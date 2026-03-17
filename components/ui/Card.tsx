@@ -46,35 +46,21 @@ export function ProductCard({
   highlight = false,
   buttonLabel = "Learn More",
 }: ProductCardProps) {
-  const accentColor = highlight ? "#E96429" : "#2251B5";
-
   return (
     <div
-      className={`flex flex-col p-6 md:p-8 rounded-[14px] transition-all duration-300 hover:-translate-y-1 ${highlight
-          ? "bg-[#FFF7F4] border border-[#E96429] shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)]"
-          : "bg-white border border-[#E0E0E0] hover:shadow-md"
-        }`}
+      className="group flex flex-col p-6 md:p-8 rounded-[14px] transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0E0E0] hover:bg-[#FFF7F4] hover:border-[#E96429] hover:shadow-md"
     >
       <div className="flex flex-col h-full gap-6">
-        {/* Icon — Figma: 48×48, bg accent/10, rounded-xl */}
+        {/* Icon */}
         <div className="flex items-center justify-between">
-          <div
-            className="p-3 rounded-xl"
-            style={{ backgroundColor: `${accentColor}1A`, color: accentColor }}
-          >
+          <div className="p-3 rounded-xl transition-colors duration-300 bg-[#2251B5]/10 text-[#2251B5] group-hover:bg-[#E96429]/10 group-hover:text-[#E96429]">
             <Icon size={24} />
           </div>
         </div>
 
         {/* Content */}
         <div className="flex flex-col gap-3 grow">
-          <h3
-            className="font-bold text-[20px] leading-[1.4]"
-            style={{
-              color: accentColor,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          >
+          <h3 className="font-bold text-[20px] leading-[1.4] transition-colors duration-300 text-[#2251B5] group-hover:text-[#E96429] font-['Plus_Jakarta_Sans',sans-serif]">
             {title}
           </h3>
           <p className="text-[#3C3C3B] text-[14px] leading-relaxed font-['Inter',sans-serif]">
@@ -82,16 +68,13 @@ export function ProductCard({
           </p>
         </div>
 
-        {/* Learn More — Figma: accent color, arrow right inline */}
+        {/* Learn More */}
         <div className="mt-auto pt-4">
-          <button
-            className="flex items-center gap-1.5 font-medium text-[16px] leading-normal group font-['Inter',sans-serif]"
-            style={{ color: accentColor }}
-          >
+          <button className="flex items-center gap-1.5 font-medium text-[16px] leading-normal font-['Inter',sans-serif] transition-colors duration-300 text-[#2251B5] group-hover:text-[#E96429] group/btn">
             {buttonLabel}
             <ArrowRight
               size={16}
-              className="transition-transform group-hover:translate-x-1"
+              className="transition-transform group-hover/btn:translate-x-1 group-hover:translate-x-1"
             />
           </button>
         </div>
