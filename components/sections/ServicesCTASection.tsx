@@ -70,7 +70,19 @@ const FEATURES = [
 
 /* ─── Component ────────────────────────────────────────── */
 
-export default function ServicesCTASection() {
+interface ServicesCTASectionProps {
+  title?: string;
+  description?: string;
+  primaryButtonText?: string;
+  secondaryButtonText?: string | undefined;
+}
+
+export default function ServicesCTASection({
+  title = "Let's Build Something Amazing Together",
+  description = "Partner with us to create innovative digital solutions that drive growth, enhance user experience, and deliver measurable results.",
+  primaryButtonText = "Start Your Project",
+  secondaryButtonText = "Schedule a Call"
+}: ServicesCTASectionProps = {}) {
   return (
     <section className="relative w-full bg-[#2251B5] overflow-x-hidden">
       {/* Decorative orange ellipse — top-right */}
@@ -98,7 +110,7 @@ export default function ServicesCTASection() {
 
           {/* Headline */}
           <h2 className="font-bold text-[48px] leading-[1.04] text-white font-['Plus_Jakarta_Sans',sans-serif] max-w-[507px]">
-            Let&apos;s Build Something Amazing Together
+            {title}
           </h2>
 
           {/* Sub-description */}
@@ -109,8 +121,7 @@ export default function ServicesCTASection() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="text-[20px] leading-normal text-white/90 font-['Inter',sans-serif] max-w-[743px]"
           >
-            Partner with us to create innovative digital solutions that drive
-            growth, enhance user experience, and deliver measurable results.
+            {description}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -122,20 +133,22 @@ export default function ServicesCTASection() {
               className="flex items-center gap-3 px-10 py-[22px] h-[60px] bg-white rounded-2xl shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] font-bold text-[18px] leading-[1.56] text-[#2251B5] font-['Inter',sans-serif]"
             >
               <span className="flex items-center gap-2">
-                Start Your Project
+                {primaryButtonText}
               </span>
               <ArrowRightIcon />
             </motion.button>
 
             {/* Secondary — ghost */}
-            <motion.button
-              whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.15)" }}
-              whileTap={{ scale: 0.97 }}
-              className="flex items-center justify-center gap-2 px-[37px] py-[21px] h-[60px] rounded-2xl border-2 border-white font-bold text-[18px] leading-[1.56] text-white font-['Inter',sans-serif] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]"
-              style={{ background: "rgba(255,255,255,0.1)" }}
-            >
-              Schedule a Call
-            </motion.button>
+            {secondaryButtonText && (
+              <motion.button
+                whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.15)" }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center justify-center gap-2 px-[37px] py-[21px] h-[60px] rounded-2xl border-2 border-white font-bold text-[18px] leading-[1.56] text-white font-['Inter',sans-serif] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]"
+                style={{ background: "rgba(255,255,255,0.1)" }}
+              >
+                {secondaryButtonText}
+              </motion.button>
+            )}
           </div>
         </motion.div>
 
