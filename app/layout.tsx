@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Company Name', // Update title
-  description: 'Company Description', // Update description
+  title: 'Innovative Network | House of Digital Mastery', // Update title
+  description: 'We are a leading IT company providing comprehensive digital solutions to businesses worldwide.', // Update description
 };
 
 export default function RootLayout({
