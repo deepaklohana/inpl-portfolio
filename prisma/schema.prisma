@@ -1,0 +1,268 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("editor")
+  isActive      Boolean   @default(true)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model SeoMetadata {
+  id               String      @id @default(uuid())
+  meta_title       String?
+  meta_description String?
+  og_image         String?
+  keywords         String?
+  no_index         Boolean     @default(false)
+  created_at       DateTime    @default(now())
+
+  blogs            Blog[]
+  events           Event[]
+  news             News[]
+  projects         Project[]
+  services         Service[]
+
+  @@map("seo_metadata")
+}
+
+model Blog {
+  id           String       @id @default(uuid())
+  title        String
+  slug         String       @unique
+  excerpt      String?
+  content      String?
+  cover_image  String?
+  author_name  String?
+  author_image String?
+  category     String?
+  tags         String?
+  status       String       @default("draft")
+  featured     Boolean      @default(false)
+  
+  seo_id       String?
+  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+  
+  published_at DateTime?
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+
+  @@map("blogs")
+}
+
+model Event {
+  id               String       @id @default(uuid())
+  title            String
+  slug             String       @unique
+  excerpt          String?
+  description      String?
+  cover_image      String?
+  event_date       DateTime?
+  end_date         DateTime?
+  location         String?
+  location_url     String?
+  is_online        Boolean      @default(false)
+  event_url        String?
+  registration_url String?
+  gallery          String[]
+  status           String       @default("draft")
+  featured         Boolean      @default(false)
+  
+  seo_id           String?
+  seo_metadata     SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+
+  published_at     DateTime?
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  @@map("events")
+}
+
+model News {
+  id           String       @id @default(uuid())
+  title        String
+  slug         String       @unique
+  excerpt      String?
+  content      String?
+  cover_image  String?
+  source_url   String?
+  category     String?
+  tags         String?
+  author_name  String?
+  status       String       @default("draft")
+  featured     Boolean      @default(false)
+
+  seo_id       String?
+  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+
+  published_at DateTime?
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+
+  @@map("news")
+}
+
+model Project {
+  id            String       @id @default(uuid())
+  title         String
+  slug          String       @unique
+  excerpt       String?
+  description   String?
+  cover_image   String?
+  client_name   String?
+  industry      String?
+  tech_stack    String[]
+  gallery       String[]
+  project_url   String?
+  start_date    DateTime?
+  end_date      DateTime?
+  sort_order    Int          @default(0)
+  services_used String[]
+  status        String       @default("draft")
+  featured      Boolean      @default(false)
+
+  seo_id        String?
+  seo_metadata  SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+  testimonials  Testimonial[]
+
+  published_at  DateTime?
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+
+  @@map("projects")
+}
+
+model ServiceCategory {
+  id               String    @id @default(uuid())
+  name             String
+  slug             String    @unique
+  icon             String?
+  description      String?
+  shortDescription String?
+  heroTitle        String?
+  heroSubtitle     String?
+  sortOrder        Int       @default(0)
+  status           String    @default("draft")
+  services         Service[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("service_categories")
+}
+
+model Service {
+  id             String           @id @default(uuid())
+  title          String
+  slug           String           @unique
+  excerpt        String?
+  description    String?
+  cover_image    String?
+  icon           String?
+  features       Json?
+  price_range    String?
+  startingPrice  String?
+  processSteps   Json?
+  toolsUsed      Json?
+  stats          Json?
+  ctaTitle       String?
+  ctaSubtitle    String?
+  sort_order     Int              @default(0)
+  status         String           @default("draft")
+  featured       Boolean          @default(false)
+
+  categoryId     String?
+  category       ServiceCategory? @relation(fields: [categoryId], references: [id])
+
+  seo_id         String?
+  seo_metadata   SeoMetadata?     @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+
+  published_at   DateTime?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+
+  @@map("services")
+}
+
+model Testimonial {
+  id             String   @id @default(uuid())
+  client_name    String
+  client_title   String?
+  client_company String?
+  company_type   String?
+  client_image   String?
+  content        String
+  rating         Float    @default(5)
+  status         String   @default("draft")
+  featured       Boolean  @default(false)
+  sort_order     Int      @default(0)
+
+  project_id     String?
+  projects       Project? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model Media {
+  id            String   @id @default(uuid())
+  filename      String   @unique
+  original_name String
+  url           String
+  mime_type     String
+  size_bytes    Int
+  folder        String   @default("general")
+  created_at    DateTime @default(now())
+
+  @@map("media")
+}

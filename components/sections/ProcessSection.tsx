@@ -34,7 +34,7 @@ const PROCESS_STEPS: ProcessStep[] = [
     tags: ["UI/UX Design", "Technical Architecture", "Prototyping"],
     color: "blue",
     icon: ClipboardList,
-    iconBg: "orange",
+    iconBg: "blue",
   },
   {
     num: "03",
@@ -62,11 +62,6 @@ function StepIcon({ icon: Icon, bg }: { icon: LucideIcon; bg: "orange" | "blue" 
   const bgColor = bg === "orange" ? "#E96429" : "#2251B5";
   return (
     <div className="relative w-[100px] h-[100px] md:w-[128px] md:h-[128px] shrink-0">
-      {/* Outer glow ring */}
-      <div
-        className="absolute -inset-2 rounded-full opacity-[0.27]"
-        style={{ backgroundColor: bgColor }}
-      />
       {/* Main circle */}
       <div
         className="absolute inset-0 rounded-full flex items-center justify-center"
@@ -92,6 +87,7 @@ function NumberBadge({ num, color }: { num: string; color: "orange" | "blue" }) 
         className={`font-bold text-2xl leading-[1.33] ${
           isOrange ? "text-[#E96429]" : "text-[#2251B5]"
         }`}
+        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
       >
         {num}
       </span>
@@ -103,7 +99,7 @@ function TagPill({ label, color }: { label: string; color: "orange" | "blue" }) 
   const isOrange = color === "orange";
   return (
     <span
-      className={`px-4 py-2 bg-white rounded-full border text-sm font-semibold leading-[1.43] shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.1),0px_1px_3px_0px_rgba(0,0,0,0.1)] ${
+      className={`whitespace-nowrap px-3 py-1.5 bg-white rounded-full border text-sm font-semibold leading-[1.43] shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.1),0px_1px_3px_0px_rgba(0,0,0,0.1)] font-['Inter',sans-serif] ${
         isOrange
           ? "border-[#E96429]/25 text-[#E96429]"
           : "border-[#2251B5]/25 text-[#2251B5]"
@@ -133,7 +129,7 @@ export default function ProcessSection() {
       {/* Mid-left orange blur */}
       <div className="absolute -left-[123px] top-[56%] w-[343px] h-[307px] bg-[#E96429]/15 blur-[300px] rounded-full pointer-events-none" />
       {/* Bottom-right orange blur */}
-      <div className="absolute right-[-100px] bottom-[0] w-[343px] h-[307px] bg-[#E96429]/15 blur-[300px] rounded-full pointer-events-none" />
+      <div className="absolute right-[-100px] bottom-0 w-[343px] h-[307px] bg-[#E96429]/15 blur-[300px] rounded-full pointer-events-none" />
 
       <Container className="relative z-10 flex flex-col items-center">
         {/* ── Section Header ──────────────────────────────────────────── */}
@@ -172,13 +168,16 @@ export default function ProcessSection() {
                         /* Content block on the left — text right-aligned */
                         <div className="flex flex-col items-end text-right max-w-[536px] w-full">
                           <NumberBadge num={step.num} color={step.color} />
-                          <h3 className="text-[#101828] font-bold text-[30px] leading-[1.2] mt-4">
+                          <h3 
+                            className="text-[#101828] font-bold text-[30px] leading-[1.2] mt-4"
+                            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                          >
                             {step.title}
                           </h3>
-                          <p className="text-[#4A5565] text-lg leading-relaxed mt-3 max-w-[440px]">
+                          <p className="text-[#4A5565] text-lg leading-relaxed mt-3 max-w-[440px] font-['Inter',sans-serif]">
                             {step.description}
                           </p>
-                          <div className="flex flex-wrap gap-2.5 mt-6 justify-end">
+                          <div className="flex flex-wrap lg:flex-nowrap gap-2 mt-6 justify-end">
                             {step.tags.map((tag) => (
                               <TagPill key={tag} label={tag} color={step.color} />
                             ))}
@@ -210,13 +209,16 @@ export default function ProcessSection() {
                         /* Content block on the right — text left-aligned */
                         <div className="flex flex-col items-start text-left max-w-[536px] w-full">
                           <NumberBadge num={step.num} color={step.color} />
-                          <h3 className="text-[#101828] font-bold text-[30px] leading-[1.2] mt-4">
+                          <h3 
+                            className="text-[#101828] font-bold text-[30px] leading-[1.2] mt-4"
+                            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                          >
                             {step.title}
                           </h3>
-                          <p className="text-[#4A5565] text-lg leading-relaxed mt-3 max-w-[440px]">
+                          <p className="text-[#4A5565] text-lg leading-relaxed mt-3 max-w-[440px] font-['Inter',sans-serif]">
                             {step.description}
                           </p>
-                          <div className="flex flex-wrap gap-2.5 mt-6 justify-start">
+                          <div className="flex flex-wrap lg:flex-nowrap gap-2 mt-6 justify-start">
                             {step.tags.map((tag) => (
                               <TagPill key={tag} label={tag} color={step.color} />
                             ))}
@@ -230,10 +232,13 @@ export default function ProcessSection() {
                   <div className="flex flex-col items-center text-center lg:hidden w-full">
                     <StepIcon icon={Icon} bg={step.iconBg} />
                     <NumberBadge num={step.num} color={step.color} />
-                    <h3 className="text-[#101828] font-bold text-[26px] leading-[1.2] mt-3">
+                    <h3 
+                      className="text-[#101828] font-bold text-[26px] leading-[1.2] mt-3"
+                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    >
                       {step.title}
                     </h3>
-                    <p className="text-[#4A5565] text-base leading-relaxed mt-2 max-w-[400px]">
+                    <p className="text-[#4A5565] text-base leading-relaxed mt-2 max-w-[400px] font-['Inter',sans-serif]">
                       {step.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-5 justify-center">

@@ -7,53 +7,19 @@ import SectionBadge from "@/components/ui/SectionBadge";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-interface Testimonial {
+export interface TestimonialProp {
+  id?: string;
   name: string;
   role: string;
   company: string;
+  companyType?: string;
   project: string;
   quote: string;
   avatar: string;
+  rating?: number;
 }
 
-const testimonials: Testimonial[] = [
-  {
-    name: "Sarah Johnson",
-    role: "CEO",
-    company: "TechVision Inc",
-    project: "E-commerce Platform",
-    quote:
-      '"Innovative Network transformed our digital presence completely. Their team delivered beyond our expectations with exceptional quality and professionalism."',
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
-  {
-    name: "Michael Chen",
-    role: "CTO",
-    company: "DataFlow Systems",
-    project: "Cloud Migration",
-    quote:
-      '"The team at Innovative Network demonstrated unparalleled expertise in modernizing our infrastructure. Their cloud solutions exceeded every benchmark we set."',
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    name: "Emily Rodriguez",
-    role: "Founder",
-    company: "GreenStart Labs",
-    project: "Mobile Application",
-    quote:
-      '"Working with Innovative Network was a game-changer for our startup. They built a mobile app that our users absolutely love and that scales beautifully."',
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-  },
-  {
-    name: "David Park",
-    role: "Director",
-    company: "NextGen Media",
-    project: "AI Integration",
-    quote:
-      '"Innovative Network brought cutting-edge AI capabilities to our platform. The results have been transformative for our business operations and customer experience."',
-    avatar: "https://randomuser.me/api/portraits/men/75.jpg",
-  },
-];
+
 
 const stats = [
   { value: "500+", label: "Happy Clients" },
@@ -80,9 +46,14 @@ function StarRating({ count = 5 }: { count?: number }) {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function TestimonialsSection() {
+export default function TestimonialsSection({ testimonials }: { testimonials?: TestimonialProp[] }) {
+  const displayData = testimonials && testimonials.length > 0 ? testimonials : [];
   const [activeIndex, setActiveIndex] = useState(0);
-  const active = testimonials[activeIndex];
+  const active = displayData[activeIndex] || displayData[0];
+
+  if (!active) {
+    return null;
+  }
 
   return (
     <section className="w-full bg-[#F5F5F5] py-20">
@@ -120,11 +91,11 @@ export default function TestimonialsSection() {
               </div>
 
               {/* Star rating */}
-              <StarRating />
+              <StarRating count={active.rating || 5} />
 
               {/* Quote text */}
-              <p className="text-[#364153] text-lg md:text-[20px] leading-relaxed font-['Inter',sans-serif]">
-                {active.quote}
+              <p className="text-[#364153] text-lg md:text-[20px] italic leading-relaxed font-['Inter',sans-serif]">
+                "{active.quote}"
               </p>
 
               {/* Author info */}
@@ -138,9 +109,10 @@ export default function TestimonialsSection() {
                   <h4 className="text-[#101828] font-bold text-lg leading-[1.55] font-['Inter',sans-serif]">
                     {active.name}
                   </h4>
-                  <p className="text-[#4A5565] text-sm leading-[1.428] font-['Inter',sans-serif]">
-                    {active.role}, {active.company}
-                  </p>
+                  <div className="text-[#4A5565] text-sm leading-[1.428] font-['Inter',sans-serif]">
+                    {active.role}{active.company ? `, ${active.company}` : ''}
+                  <h6 className="text-[#E96429] text-sm leading-[1.428] font-['Inter',sans-serif] font-semibold">{active.companyType}</h6>
+                  </div>
                   <p className="text-[#E96429] font-semibold text-sm leading-[1.428] font-['Inter',sans-serif]">
                     {active.project}
                   </p>
@@ -149,14 +121,14 @@ export default function TestimonialsSection() {
             </div>
 
             {/* ── Client Selector Grid ───────────────────────────────── */}
-            <div className="flex flex-col gap-0 w-full lg:flex-1">
-              {/* Row layout: 2 columns × 3 rows on desktop, stack on mobile */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
-                {testimonials.map((t, i) => {
+            <div className="flex flex-col gap-6 w-full lg:flex-1">
+              {/* Row layout: 2 columns × n rows on desktop, stack on mobile */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {displayData.map((t, i) => {
                   const isActive = i === activeIndex;
                   return (
                     <button
-                      key={t.name}
+                      key={t.id || t.name + i}
                       onClick={() => setActiveIndex(i)}
                       className={`flex flex-col gap-3 p-6 rounded-2xl border transition-all duration-300 text-left ${
                         isActive
@@ -183,11 +155,11 @@ export default function TestimonialsSection() {
 
                       {/* Stars */}
                       <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, j) => (
+                        {Array.from({ length: t.rating || 5 }).map((_, j) => (
                           <Star
                             key={j}
                             size={12}
-                            className="text-[#E96429] fill-[#E96429]"
+                            className={`${isActive ? "text-[#E96429] fill-[#E96429]" : "text-[#2251B5] fill-[#2251B5]"}`}
                           />
                         ))}
                       </div>
@@ -199,7 +171,7 @@ export default function TestimonialsSection() {
           </div>
 
           {/* ── Stats Row ─────────────────────────────────────────────── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 w-full">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
             {stats.map((stat) => (
               <div
                 key={stat.label}
