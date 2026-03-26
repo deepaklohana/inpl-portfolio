@@ -3,6 +3,7 @@
 import SectionBadge from "../ui/SectionBadge";
 import Container from "../ui/Container";
 import { Check } from "lucide-react";
+import ScrollReveal from "@/components/animations/ScrollReveal";
 
 export default function ProductFeaturesSection() {
   const features = [
@@ -24,7 +25,7 @@ export default function ProductFeaturesSection() {
 
       <Container className="relative z-10 flex flex-col lg:flex-row gap-16 justify-between items-center lg:items-start">
         {/* ── Left Content (Text & Features) ───────────────────────── */}
-        <div className="flex flex-col flex-1 max-w-[493px] w-full">
+        <ScrollReveal variant="slideLeft" className="flex flex-col flex-1 max-w-[493px] w-full">
           <SectionBadge label="Our Products" variant="light" />
 
           <h2 className="mt-6 font-bold text-[38px] leading-[1.05] tracking-[-0.03em] text-[#2251B5] font-['Plus_Jakarta_Sans',sans-serif] whitespace-pre-line">
@@ -48,11 +49,11 @@ export default function ProductFeaturesSection() {
               </div>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* ── Right Content (Stats Grid) ───────────────────────────── */}
         {/* On desktop, this block is aligned right. */}
-        <div className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto shrink-0 relative lg:mt-[32px] justify-center sm:items-stretch">
+        <ScrollReveal variant="slideRight" className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto shrink-0 relative lg:mt-[32px] justify-center sm:items-stretch">
           
           {/* Column 1 */}
           <div className="flex flex-col gap-6 w-full sm:w-[284px]">
@@ -100,7 +101,7 @@ export default function ProductFeaturesSection() {
             </div>
           </div>
 
-        </div>
+        </ScrollReveal>
       </Container>
     </section>
   );

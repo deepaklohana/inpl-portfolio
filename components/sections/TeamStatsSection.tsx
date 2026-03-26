@@ -1,4 +1,5 @@
 import SectionBadge from "@/components/ui/SectionBadge";
+import ShinyCard from "@/components/ui/ShinyCard";
 
 export default function TeamStatsSection() {
   return (
@@ -23,7 +24,7 @@ export default function TeamStatsSection() {
         {/* Stats Grid */}
         <div className="w-full flex flex-col md:flex-row justify-center items-center self-stretch gap-[32px]">
           {/* Card 1 */}
-          <div className="flex flex-col justify-center items-center gap-[8px] p-[32px] w-full md:w-[284px] h-[212px] bg-white border border-[#E0E0E0] rounded-[24px]">
+          <ShinyCard className="flex flex-col justify-center items-center gap-[8px] p-[32px] w-full md:w-[284px] h-[212px]">
             <div className="flex flex-col items-stretch gap-[16px] w-[220px]">
               <div className="flex flex-row justify-center items-center self-stretch gap-[8px] px-[62px]">
                 <div
@@ -48,10 +49,13 @@ export default function TeamStatsSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </ShinyCard>
 
           {/* Card 2 */}
-          <div className="flex flex-col justify-center items-stretch gap-[8px] p-[32px] w-full md:w-[284px] bg-white border border-[#E0E0E0] rounded-[24px]">
+          <ShinyCard 
+            className="flex flex-col justify-center items-stretch gap-[8px] p-[32px] w-full md:w-[284px]"
+            glowColor="#E96429"
+          >
             <div className="flex flex-col items-stretch self-stretch gap-[16px]">
               <div className="flex flex-row justify-center items-center self-stretch gap-[8px] px-[49px]">
                 <div
@@ -76,10 +80,10 @@ export default function TeamStatsSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </ShinyCard>
 
           {/* Card 3 */}
-          <div className="flex flex-col justify-center items-stretch gap-[8px] p-[32px] w-full md:w-[284px] bg-white border border-[#E0E0E0] rounded-[24px]">
+          <ShinyCard className="flex flex-col justify-center items-stretch gap-[8px] p-[32px] w-full md:w-[284px]">
             <div className="flex flex-col justify-center items-stretch self-stretch gap-[16px]">
               <div className="flex flex-row justify-center items-center self-stretch gap-[8px] px-[61px]">
                 <div
@@ -104,10 +108,13 @@ export default function TeamStatsSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </ShinyCard>
 
           {/* Card 4 */}
-          <div className="flex flex-col justify-center items-stretch gap-[8px] py-[32px] px-[18px] w-full md:w-[270px] h-[212px] bg-white border border-[#E0E0E0] rounded-[24px]">
+          <ShinyCard 
+            className="flex flex-col justify-center items-stretch gap-[8px] py-[32px] px-[18px] w-full md:w-[270px] h-[212px]"
+            glowColor="#E96429"
+          >
             <div className="flex flex-col self-stretch gap-[16px]">
               <div className="flex w-[220px] h-[48px] mx-auto relative overflow-hidden">
                 <div
@@ -133,7 +140,7 @@ export default function TeamStatsSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </ShinyCard>
         </div>
       </div>
     </section>

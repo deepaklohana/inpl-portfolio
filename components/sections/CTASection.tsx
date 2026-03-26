@@ -1,5 +1,6 @@
 import SectionBadge from "@/components/ui/SectionBadge";
 import { CTACard } from "@/components/ui/Card";
+import ScrollReveal from "@/components/animations/ScrollReveal";
 
 // Figma: stats row — Inter 700 30px for value, Inter 400 14px (white/70) for label
 const stats = [
@@ -45,7 +46,7 @@ export default function CTASection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left Column — column gap 40px */}
-          <div className="flex flex-col items-start gap-10">
+          <ScrollReveal variant="slideLeft" className="flex flex-col items-start gap-10">
             {/* Figma: badge bg rgba(255,255,255,0.2), padding 8px 12px, border white/10, white font */}
             <SectionBadge label="Let's Get Started" variant="dark" />
 
@@ -77,10 +78,10 @@ export default function CTASection() {
                 </div>
               ))}
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right Column — Figma: width 588, column gap 24px, starting y:80 */}
-          <div className="flex flex-col gap-6 lg:pl-10">
+          <ScrollReveal variant="slideRight" className="flex flex-col gap-6 lg:pl-10">
             {ctaCards.map((card) => (
               <CTACard key={card.title} {...card} />
             ))}
@@ -102,7 +103,7 @@ export default function CTASection() {
                 Join 500+ satisfied clients worldwide
               </span>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

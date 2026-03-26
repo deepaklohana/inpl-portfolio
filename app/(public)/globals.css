@@ -61,6 +61,17 @@
   animation: marquee 30s linear infinite;
 }
 
+@keyframes pop-blob {
+  0% { transform: scale(1) translate(0px, 0px); }
+  33% { transform: scale(1.5) translate(50px, -50px); }
+  66% { transform: scale(0.7) translate(-30px, 30px); }
+  100% { transform: scale(1) translate(0px, 0px); }
+}
+
+.animate-pop-blob {
+  animation: pop-blob 8s ease-in-out infinite;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

@@ -4,6 +4,8 @@ import SectionHeader from "../ui/SectionHeader";
 import Container from "../ui/Container";
 import Button from "../ui/Button";
 import { Lightbulb, ClipboardList, Settings, BarChart3, type LucideIcon } from "lucide-react";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerReveal from "@/components/animations/StaggerReveal";
 
 interface ProcessStep {
   num: string;
@@ -79,8 +81,8 @@ function NumberBadge({ num, color }: { num: string; color: "orange" | "blue" }) 
     <div
       className={`px-4 py-2 rounded-full border-2 inline-flex items-center justify-center ${
         isOrange
-          ? "bg-linear-to-br from-[#E96429]/[0.13] to-[#E96429]/[0.06] border-[#E96429]/25"
-          : "bg-linear-to-br from-[#2251B5]/[0.13] to-[#2251B5]/[0.06] border-[#2251B5]/25"
+          ? "bg-linear-to-br from-[#E96429]/13 to-[#E96429]/6 border-[#E96429]/25"
+          : "bg-linear-to-br from-[#2251B5]/13 to-[#2251B5]/6 border-[#2251B5]/25"
       }`}
     >
       <span
@@ -133,12 +135,14 @@ export default function ProcessSection() {
 
       <Container className="relative z-10 flex flex-col items-center">
         {/* ── Section Header ──────────────────────────────────────────── */}
-        <SectionHeader
-          badge="Our Process"
-          title="How We Work"
-          subtitle="A proven methodology that ensures successful project delivery from concept to completion"
-          align="center"
-        />
+        <ScrollReveal variant="fadeUp">
+          <SectionHeader
+            badge="Our Process"
+            title="How We Work"
+            subtitle="A proven methodology that ensures successful project delivery from concept to completion"
+            align="center"
+          />
+        </ScrollReveal>
 
         {/* ── Timeline Container ─────────────────────────────────────── */}
         <div className="relative w-full mt-16 md:mt-24">
@@ -146,7 +150,7 @@ export default function ProcessSection() {
           <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 rounded-full hidden lg:block bg-linear-to-b from-[#E96429] via-[#2251B5] to-[#E96429]" />
 
           {/* ── Steps ─────────────────────────────────────────────────── */}
-          <div className="flex flex-col gap-12 lg:gap-0">
+          <StaggerReveal className="flex flex-col gap-12 lg:gap-0">
             {PROCESS_STEPS.map((step, index) => {
               const isLeft = index % 2 === 0; // steps 01, 03 have content on the LEFT
               const Icon = step.icon;
@@ -250,7 +254,7 @@ export default function ProcessSection() {
                 </div>
               );
             })}
-          </div>
+          </StaggerReveal>
         </div>
 
         {/* ── Bottom CTA ──────────────────────────────────────────────── */}

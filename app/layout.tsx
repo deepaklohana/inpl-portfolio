@@ -33,7 +33,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" style={{ scrollBehavior: 'auto' }}>
       <body
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white font-sans flex flex-col`}

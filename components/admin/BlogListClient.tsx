@@ -8,6 +8,7 @@ import { deleteBlog } from '@/lib/actions/blogs';
 import PublishButton from '@/components/admin/PublishButton';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }) {
   const [blogs, setBlogs] = useState(initialBlogs);
@@ -59,10 +60,10 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <ScrollReveal variant="fadeUp" className="bg-white rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-[#F3F4F6]">
+          <thead className="bg-[#F9FAFB]/80">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Title & Category
@@ -78,9 +79,9 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-[#F3F4F6]">
             {blogs.map((blog) => (
-              <tr key={blog.id} className="hover:bg-gray-50 transition-colors">
+              <tr key={blog.id} className="hover:bg-[#2251B5]/5 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="ml-4">
@@ -146,6 +147,6 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete({ isOpen: false, id: null, label: '' })}
       />
-    </div>
+    </ScrollReveal>
   );
 }

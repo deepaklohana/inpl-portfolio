@@ -16,6 +16,7 @@ import { getMediaList, uploadToStorage, deleteFromStorage } from '@/lib/storage'
 import type { Media } from '@/lib/storage';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -164,7 +165,7 @@ export default function AdminMediaPage() {
   );
 
   return (
-    <div className="space-y-6 relative">
+    <ScrollReveal variant="fadeUp" className="space-y-6 relative">
       {/* Upload progress overlay */}
       {isUploading && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center backdrop-blur-sm">
@@ -184,9 +185,9 @@ export default function AdminMediaPage() {
 
       {/* Page-level drag overlay */}
       {isDraggingPage && !isUploading && (
-        <div className="fixed inset-0 z-50 bg-blue-600/20 backdrop-blur-sm flex items-center justify-center pointer-events-none">
-          <div className="bg-white rounded-2xl p-12 shadow-2xl border-2 border-dashed border-blue-500 flex flex-col items-center gap-4">
-            <Upload className="h-16 w-16 text-blue-600" />
+        <div className="fixed inset-0 z-50 bg-[#2251B5]/10 backdrop-blur-[2px] flex items-center justify-center pointer-events-none transition-all duration-300">
+          <div className="bg-white rounded-2xl p-12 shadow-[0px_0px_50px_rgba(34,81,181,0.2)] border-2 border-dashed border-[#2251B5] flex flex-col items-center gap-4 transform scale-105 transition-transform duration-300">
+            <Upload className="h-16 w-16 text-[#2251B5] animate-bounce" />
             <p className="text-xl font-semibold text-gray-800">Drop file to upload</p>
             <p className="text-sm text-gray-500">Release to start uploading</p>
           </div>
@@ -225,7 +226,7 @@ export default function AdminMediaPage() {
           placeholder="Search by filename..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
+          className="w-full pl-10 pr-4 py-3 border border-[#F3F4F6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2251B5] focus:border-transparent bg-white shadow-[0px_4px_10px_rgba(0,0,0,0.03)] transition-all duration-200"
         />
         {search && (
           <button
@@ -245,10 +246,10 @@ export default function AdminMediaPage() {
       ) : filtered.length === 0 && media.length === 0 ? (
         /* Empty state */
         <div
-          className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors"
+          className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-[#E5E7EB] rounded-2xl cursor-pointer hover:border-[#2251B5] hover:bg-[#2251B5]/5 transition-all duration-300"
           onClick={() => fileInputRef.current?.click()}
         >
-          <div className="bg-blue-50 p-4 rounded-full mb-4">
+          <div className="bg-blue-50 p-4 rounded-2xl mb-4 group-hover:scale-110 transition-transform">
             <ImagePlus className="h-10 w-10 text-blue-600" />
           </div>
           <p className="text-lg font-semibold text-gray-800 mb-1">No media yet</p>
@@ -267,7 +268,7 @@ export default function AdminMediaPage() {
           {filtered.map((item) => (
             <div
               key={item.id}
-              className="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              className="group bg-white border border-[#F3F4F6] rounded-2xl overflow-hidden shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:shadow-[0px_10px_25px_-5px_rgba(34,81,181,0.15)] hover:-translate-y-1 transition-all duration-300"
             >
               {/* Image preview */}
               <div className="relative aspect-square bg-gray-100">
@@ -344,6 +345,6 @@ export default function AdminMediaPage() {
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(null)}
       />
-    </div>
+    </ScrollReveal>
   );
 }

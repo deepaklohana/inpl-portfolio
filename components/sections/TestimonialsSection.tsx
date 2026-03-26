@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Star, Quote } from "lucide-react";
 import Container from "@/components/ui/Container";
 import SectionBadge from "@/components/ui/SectionBadge";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerReveal from "@/components/animations/StaggerReveal";
+import CountUp from "@/components/animations/CountUp";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -22,10 +25,10 @@ export interface TestimonialProp {
 
 
 const stats = [
-  { value: "500+", label: "Happy Clients" },
-  { value: "98%", label: "Satisfaction Rate" },
-  { value: "1000+", label: "Projects Completed" },
-  { value: "50+", label: "Industry Awards" },
+  { value: 500, suffix: "+", label: "Happy Clients" },
+  { value: 98, suffix: "%", label: "Satisfaction Rate" },
+  { value: 1000, suffix: "+", label: "Projects Completed" },
+  { value: 50, suffix: "+", label: "Industry Awards" },
 ];
 
 // ─── Star Rating ─────────────────────────────────────────────────────────────
@@ -59,7 +62,7 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
     <section className="w-full bg-[#F5F5F5] py-20">
       <Container className="flex flex-col items-center gap-12">
         {/* ── Header ───────────────────────────────────────────────────── */}
-        <div className="flex flex-col items-center gap-3 max-w-[672px] text-center">
+        <ScrollReveal variant="fadeUp" className="flex flex-col items-center gap-3 max-w-[672px] text-center">
           <SectionBadge label="Client Success" />
           <h2
             className="font-bold text-3xl md:text-[38px] leading-[1.05] tracking-[-0.03em]"
@@ -71,14 +74,14 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
             A proven methodology that ensures successful project delivery from
             concept to completion
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* ── Main content: Testimonial card + Client selector ─────────── */}
         <div className="flex flex-col gap-16 w-full">
           {/* Card + selector row */}
           <div className="flex flex-col lg:flex-row items-center gap-6 w-full">
             {/* ── Featured Testimonial Card ──────────────────────────── */}
-            <div className="w-full lg:w-[588px] shrink-0 bg-white rounded-3xl border-2 border-[#E96429]/25 shadow-[0px_14px_40px_-12px_rgba(0,0,0,0.11)] p-10 flex flex-col gap-6 relative min-h-[422px]">
+            <ScrollReveal variant="slideLeft" className="w-full lg:w-[588px] shrink-0 bg-white rounded-3xl border-2 border-[#E96429]/25 shadow-[0px_14px_40px_-12px_rgba(0,0,0,0.11)] p-10 flex flex-col gap-6 relative min-h-[422px]">
               {/* Quote icon */}
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)]"
@@ -118,10 +121,10 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
                   </p>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             {/* ── Client Selector Grid ───────────────────────────────── */}
-            <div className="flex flex-col gap-6 w-full lg:flex-1">
+            <ScrollReveal variant="slideRight" className="flex flex-col gap-6 w-full lg:flex-1">
               {/* Row layout: 2 columns × n rows on desktop, stack on mobile */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {displayData.map((t, i) => {
@@ -167,31 +170,35 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
                   );
                 })}
               </div>
-            </div>
+            </ScrollReveal>
           </div>
 
           {/* ── Stats Row ─────────────────────────────────────────────── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
+          <StaggerReveal className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
             {stats.map((stat) => (
               <div
                 key={stat.label}
                 className="flex flex-col items-center gap-2 bg-white/80 border border-[#F3F4F6] rounded-2xl p-6 shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)]"
               >
                 <span
-                  className="font-bold text-4xl leading-[1.11] font-['Inter',sans-serif] bg-clip-text text-transparent"
+                  className="bg-clip-text text-transparent inline-block"
                   style={{
                     backgroundImage:
                       "linear-gradient(180deg, #E96429 0%, #2251B5 100%)",
                   }}
                 >
-                  {stat.value}
+                  <CountUp
+                    end={stat.value}
+                    suffix={stat.suffix}
+                    className="font-bold text-4xl leading-[1.11] font-['Inter',sans-serif]"
+                  />
                 </span>
                 <span className="text-[#4A5565] font-medium text-sm leading-[1.428] font-['Inter',sans-serif] text-center">
                   {stat.label}
                 </span>
               </div>
             ))}
-          </div>
+          </StaggerReveal>
         </div>
       </Container>
     </section>

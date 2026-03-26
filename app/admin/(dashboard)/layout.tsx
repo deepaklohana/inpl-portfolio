@@ -4,6 +4,7 @@ import { auth } from '@/auth'
 import { signOut } from '@/auth'
 import { NavLink } from '@/components/admin/NavLink'
 import { AuthProvider } from '@/components/admin/AuthProvider'
+import AdminPageTransition from '@/components/animations/AdminPageTransition'
 import {
   LayoutDashboard,
   FileText,
@@ -34,12 +35,12 @@ export default async function AdminLayout({
     <AuthProvider session={session}>
       <div className="flex min-h-screen bg-gray-50 text-gray-900 font-sans">
         {/* Sidebar */}
-        <aside className="fixed inset-y-0 left-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-50 shadow-sm">
-          <div className="p-6 border-b border-gray-100 flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg text-white">
+        <aside className="fixed inset-y-0 left-0 w-[260px] bg-white flex flex-col z-50 shadow-[4px_0_24px_rgba(0,0,0,0.03)] border-r border-[#F3F4F6]">
+          <div className="p-6 border-b border-[#F3F4F6] flex items-center gap-3">
+            <div className="bg-linear-to-br from-[#E96429] to-[#E96429]/80 p-2.5 rounded-xl text-white shadow-sm">
               <Hexagon className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-gray-900">Admin Portal</h2>
+            <h2 className="text-xl font-bold tracking-tight text-[#101828] font-['Plus_Jakarta_Sans',sans-serif]">Admin Portal</h2>
           </div>
 
           <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
@@ -112,8 +113,10 @@ export default async function AdminLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 ml-[260px] p-8 max-w-[1600px]">
-          {children}
+        <main className="flex-1 ml-[260px] p-8 max-w-[1600px] overflow-x-hidden">
+          <AdminPageTransition>
+            {children}
+          </AdminPageTransition>
         </main>
       </div>
     </AuthProvider>

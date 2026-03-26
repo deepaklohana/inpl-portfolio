@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { FileText, Briefcase, Calendar, MessageSquare, ArrowRight, Activity } from 'lucide-react'
+import ScrollReveal from '@/components/animations/ScrollReveal'
 
 export default async function AdminDashboardPage() {
   const now = new Date()
@@ -98,14 +99,14 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <ScrollReveal variant="fadeUp" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => {
           const Icon = stat.icon
           return (
             <Link
               key={i}
               href={stat.href}
-              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group"
+              className="block h-full bg-white border border-[#F3F4F6] rounded-2xl p-6 shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:shadow-[0px_10px_25px_-5px_rgba(34,81,181,0.15)] hover:-translate-y-1 hover:border-[#2251B5]/30 transition-all duration-300 group"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className={`p-3 rounded-lg ${stat.iconBg}`}>
@@ -124,11 +125,11 @@ export default async function AdminDashboardPage() {
             </Link>
           )
         })}
-      </div>
+      </ScrollReveal>
 
       {/* Recent Blogs Table */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+      <ScrollReveal variant="fadeUp" className="bg-white border border-[#F3F4F6] rounded-2xl overflow-hidden shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)]">
+        <div className="px-6 py-5 border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]/80">
           <h3 className="text-base font-semibold text-gray-900">Recent Blogs</h3>
           <Link href="/admin/blogs" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1">
             View All <ArrowRight className="w-4 h-4" />
@@ -136,18 +137,18 @@ export default async function AdminDashboardPage() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-gray-500 border-b border-gray-200">
+            <thead className="bg-[#F9FAFB]/80 text-[#6A7282] border-b border-[#F3F4F6]">
               <tr>
                 <th className="px-6 py-3 font-medium uppercase tracking-wider text-xs">Title</th>
                 <th className="px-6 py-3 font-medium uppercase tracking-wider text-xs">Status</th>
                 <th className="px-6 py-3 font-medium uppercase tracking-wider text-xs text-right">Created At</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-[#F3F4F6]">
               {recentBlogs.length > 0 ? (
                 recentBlogs.map((blog) => (
-                  <tr key={blog.id} className="hover:bg-gray-50/80 transition-colors group">
-                    <td className="px-6 py-4 font-medium text-gray-900 max-w-[300px] truncate">
+                  <tr key={blog.id} className="hover:bg-[#2251B5]/5 transition-colors group">
+                    <td className="px-6 py-4 font-medium text-[#101828] max-w-[300px] truncate">
                       <Link href={`/admin/blogs/${blog.id}/edit`} className="hover:text-blue-600 transition-colors">
                         {blog.title}
                       </Link>
@@ -173,7 +174,7 @@ export default async function AdminDashboardPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </ScrollReveal>
     </div>
   )
 }

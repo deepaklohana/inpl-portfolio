@@ -12,6 +12,7 @@ import ImageUploader from './ImageUploader';
 import SeoPanel from './SeoPanel';
 import { createProject, updateProject } from '@/lib/actions/projects';
 import { toast } from 'sonner';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -81,10 +82,10 @@ export default function ProjectForm({ initialData, mode }: { initialData?: any; 
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
+    <ScrollReveal variant="fadeUp" className="max-w-5xl mx-auto pb-20">
       <form className="space-y-8">
         {/* Sticky header */}
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-100 sticky top-0 z-10">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-[#F3F4F6] mb-6 sticky top-0 z-10 transition-shadow hover:shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.06)]">
           <h1 className="text-2xl font-bold text-gray-800">{mode === 'create' ? 'New Project' : 'Edit Project'}</h1>
           <div className="flex gap-3">
             <button type="button" onClick={() => router.push('/admin/projects')} disabled={isSubmitting} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50">Cancel</button>
@@ -100,7 +101,7 @@ export default function ProjectForm({ initialData, mode }: { initialData?: any; 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
                 <input type="text" {...register('title')} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Project title" />
@@ -182,7 +183,7 @@ export default function ProjectForm({ initialData, mode }: { initialData?: any; 
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6]">
               <h3 className="font-medium text-gray-800 border-b pb-2 mb-4">Cover Image</h3>
               <Controller name="cover_image" control={control} render={({ field }: { field: any }) => (
                 <ImageUploader value={field.value} onUpload={field.onChange} folder="project_covers" />
@@ -202,6 +203,6 @@ export default function ProjectForm({ initialData, mode }: { initialData?: any; 
           </div>
         </div>
       </form>
-    </div>
+    </ScrollReveal>
   );
 }

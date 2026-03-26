@@ -9,6 +9,7 @@ import slugify from 'slugify';
 import { Loader2 } from 'lucide-react';
 import { createServiceCategory, updateServiceCategory } from '@/lib/actions/serviceCategories';
 import { toast } from 'sonner';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -89,10 +90,10 @@ export default function CategoryForm({ initialData, mode }: { initialData?: any;
   const iconVal = watch('icon');
 
   return (
-    <div className="max-w-2xl mx-auto pb-16">
+    <ScrollReveal variant="fadeUp" className="max-w-2xl mx-auto pb-16">
       <form className="space-y-6">
         {/* Sticky Topbar */}
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-100 sticky top-0 z-10">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-[#F3F4F6] mb-6 sticky top-0 z-10 transition-shadow hover:shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.06)]">
           <h1 className="text-xl font-bold text-gray-800">
             {mode === 'create' ? 'New Category' : 'Edit Category'}
           </h1>
@@ -115,7 +116,7 @@ export default function CategoryForm({ initialData, mode }: { initialData?: any;
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 space-y-5">
+        <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-5">
           <div>
             <Label>Name *</Label>
             <Input {...register('name')} placeholder="Development" />
@@ -181,6 +182,6 @@ export default function CategoryForm({ initialData, mode }: { initialData?: any;
           </div>
         </div>
       </form>
-    </div>
+    </ScrollReveal>
   );
 }

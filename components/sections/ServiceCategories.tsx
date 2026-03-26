@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronRight, Code, Palette, TrendingUp, Settings, Users, ArrowRight, type LucideIcon } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Button from "@/components/ui/Button";
+import ScrollReveal from "@/components/animations/ScrollReveal";
 
 type ServiceItem = {
   title: string;
@@ -96,7 +97,7 @@ export default function ServiceCategories() {
     <section className="w-full bg-white py-20 px-4 md:px-8">
       <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-12">
         {/* Header */}
-        <div className="max-w-[672px] mx-auto">
+        <ScrollReveal variant="fadeUp" className="max-w-[672px] mx-auto">
           <SectionHeader
             badge="Categories"
             title="Service Categories"
@@ -104,12 +105,12 @@ export default function ServiceCategories() {
             align="center"
             titleColor="#2251B5"
           />
-        </div>
+        </ScrollReveal>
 
         {/* Content Container */}
         <div className="flex flex-col lg:flex-row w-full gap-[53px] items-start lg:items-center justify-center">
           {/* Left Column: Categories List */}
-          <div className="flex flex-col w-full lg:w-[420px] gap-4 shrink-0">
+          <ScrollReveal variant="slideLeft" className="flex flex-col w-full lg:w-[420px] gap-4 shrink-0">
             {categoriesData.map((category) => {
               const isActive = category.id === activeCategoryId;
               const Icon = category.icon;
@@ -157,10 +158,10 @@ export default function ServiceCategories() {
                 </button>
               );
             })}
-          </div>
+          </ScrollReveal>
 
           {/* Right Column: Services List pane */}
-          <div className="flex flex-col bg-white border-2 border-[#E96429]/25 rounded-3xl w-full max-w-[595px] overflow-hidden">
+          <ScrollReveal variant="slideRight" className="flex flex-col bg-white border-2 border-[#E96429]/25 rounded-3xl w-full max-w-[595px] overflow-hidden">
             {/* Pane Header */}
             <div className="flex flex-col px-[34px] pt-[32px] pb-6 gap-3">
               <h3 className="font-bold text-[30px] leading-[1.2] text-[#E96429] font-['Inter',sans-serif]">
@@ -206,7 +207,7 @@ export default function ServiceCategories() {
                 </Button>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

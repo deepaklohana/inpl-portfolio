@@ -12,6 +12,7 @@ import ImageUploader from './ImageUploader';
 import SeoPanel from './SeoPanel';
 import { createEvent, updateEvent } from '@/lib/actions/events';
 import { toast } from 'sonner';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -81,9 +82,9 @@ export default function EventForm({ initialData, mode }: { initialData?: any; mo
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
+    <ScrollReveal variant="fadeUp" className="max-w-5xl mx-auto pb-20">
       <form className="space-y-8">
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-100 sticky top-0 z-10">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-[#F3F4F6] mb-6 sticky top-0 z-10 transition-shadow hover:shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.06)]">
           <h1 className="text-2xl font-bold text-gray-800">{mode === 'create' ? 'New Event' : 'Edit Event'}</h1>
           <div className="flex gap-3">
             <button type="button" onClick={() => router.push('/admin/events')} disabled={isSubmitting} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50">Cancel</button>
@@ -98,7 +99,7 @@ export default function EventForm({ initialData, mode }: { initialData?: any; mo
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
                 <input type="text" {...register('title')} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
@@ -115,7 +116,7 @@ export default function EventForm({ initialData, mode }: { initialData?: any; mo
             </div>
 
             {/* Event Details */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-4">
               <h3 className="font-medium text-gray-800 border-b pb-2">Event Details</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -157,14 +158,14 @@ export default function EventForm({ initialData, mode }: { initialData?: any; mo
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6]">
               <label className="block text-sm font-medium text-gray-700 mb-3">Description</label>
               <Controller name="description" control={control} render={({ field }: { field: any }) => (
                 <RichTextEditor value={field.value || ''} onChange={field.onChange} />
               )} />
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] overflow-hidden">
               <button type="button" onClick={() => setIsSeoOpen(!isSeoOpen)} className="w-full px-6 py-4 flex justify-between items-center bg-gray-50 border-b border-gray-100 hover:bg-gray-100">
                 <h3 className="text-lg font-medium text-gray-800">SEO Settings</h3>
                 {isSeoOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -174,13 +175,13 @@ export default function EventForm({ initialData, mode }: { initialData?: any; mo
           </div>
 
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6]">
               <h3 className="font-medium text-gray-800 border-b pb-2 mb-4">Cover Image</h3>
               <Controller name="cover_image" control={control} render={({ field }: { field: any }) => (
                 <ImageUploader value={field.value} onUpload={field.onChange} folder="event_covers" />
               )} />
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 space-y-3">
+            <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-3">
               <h3 className="font-medium text-gray-800 border-b pb-2">Settings</h3>
               <div className="flex items-center">
                 <input type="checkbox" id="featured" {...register('featured')} className="h-4 w-4 text-blue-600 border-gray-300 rounded" />
@@ -190,6 +191,6 @@ export default function EventForm({ initialData, mode }: { initialData?: any; mo
           </div>
         </div>
       </form>
-    </div>
+    </ScrollReveal>
   );
 }

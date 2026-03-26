@@ -1,5 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import PageTransition from '@/components/animations/PageTransition';
 
 export default function PublicLayout({
   children,
@@ -9,8 +10,8 @@ export default function PublicLayout({
   return (
     <>
       <Navbar />
-      <main className="flex flex-col items-center justify-center grow w-full">
-        {children}
+      <main className="flex flex-col grow w-full">
+        <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
     </>

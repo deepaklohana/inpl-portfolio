@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
+import ScrollReveal from "@/components/animations/ScrollReveal";
 
 export default function DemoSection() {
   const [email, setEmail] = useState("");
@@ -45,7 +46,7 @@ export default function DemoSection() {
       />
       <Container>
         {/* Frame 41 — column, gap 40px, centered, max-w 896px, y:105 */}
-        <div className="flex flex-col items-center gap-10 max-w-[896px] mx-auto relative z-10 pt-[105px] pb-[215px]">
+        <ScrollReveal variant="scale" className="flex flex-col items-center gap-10 max-w-[896px] mx-auto relative z-10 pt-[105px] pb-[215px]">
 
           {/* Frame 39 — heading + subtitle, gap 16px */}
           <div className="flex flex-col items-center gap-4 w-full">
@@ -114,7 +115,7 @@ export default function DemoSection() {
             </p>
           </div>
 
-        </div>
+        </ScrollReveal>
       </Container>
     </section>
   );

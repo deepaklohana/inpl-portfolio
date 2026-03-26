@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { ProductCard } from "@/components/ui/Card";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerReveal from "@/components/animations/StaggerReveal";
 
 // ─── Figma: Section 5 — "Our Services" ───────────────────────────────────────
 // Layout: 1440px wide, padding 80px 120px, col gap 48px
@@ -79,16 +81,18 @@ export default function ServicesSection() {
 
       <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-12 relative z-10">
         {/* Section Header — reuses existing SectionHeader + SectionBadge */}
-        <SectionHeader
-          badge="Our Services"
-          title={"Comprehensive Solutions\nfor Every Need"}
-          subtitle="From concept to deployment and beyond, our full-stack services cover every aspect of your digital journey with excellence and innovation."
-          align="center"
-          titleColor="#2251B5"
-        />
+        <ScrollReveal variant="fadeUp">
+          <SectionHeader
+            badge="Our Services"
+            title={"Comprehensive Solutions\nfor Every Need"}
+            subtitle="From concept to deployment and beyond, our full-stack services cover every aspect of your digital journey with excellence and innovation."
+            align="center"
+            titleColor="#2251B5"
+          />
+        </ScrollReveal>
         {/* Cards Grid — 3 col desktop, 2 col tablet, 1 col mobile */}
         {/* Figma: row wrap, gap 24px, each card 384px wide */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {services.map((service, index) => (
             <ProductCard
               key={index}
@@ -99,7 +103,7 @@ export default function ServicesSection() {
               buttonLabel="Explore Services"
             />
           ))}
-        </div>
+        </StaggerReveal>
       </div>
     </section>
   );

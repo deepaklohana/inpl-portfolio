@@ -51,7 +51,7 @@ export default function Navbar() {
             Services
           </Link>
 
-          <Link href="/news-events" className={getLinkClasses("/news-events")}>
+          <Link href="/news" className={getLinkClasses("/news")}>
             News &amp; Events
           </Link>
 

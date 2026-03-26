@@ -12,6 +12,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerReveal from "@/components/animations/StaggerReveal";
 
 interface Feature {
   label: string;
@@ -123,16 +125,18 @@ export default function ProductSuiteSection() {
       
       <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-12 relative z-10 cursor-default">
         {/* Section Header */}
-        <SectionHeader
-          badge="Products"
-          title="Our Product Suite"
-          subtitle="Powerful, integrated solutions for every aspect of your business"
-          align="center"
-          titleColor="#101828"
-        />
+        <ScrollReveal variant="fadeUp">
+          <SectionHeader
+            badge="Products"
+            title="Our Product Suite"
+            subtitle="Powerful, integrated solutions for every aspect of your business"
+            align="center"
+            titleColor="#101828"
+          />
+        </ScrollReveal>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {products.map((product, index) => (
             <div
               key={index}
@@ -200,7 +204,7 @@ export default function ProductSuiteSection() {
               </div>
             </div>
           ))}
-        </div>
+        </StaggerReveal>
       </div>
     </section>
   );

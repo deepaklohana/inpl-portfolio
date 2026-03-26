@@ -12,6 +12,7 @@ import ImageUploader from './ImageUploader';
 import SeoPanel from './SeoPanel';
 import { createService, updateService, getServiceCategories } from '@/lib/actions/services';
 import { toast } from 'sonner';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -79,9 +80,9 @@ function safeParseJson<T>(val: unknown, fallback: T): T {
 function Card({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] overflow-hidden">
       <button type="button" onClick={() => setOpen(!open)}
-        className="w-full px-6 py-4 flex justify-between items-center bg-gray-50 border-b border-gray-100 hover:bg-gray-100 transition-colors">
+        className="w-full px-6 py-4 flex justify-between items-center bg-[#F9FAFB]/80 border-b border-[#F3F4F6] hover:bg-gray-50 transition-colors">
         <h3 className="text-base font-semibold text-gray-800">{title}</h3>
         {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </button>
@@ -243,11 +244,11 @@ export default function ServiceForm({ initialData, mode }: { initialData?: any; 
   );
 
   return (
-    <div className="max-w-5xl mx-auto pb-24">
+    <ScrollReveal variant="fadeUp" className="max-w-5xl mx-auto pb-24">
       <form className="space-y-6">
 
         {/* ── Sticky Topbar ── */}
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-100 sticky top-0 z-10">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-[#F3F4F6] mb-6 sticky top-0 z-10 transition-shadow hover:shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.06)]">
           <h1 className="text-xl font-bold text-gray-800">
             {mode === 'create' ? 'New Service' : 'Edit Service'}
           </h1>
@@ -452,7 +453,7 @@ export default function ServiceForm({ initialData, mode }: { initialData?: any; 
           <div className="lg:col-span-1 space-y-6">
 
             {/* Settings */}
-            <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100 space-y-4">
+            <div className="bg-white p-5 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-4">
               <h3 className="font-semibold text-gray-800 border-b pb-2 text-sm">Settings</h3>
               <div>
                 <Label>Starting Price</Label>
@@ -472,6 +473,6 @@ export default function ServiceForm({ initialData, mode }: { initialData?: any; 
           </div>
         </div>
       </form>
-    </div>
+    </ScrollReveal>
   );
 }

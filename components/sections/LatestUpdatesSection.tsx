@@ -1,6 +1,8 @@
 import SectionHeader from "@/components/ui/SectionHeader";
 import { EventCard } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerReveal from "@/components/animations/StaggerReveal";
 
 const UPDATES = [
   {
@@ -37,7 +39,7 @@ export default function LatestUpdatesSection() {
     <section className="bg-[#F5F5F5] w-full py-20 md:py-[80px] flex justify-center">
       <div className="w-full max-w-[1200px] px-6 mx-auto flex flex-col items-center gap-[48px]">
         {/* Header section (layout_MP4LJY) */}
-        <div className="max-w-[672px] mx-auto">
+        <ScrollReveal variant="fadeUp" className="max-w-[672px] mx-auto">
           <SectionHeader
             badge="Latest Updates"
             title="News & Events"
@@ -45,10 +47,10 @@ export default function LatestUpdatesSection() {
             titleColor="#2251B5"
             align="center"
           />
-        </div>
+        </ScrollReveal>
 
         {/* Cards row (layout_L92J7R) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {UPDATES.map((update) => (
             <EventCard
               key={update.id}
@@ -59,7 +61,7 @@ export default function LatestUpdatesSection() {
               isHighlighted={update.isHighlighted}
             />
           ))}
-        </div>
+        </StaggerReveal>
 
         {/* Button */}
         <div>

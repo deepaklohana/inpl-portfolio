@@ -8,6 +8,7 @@ import * as LucideIcons from 'lucide-react';
 import PublishButton from '@/components/admin/PublishButton';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import ScrollReveal from '@/components/animations/ScrollReveal';
 
 // Import all server actions directly — this is safe because they are 'use server' functions
 import { deleteProject, toggleProjectStatus } from '@/lib/actions/projects';
@@ -152,10 +153,10 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <ScrollReveal variant="fadeUp" className="bg-white rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-[#F3F4F6]">
+          <thead className="bg-[#F9FAFB]/80">
             <tr>
               {columns.map(col => (
                 <th key={col.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{col.label}</th>
@@ -164,9 +165,9 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-[#F3F4F6]">
             {rows.map(row => (
-              <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+              <tr key={row.id} className="hover:bg-[#2251B5]/5 transition-colors">
                 {columns.map(col => (
                   <td key={col.key} className="px-6 py-4 text-sm text-gray-700">
                     {renderCell(row, col)}
@@ -225,6 +226,6 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete({ isOpen: false, id: null, label: '' })}
       />
-    </div>
+    </ScrollReveal>
   );
 }

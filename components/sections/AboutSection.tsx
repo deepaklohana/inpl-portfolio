@@ -1,6 +1,7 @@
 import { Lightbulb, FileText, Rocket, BarChart2, type LucideIcon } from "lucide-react";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { motion } from "framer-motion";
+import ScrollReveal from "@/components/animations/ScrollReveal";
 
 const steps: {
   number: string;
@@ -58,7 +59,7 @@ export default function AboutSection() {
 
       <div className="max-w-[1200px] mx-auto flex flex-col items-center z-10 relative">
         {/* Section Header */}
-        <div className="flex flex-col items-center gap-4 text-center mb-16 md:mb-[100px]">
+        <ScrollReveal variant="fadeUp" className="flex flex-col items-center gap-4 text-center mb-16 md:mb-[100px]">
           <SectionBadge label="Our Process" />
           <h2
             className="text-[#2251B5] font-bold text-3xl md:text-[38px] leading-[1.1] tracking-[-0.02em]"
@@ -70,7 +71,7 @@ export default function AboutSection() {
             A proven methodology that ensures successful project delivery from
             concept to completion
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Timeline Area */}
         <div className="relative w-full max-w-[1200px] mx-auto pb-8 md:pb-24">
@@ -87,7 +88,7 @@ export default function AboutSection() {
                   className="w-full flex flex-col md:flex-row items-center relative"
                 >
                   {/* Left Column (50%) */}
-                  <div className="w-full md:w-1/2 flex justify-start md:justify-end md:pr-12 lg:pr-16 z-10">
+                  <ScrollReveal variant="slideLeft" className="w-full md:w-1/2 flex justify-start md:justify-end md:pr-12 lg:pr-16 z-10">
                     {isLeft ? (
                       // Text on the left
                       <div className="flex flex-col items-start md:items-end text-left md:text-right gap-5 w-full max-w-[535px]">
@@ -144,10 +145,10 @@ export default function AboutSection() {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </ScrollReveal>
 
                   {/* Right Column (50%) */}
-                  <div className="w-full md:w-1/2 flex justify-start md:pl-12 lg:pl-16 z-10 mt-8 md:mt-0">
+                  <ScrollReveal variant="slideRight" className="w-full md:w-1/2 flex justify-start md:pl-12 lg:pl-16 z-10 mt-8 md:mt-0">
                     {isLeft ? (
                       // Icon on the right
                       <div className="flex justify-start w-full max-w-[535px]">
@@ -204,7 +205,7 @@ export default function AboutSection() {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </ScrollReveal>
                 </div>
               );
             })}

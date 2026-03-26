@@ -6,7 +6,10 @@ import bcrypt from 'bcryptjs'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
-  session: { strategy: 'jwt' },
+  session: { 
+    strategy: 'jwt',
+    maxAge: 3 * 24 * 60 * 60, // 3 days
+  },
   pages: {
     signIn: '/admin/login',
   },

@@ -18,10 +18,10 @@ export function NavLink({ href, icon, children, indent = false }: NavLinkProps) 
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${indent ? 'ml-4 text-sm' : ''} ${
+      className={`group flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all duration-300 font-['Inter',sans-serif] ${indent ? 'ml-4 text-sm' : ''} ${
         isActive
-          ? 'bg-blue-50 text-blue-700'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          ? 'bg-linear-to-r from-[#2251B5] to-[#2251B5]/90 text-white shadow-[0px_8px_15px_-3px_rgba(34,81,181,0.25)]'
+          : 'text-[#4A5565] hover:text-[#2251B5] hover:bg-[#F3F4F6]'
       }`}
     >
       <div className={indent ? 'w-4 h-4 [&>svg]:w-4 [&>svg]:h-4' : 'w-5 h-5 [&>svg]:w-5 [&>svg]:h-5'}>{icon}</div>

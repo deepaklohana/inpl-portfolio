@@ -1,4 +1,5 @@
 import React from "react";
+import HeroReveal from "@/components/animations/HeroReveal";
 
 export default function AboutHero() {
   return (
@@ -7,28 +8,28 @@ export default function AboutHero() {
       <div className="absolute inset-0 pointer-events-none overflow-hidden sm:flex justify-center hidden">
         <div className="relative w-[1440px] h-full max-w-full">
           {/* Ellipse 1 */}
-          <div className="absolute w-[343px] h-[307px] left-[557px] top-[200px] bg-[rgba(248,130,77,0.4)] blur-[150px] rounded-full" />
+          <div className="absolute w-[343px] h-[307px] left-[557px] top-[200px] bg-[rgba(248,130,77,0.4)] blur-[150px] rounded-full animate-pop-blob" />
           {/* Ellipse 3 */}
-          <div className="absolute w-[343px] h-[307px] left-[183px] top-[80px] bg-[rgba(255,154,109,0.2)] blur-[150px] rounded-full" />
+          <div className="absolute w-[343px] h-[307px] left-[183px] top-[80px] bg-[rgba(255,154,109,0.2)] blur-[150px] rounded-full animate-pop-blob [animation-delay:2s]" />
           {/* Ellipse 2 */}
-          <div className="absolute w-[343px] h-[307px] left-[914px] top-[166px] bg-[rgba(67,126,253,0.2)] blur-[150px] rounded-full" />
+          <div className="absolute w-[343px] h-[307px] left-[914px] top-[166px] bg-[rgba(67,126,253,0.2)] blur-[150px] rounded-full animate-pop-blob [animation-delay:4s]" />
           {/* Ellipse 4 */}
-          <div className="absolute w-[288px] h-[258px] left-[234px] top-[294px] bg-[rgba(47,103,223,0.3)] blur-[150px] rounded-full" />
+          <div className="absolute w-[288px] h-[258px] left-[234px] top-[294px] bg-[rgba(47,103,223,0.3)] blur-[150px] rounded-full animate-pop-blob [animation-delay:1s]" />
           {/* Ellipse 5 */}
-          <div className="absolute w-[288px] h-[258px] left-[873px] top-[325px] bg-[rgba(162,223,47,0.2)] blur-[150px] rounded-full" />
+          <div className="absolute w-[288px] h-[258px] left-[873px] top-[325px] bg-[rgba(162,223,47,0.2)] blur-[150px] rounded-full animate-pop-blob [animation-delay:3s]" />
         </div>
       </div>
 
       {/* Background Blurs — Mobile */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden sm:hidden flex justify-center">
         <div className="relative w-full h-full">
-          <div className="absolute w-[200px] h-[200px] left-[10%] top-[20%] bg-[rgba(248,130,77,0.4)] blur-[80px] rounded-full" />
-          <div className="absolute w-[200px] h-[200px] right-[10%] top-[50%] bg-[rgba(67,126,253,0.2)] blur-[80px] rounded-full" />
+          <div className="absolute w-[200px] h-[200px] left-[10%] top-[20%] bg-[rgba(248,130,77,0.4)] blur-[80px] rounded-full animate-pop-blob" />
+          <div className="absolute w-[200px] h-[200px] right-[10%] top-[50%] bg-[rgba(67,126,253,0.2)] blur-[80px] rounded-full animate-pop-blob [animation-delay:3s]" />
         </div>
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 text-center flex flex-col items-center gap-6">
+      <HeroReveal className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 text-center flex flex-col items-center gap-6">
         {/* Badge */}
         <div className="flex items-center gap-2 bg-[#FFEDE5] border border-[rgba(233,100,41,0.3)] rounded-full px-4 py-2 mt-8 md:mt-0">
           <div className="w-2 h-2 rounded-full bg-[#2251B5]" />
@@ -38,17 +39,15 @@ export default function AboutHero() {
         </div>
 
         {/* Headline */}
-        <div className="flex flex-col items-center gap-6 w-full max-w-[885px]">
-          <h1 className="text-4xl sm:text-5xl md:text-[72px] font-bold text-[#101828] leading-[1.1] tracking-[-0.025em] font-['Inter',sans-serif]">
-            Pioneering Digital Excellence Since 2016
-          </h1>
-          
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg md:text-[20px] text-[#4A5565] leading-[1.6] max-w-[990px] font-['Inter',sans-serif]">
-            We are your strategic partner in navigating the digital landscape with innovative solutions that empower businesses to thrive in an ever-evolving world.
-          </p>
-        </div>
-      </div>
+        <h1 className="text-4xl sm:text-5xl md:text-[72px] font-bold text-[#101828] leading-[1.1] tracking-[-0.025em] font-['Inter',sans-serif] w-full max-w-[885px]">
+          Pioneering Digital Excellence Since 2016
+        </h1>
+        
+        {/* Subtitle */}
+        <p className="text-base sm:text-lg md:text-[20px] text-[#4A5565] leading-[1.6] max-w-[990px] font-['Inter',sans-serif]">
+          We are your strategic partner in navigating the digital landscape with innovative solutions that empower businesses to thrive in an ever-evolving world.
+        </p>
+      </HeroReveal>
     </section>
   );
 }
