@@ -10,7 +10,12 @@ const VIEW_FILTERS = [
   { value: 'both', label: 'Services + Project' },
 ] as const;
 
-export default async function AdminTestimonialsPage({ searchParams }: { searchParams?: { page?: string } }) {
+type PageProps = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function AdminTestimonialsPage(props: PageProps) {
+  const searchParams = await props.searchParams;
   const testimonials = await getTestimonialsForAdmin();
 
   const activePage = (searchParams?.page && typeof searchParams.page === 'string' ? searchParams.page : 'all').toLowerCase();

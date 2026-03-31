@@ -151,7 +151,7 @@ function FeatureSectionList({ nestIndex, control, register, removeSection }: any
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-type Category = { id: string; name: string; icon: string | null };
+type Category = { id: number; name: string; icon: string | null };
 
 export default function ServiceForm({ initialData, mode }: { initialData?: any; mode: 'create' | 'edit' }) {
   const router = useRouter();

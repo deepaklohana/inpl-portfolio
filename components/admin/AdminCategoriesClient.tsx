@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 type Category = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   icon: string | null;
@@ -27,12 +27,12 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function AdminCategoriesClient({ categories: initial }: { categories: Category[] }) {
   const [categories, setCategories] = useState(initial);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const router = useRouter();
 
-  const handleDelete = async (id: string, name: string) => {
+  const handleDelete = async (id: number, name: string) => {
     setDeleteTarget({ id, name });
     setIsDeleteConfirmOpen(true);
   };
@@ -53,7 +53,7 @@ export default function AdminCategoriesClient({ categories: initial }: { categor
     setDeleteTarget(null);
   };
 
-  const handleToggle = async (id: string, current: string) => {
+  const handleToggle = async (id: number, current: string) => {
     const next = current === 'published' ? 'draft' : 'published';
     setBusyId(id);
     const result = await toggleCategoryStatus(id, next as any);

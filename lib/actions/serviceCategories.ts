@@ -32,9 +32,9 @@ export async function getServiceCategories() {
   }
 }
 
-export async function getServiceCategoryById(id: string) {
+export async function getServiceCategoryById(id: string | number) {
   try {
-    return await prisma.serviceCategory.findUnique({ where: { id: parseInt(id, 10) } });
+    return await prisma.serviceCategory.findUnique({ where: { id: typeof id === 'number' ? id : parseInt(id, 10) } });
   } catch (e) {
     console.error('getServiceCategoryById failed:', e);
     return null;
@@ -62,10 +62,10 @@ export async function createServiceCategory(data: CategoryFormData) {
   }
 }
 
-export async function updateServiceCategory(id: string, data: CategoryFormData) {
+export async function updateServiceCategory(id: string | number, data: CategoryFormData) {
   try {
     await prisma.serviceCategory.update({
-      where: { id: parseInt(id, 10) },
+      where: { id: typeof id === 'number' ? id : parseInt(id, 10) },
       data: {
         name: data.name,
         slug: data.slug,
@@ -84,9 +84,9 @@ export async function updateServiceCategory(id: string, data: CategoryFormData) 
   }
 }
 
-export async function deleteServiceCategory(id: string) {
+export async function deleteServiceCategory(id: string | number) {
   try {
-    await prisma.serviceCategory.delete({ where: { id: parseInt(id, 10) } });
+    await prisma.serviceCategory.delete({ where: { id: typeof id === 'number' ? id : parseInt(id, 10) } });
     revalidatePath('/admin/services/categories');
     return { success: true };
   } catch (e: unknown) {
@@ -95,9 +95,9 @@ export async function deleteServiceCategory(id: string) {
   }
 }
 
-export async function toggleCategoryStatus(id: string, status: 'published' | 'draft' | 'archived') {
+export async function toggleCategoryStatus(id: string | number, status: 'published' | 'draft' | 'archived') {
   try {
-    await prisma.serviceCategory.update({ where: { id: parseInt(id, 10) }, data: { status } });
+    await prisma.serviceCategory.update({ where: { id: typeof id === 'number' ? id : parseInt(id, 10) }, data: { status } });
     revalidatePath('/admin/services/categories');
     return { success: true };
   } catch (e: unknown) {

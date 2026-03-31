@@ -9,7 +9,7 @@ import { deleteProduct } from '@/lib/actions/products';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
-  product: { id: string; name: string; tagline: string | null; status: string; _count: { modules: number }; };
+  product: { id: number; name: string; tagline: string | null; status: string; _count: { modules: number }; };
 }
 
 export default function ProductCard({ product }: ProductCardProps) {

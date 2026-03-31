@@ -28,11 +28,11 @@ export default function AdminMediaPage() {
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDraggingPage, setIsDraggingPage] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Media | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
@@ -128,7 +128,7 @@ export default function AdminMediaPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleCopy = async (url: string, id: string) => {
+  const handleCopy = async (url: string, id: string | number) => {
     try {
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
