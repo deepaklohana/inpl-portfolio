@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 
-export default function DevStatsBar({stats}: {stats: any}) {
+export default function DevStatsBar({stats}: {stats?: any}) {
   let parsedStats = [];
   
   if (Array.isArray(stats)) {
