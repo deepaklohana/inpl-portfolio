@@ -57,7 +57,7 @@ export async function getEvents(options?: { status?: string; limit?: number; off
 export async function getEventById(id: string) {
   try {
     const data = await prisma.event.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { seo_metadata: true }
     });
     return data;
@@ -136,7 +136,7 @@ export async function createEvent(formData: EventFormData) {
 export async function updateEvent(id: string, formData: EventFormData) {
   try {
     const existing = await prisma.event.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
@@ -172,7 +172,7 @@ export async function updateEvent(id: string, formData: EventFormData) {
     }
 
     await prisma.event.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         title: formData.title,
         slug: formData.slug,
@@ -211,12 +211,12 @@ export async function updateEvent(id: string, formData: EventFormData) {
 export async function deleteEvent(id: string) {
   try {
     const data = await prisma.event.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
     await prisma.event.delete({
-      where: { id }
+      where: { id: parseInt(id, 10) }
     });
 
     if (data?.seo_id) {
@@ -242,12 +242,12 @@ export async function toggleEventStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const data = await prisma.event.findUnique({ where: { id }, select: { slug: true } });
+      const data = await prisma.event.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
       resolvedSlug = data?.slug || undefined;
     }
     
     await prisma.event.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         status,
         published_at: status === 'published' ? new Date() : null

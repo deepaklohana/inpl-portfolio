@@ -2,30 +2,37 @@
 
 import { motion } from "framer-motion";
 
-const stats = [
-  {
-    value: "500+",
-    label: "Projects Delivered",
-  },
-  {
-    value: "50+",
-    label: "Expert Developers",
-  },
-  {
-    value: "15+",
-    label: "Years Experience",
-  },
-  {
-    value: "98%",
-    label: "Client Satisfaction",
-  },
-];
 
-export default function DevStatsBar() {
+export default function DevStatsBar({stats}: {stats: any}) {
+  let parsedStats = [];
+  
+  if (Array.isArray(stats)) {
+    parsedStats = stats;
+  } else if (typeof stats === 'string') {
+    try {
+      parsedStats = JSON.parse(stats);
+      if (typeof parsedStats === 'string') {
+        parsedStats = JSON.parse(parsedStats);
+      }
+    } catch (e) {
+      console.log('Error parsing stats JSON:', e);
+    }
+  } else if (stats && typeof stats === 'object') {
+    // maybe it was saved as some object wrapper? 
+    if (Array.isArray(stats.stats)) parsedStats = stats.stats;
+    else if (Array.isArray(stats.data)) parsedStats = stats.data;
+  }
+
+  if (!Array.isArray(parsedStats) || parsedStats.length === 0) {
+    return null; // Return nothing if no valid stats
+  }
+
   return (
-    <section className="w-full bg-linear-to-b from-[#E96429] to-[#2251B5] py-8 px-4 md:px-[140px]">
+    <section className="w-full bg-[#E96429] py-8 px-4 md:px-[140px]" style={{
+      background: 'linear-gradient(135deg, rgba(233, 100, 41, 1) 0%, rgba(34, 81, 181, 1) 100%)'
+    }}>
       <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-[161px] justify-items-center">
-        {stats.map((stat, index) => (
+        {parsedStats.map((stat: any, index: number) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 20 }}

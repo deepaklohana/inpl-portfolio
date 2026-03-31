@@ -24,12 +24,35 @@ export interface TestimonialProp {
 
 
 
-const stats = [
+export interface TestimonialsStat {
+  value: string | number;
+  label: string;
+  suffix?: string;
+}
+
+const defaultStats: TestimonialsStat[] = [
   { value: 500, suffix: "+", label: "Happy Clients" },
   { value: 98, suffix: "%", label: "Satisfaction Rate" },
   { value: 1000, suffix: "+", label: "Projects Completed" },
   { value: 50, suffix: "+", label: "Industry Awards" },
 ];
+
+function parseStatForCountUp(value: string | number): { end: number; suffix: string } | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return { end: Math.floor(value), suffix: "" }
+  }
+
+  const raw = String(value).trim()
+  const match = raw.match(/^-?\d+(?:\.\d+)?/)
+  if (!match) return null
+
+  const numberPart = match[0]
+  const end = Number(numberPart)
+  if (!Number.isFinite(end)) return null
+
+  const suffix = raw.slice(numberPart.length)
+  return { end: Math.floor(end), suffix }
+}
 
 // ─── Star Rating ─────────────────────────────────────────────────────────────
 
@@ -49,7 +72,13 @@ function StarRating({ count = 5 }: { count?: number }) {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function TestimonialsSection({ testimonials }: { testimonials?: TestimonialProp[] }) {
+export default function TestimonialsSection({
+  testimonials,
+  stats,
+}: {
+  testimonials?: TestimonialProp[];
+  stats?: TestimonialsStat[];
+}) {
   const displayData = testimonials && testimonials.length > 0 ? testimonials : [];
   const [activeIndex, setActiveIndex] = useState(0);
   const active = displayData[activeIndex] || displayData[0];
@@ -57,6 +86,8 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
   if (!active) {
     return null;
   }
+
+  const statsToUse = stats && stats.length > 0 ? stats : defaultStats
 
   return (
     <section className="w-full bg-[#F5F5F5] py-20">
@@ -175,7 +206,13 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
 
           {/* ── Stats Row ─────────────────────────────────────────────── */}
           <StaggerReveal className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
-            {stats.map((stat) => (
+            {statsToUse.map((stat) => {
+              const parsed = parseStatForCountUp(stat.value)
+              const suffix = stat.suffix ?? parsed?.suffix ?? ""
+              const end = parsed?.end
+              const showCountUp = typeof end === "number"
+
+              return (
               <div
                 key={stat.label}
                 className="flex flex-col items-center gap-2 bg-white/80 border border-[#F3F4F6] rounded-2xl p-6 shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)]"
@@ -187,17 +224,24 @@ export default function TestimonialsSection({ testimonials }: { testimonials?: T
                       "linear-gradient(180deg, #E96429 0%, #2251B5 100%)",
                   }}
                 >
-                  <CountUp
-                    end={stat.value}
-                    suffix={stat.suffix}
-                    className="font-bold text-4xl leading-[1.11] font-['Inter',sans-serif]"
-                  />
+                  {showCountUp ? (
+                    <CountUp
+                      end={end as number}
+                      suffix={suffix}
+                      className="font-bold text-4xl leading-[1.11] font-['Inter',sans-serif]"
+                    />
+                  ) : (
+                    <span className="font-bold text-4xl leading-[1.11] font-['Inter',sans-serif]">
+                      {stat.value}
+                    </span>
+                  )}
                 </span>
                 <span className="text-[#4A5565] font-medium text-sm leading-[1.428] font-['Inter',sans-serif] text-center">
                   {stat.label}
                 </span>
               </div>
-            ))}
+              )
+            })}
           </StaggerReveal>
         </div>
       </Container>

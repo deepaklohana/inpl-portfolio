@@ -8,15 +8,15 @@ import { getTestimonials } from "@/lib/actions/testimonials";
 export const revalidate = 60; // Fallback validation
 
 export default async function ServicesPage() {
-  const dbTestimonials = await getTestimonials({ status: 'published' });
+  const dbTestimonials = await getTestimonials({ page: 'services', limit: 4 });
   
-  const formattedTestimonials = dbTestimonials.map(t => ({
-    id: t.id,
+  const formattedTestimonials = dbTestimonials.map((t: any) => ({
+    id: String(t.id),
     name: t.client_name,
     role: t.client_title || '',
     company: t.client_company || '',
     companyType: t.company_type || '',
-    project: t.projects?.title || '',
+    project: (t as any).projects?.title || '',
     quote: t.content,
     avatar: t.client_image || "https://randomuser.me/api/portraits/lego/1.jpg",
     rating: t.rating || 5,

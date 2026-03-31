@@ -62,13 +62,27 @@ export async function getProjects(options?: { status?: string; limit?: number; o
 export async function getProjectById(id: string) {
   try {
     const data = await prisma.project.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { seo_metadata: true }
     });
     return data;
   } catch (error) {
     console.error('Error fetching project by id:', error);
     return null;
+  }
+}
+
+// Admin helper: fetch by slug regardless of published status.
+export async function getProjectBySlugAny(slug: string) {
+  try {
+    const data = await prisma.project.findUnique({
+      where: { slug },
+      include: { seo_metadata: true }
+    })
+    return data
+  } catch (error) {
+    console.error('Error fetching project by slug (any):', error)
+    return null
   }
 }
 
@@ -142,7 +156,7 @@ export async function createProject(formData: ProjectFormData) {
 export async function updateProject(id: string, formData: ProjectFormData) {
   try {
     const existing = await prisma.project.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
     
@@ -178,7 +192,7 @@ export async function updateProject(id: string, formData: ProjectFormData) {
     }
 
     await prisma.project.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         title: formData.title,
         slug: formData.slug,
@@ -218,12 +232,12 @@ export async function updateProject(id: string, formData: ProjectFormData) {
 export async function deleteProject(id: string) {
   try {
     const data = await prisma.project.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
     await prisma.project.delete({
-      where: { id }
+      where: { id: parseInt(id, 10) }
     });
 
     if (data?.seo_id) {
@@ -249,12 +263,12 @@ export async function toggleProjectStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const data = await prisma.project.findUnique({ where: { id }, select: { slug: true } });
+      const data = await prisma.project.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
       resolvedSlug = data?.slug || undefined;
     }
     
     await prisma.project.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         status,
         published_at: status === 'published' ? new Date() : null

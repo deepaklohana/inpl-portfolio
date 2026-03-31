@@ -1,4 +1,5 @@
 import { getTestimonialById } from '@/lib/actions/testimonials';
+import { getPageTestimonialCounts } from '@/lib/actions/testimonials';
 import { getProjects } from '@/lib/actions/projects';
 import TestimonialForm from '@/components/admin/TestimonialForm';
 import { notFound } from 'next/navigation';
@@ -11,5 +12,6 @@ export default async function EditTestimonialPage(props: PageProps<'/admin/testi
   ]);
   if (!testimonial) notFound();
   const projectList = projects.map((pr: any) => ({ id: pr.id, title: pr.title }));
-  return <TestimonialForm mode="edit" initialData={testimonial} projects={projectList} />;
+  const pageCounts = await getPageTestimonialCounts();
+  return <TestimonialForm mode="edit" initialData={testimonial} projects={projectList} pageCounts={pageCounts} />;
 }

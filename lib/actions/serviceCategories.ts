@@ -34,7 +34,7 @@ export async function getServiceCategories() {
 
 export async function getServiceCategoryById(id: string) {
   try {
-    return await prisma.serviceCategory.findUnique({ where: { id } });
+    return await prisma.serviceCategory.findUnique({ where: { id: parseInt(id, 10) } });
   } catch (e) {
     console.error('getServiceCategoryById failed:', e);
     return null;
@@ -65,7 +65,7 @@ export async function createServiceCategory(data: CategoryFormData) {
 export async function updateServiceCategory(id: string, data: CategoryFormData) {
   try {
     await prisma.serviceCategory.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         name: data.name,
         slug: data.slug,
@@ -86,7 +86,7 @@ export async function updateServiceCategory(id: string, data: CategoryFormData) 
 
 export async function deleteServiceCategory(id: string) {
   try {
-    await prisma.serviceCategory.delete({ where: { id } });
+    await prisma.serviceCategory.delete({ where: { id: parseInt(id, 10) } });
     revalidatePath('/admin/services/categories');
     return { success: true };
   } catch (e: unknown) {
@@ -97,7 +97,7 @@ export async function deleteServiceCategory(id: string) {
 
 export async function toggleCategoryStatus(id: string, status: 'published' | 'draft' | 'archived') {
   try {
-    await prisma.serviceCategory.update({ where: { id }, data: { status } });
+    await prisma.serviceCategory.update({ where: { id: parseInt(id, 10) }, data: { status } });
     revalidatePath('/admin/services/categories');
     return { success: true };
   } catch (e: unknown) {

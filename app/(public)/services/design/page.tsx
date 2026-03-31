@@ -154,7 +154,7 @@ export default function DesignServicesPage() {
         secondaryButtonText="View Portfolio"
         showPartnerMarquee={false}
       />
-        <DevStatsBar />
+      <DevStatsBar />
       <DetailedServicesGrid
         badgeLabel="Services"
         title="Our Design Services"

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Edit2, Trash2, Globe, FileText, Archive } from 'lucide-react';
 import { deleteServiceCategory, toggleCategoryStatus } from '@/lib/actions/serviceCategories';
 import { toast } from 'sonner';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 type Category = {
   id: string;
@@ -27,19 +28,29 @@ const STATUS_STYLES: Record<string, string> = {
 export default function AdminCategoriesClient({ categories: initial }: { categories: Category[] }) {
   const [categories, setCategories] = useState(initial);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const router = useRouter();
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Delete category "${name}"? Services in it will be uncategorised.`)) return;
+    setDeleteTarget({ id, name });
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, name } = deleteTarget;
     setBusyId(id);
     const result = await deleteServiceCategory(id);
     if (result.success) {
       setCategories(c => c.filter(cat => cat.id !== id));
       toast.success('Category deleted');
     } else {
-      toast.error((result as any).error || 'Failed to delete');
+      toast.error((result as any).error || `Failed to delete "${name}"`);
     }
     setBusyId(null);
+    setIsDeleteConfirmOpen(false);
+    setDeleteTarget(null);
   };
 
   const handleToggle = async (id: string, current: string) => {
@@ -133,6 +144,21 @@ export default function AdminCategoriesClient({ categories: initial }: { categor
           ))}
         </tbody>
       </table>
+
+      <ConfirmModal
+        isOpen={isDeleteConfirmOpen}
+        title="Delete Category"
+        description={`Are you sure you want to delete "${deleteTarget?.name ?? ''}"? Services in it will be uncategorised.`}
+        confirmText={busyId ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        onCancel={() => {
+          setIsDeleteConfirmOpen(false);
+          setDeleteTarget(null);
+        }}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+      />
     </div>
   );
 }

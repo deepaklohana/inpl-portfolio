@@ -3,6 +3,8 @@ import ProductSuiteSection from "@/components/sections/ProductSuiteSection";
 import ProductFeaturesSection from "@/components/sections/ProductFeaturesSection";
 import ServicesCTASection from "@/components/sections/ServicesCTASection";
 import DevStatsBar from "@/components/sections/DevStatsBar";
+import ProductCTASection from "@/components/sections/ProductCTASection";
+import { getProducts } from "@/lib/actions/products";
 
 export const metadata = {
   title: "Products | Innovative Network",
@@ -10,18 +12,17 @@ export const metadata = {
     "Comprehensive business management software solutions designed to streamline operations, boost productivity, and drive growth across all departments.",
 };
 
-export default function ProductPage() {
+export const revalidate = 60; // Fallback validation
+
+export default async function ProductPage() {
+  const products = await getProducts({ status: 'published' });
+
   return (
     <>
       <ProductHero />
-      <ProductSuiteSection />
+      <ProductSuiteSection products={products} />
       <ProductFeaturesSection />
-      <ServicesCTASection
-        title="Ready to Transform Your Business?"
-        description="Get started with a free demo and see how our products can revolutionize your operations"
-        primaryButtonText="Schedule Free Demo"
-        secondaryButtonText="Contact Sales"
-      />
+      <ProductCTASection />
     </>
   );
 }

@@ -11,6 +11,9 @@ interface ConfirmModalProps {
   onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
+  position?: 'fixed' | 'absolute';
+  overlayClassName?: string;
+  modalClassName?: string;
 }
 
 export function ConfirmModal({
@@ -21,16 +24,21 @@ export function ConfirmModal({
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
+  position = 'fixed',
+  overlayClassName = '',
+  modalClassName = '',
 }: ConfirmModalProps) {
   if (!isOpen) return null;
 
+  const overlayPositionClass = position === 'absolute' ? 'absolute inset-0' : 'fixed inset-0';
+
   return (
     <div 
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200"
+      className={`${overlayPositionClass} z-100 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200 ${overlayClassName}`}
       onClick={onCancel}
     >
       <div 
-        className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+        className={`bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ${modalClassName}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-100">

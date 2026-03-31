@@ -48,7 +48,7 @@ export async function getNews(options?: { status?: string; limit?: number; offse
 export async function getNewsById(id: string) {
   try {
     const data = await prisma.news.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { seo_metadata: true }
     });
     return data;
@@ -123,7 +123,7 @@ export async function createNews(formData: NewsFormData) {
 export async function updateNews(id: string, formData: NewsFormData) {
   try {
     const existing = await prisma.news.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
@@ -159,7 +159,7 @@ export async function updateNews(id: string, formData: NewsFormData) {
     }
 
     await prisma.news.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         title: formData.title,
         slug: formData.slug,
@@ -194,12 +194,12 @@ export async function updateNews(id: string, formData: NewsFormData) {
 export async function deleteNews(id: string) {
   try {
     const data = await prisma.news.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
     await prisma.news.delete({
-      where: { id }
+      where: { id: parseInt(id, 10) }
     });
 
     if (data?.seo_id) {
@@ -225,12 +225,12 @@ export async function toggleNewsStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const data = await prisma.news.findUnique({ where: { id }, select: { slug: true } });
+      const data = await prisma.news.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
       resolvedSlug = data?.slug || undefined;
     }
     
     await prisma.news.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         status,
         published_at: status === 'published' ? new Date() : null

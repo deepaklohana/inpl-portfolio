@@ -9,14 +9,14 @@ import { prisma } from '@/lib/prisma';
 // ─────────────────────────────────────────────────────────────
 
 export interface Media {
-  id: string;
+  id: number;
   filename: string;
   original_name: string;
   url: string;
   mime_type: string;
   size_bytes: number;
   folder: string;
-  created_at: Date | string;
+  created_at: Date;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ export async function uploadToStorage(
 
 export async function deleteFromStorage(
   filePath: string,
-  mediaId: string
+  mediaId: string | number
 ): Promise<void> {
   const absolutePath = path.join(process.cwd(), 'public', 'uploads', filePath);
 
@@ -83,7 +83,8 @@ export async function deleteFromStorage(
     console.warn(`Could not delete file at ${absolutePath}:`, err.message);
   }
 
-  await prisma.media.delete({ where: { id: mediaId } });
+  const numericId = typeof mediaId === 'number' ? mediaId : parseInt(mediaId, 10);
+  await prisma.media.delete({ where: { id: numericId } });
 }
 
 // ─────────────────────────────────────────────────────────────

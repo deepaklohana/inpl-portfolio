@@ -85,7 +85,7 @@ export async function getServices(options?: { status?: string; limit?: number; o
 export async function getServiceById(id: string) {
   try {
     return await prisma.service.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { seo_metadata: true, category: true },
     });
   } catch (error) {
@@ -131,7 +131,7 @@ export async function createService(formData: ServiceFormData) {
         slug: formData.slug,
         excerpt: formData.excerpt || null,
         icon: formData.icon || null,
-        categoryId: formData.categoryId || null,
+        categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : null,
         features: parseJson(formData.features),
         startingPrice: formData.startingPrice || null,
         processSteps: parseJson(formData.processSteps),
@@ -166,7 +166,7 @@ export async function createService(formData: ServiceFormData) {
 export async function updateService(id: string, formData: ServiceFormData) {
   try {
     const existing = await prisma.service.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true },
     });
 
@@ -202,13 +202,13 @@ export async function updateService(id: string, formData: ServiceFormData) {
     }
 
     await prisma.service.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
         icon: formData.icon || null,
-        categoryId: formData.categoryId || null,
+        categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : null,
         features: parseJson(formData.features),
         startingPrice: formData.startingPrice || null,
         processSteps: parseJson(formData.processSteps),
@@ -243,11 +243,11 @@ export async function updateService(id: string, formData: ServiceFormData) {
 export async function deleteService(id: string) {
   try {
     const data = await prisma.service.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true },
     });
 
-    await prisma.service.delete({ where: { id } });
+    await prisma.service.delete({ where: { id: parseInt(id, 10) } });
 
     if (data?.seo_id) {
       await prisma.seoMetadata.delete({ where: { id: data.seo_id } });
@@ -272,12 +272,12 @@ export async function toggleServiceStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const data = await prisma.service.findUnique({ where: { id }, select: { slug: true } });
+      const data = await prisma.service.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
       resolvedSlug = data?.slug || undefined;
     }
 
     await prisma.service.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: { status, published_at: status === 'published' ? new Date() : null }
     });
 

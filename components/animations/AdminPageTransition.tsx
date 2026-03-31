@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 
 const variants = {
-  hidden: { opacity: 0, y: 15, filter: 'blur(3px)' },
-  enter: { opacity: 1, y: 0, filter: 'blur(0px)' },
-  exit: { opacity: 0, y: -10, filter: 'blur(2px)' }
+  hidden: { opacity: 0, filter: 'blur(3px)' },
+  enter: { opacity: 1, filter: 'blur(0px)' },
+  exit: { opacity: 0, filter: 'blur(2px)' }
 }
 
 export default function AdminPageTransition({ children }: { children: React.ReactNode }) {

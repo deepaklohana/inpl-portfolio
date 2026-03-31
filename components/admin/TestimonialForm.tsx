@@ -5,12 +5,20 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
-import { Loader2, Star } from 'lucide-react';
+import { Home, Loader2, Mail, Package, Settings, Star, Users } from 'lucide-react';
 import ImageUploader from './ImageUploader';
 import { Controller } from 'react-hook-form';
 import { createTestimonial, updateTestimonial } from '@/lib/actions/testimonials';
 import { toast } from 'sonner';
 import ScrollReveal from '@/components/animations/ScrollReveal';
+
+const PAGE_OPTIONS = [
+  { value: 'services', label: 'Services Page', icon: Settings },
+  { value: 'products', label: 'Product Pages (all)', icon: Package },
+  { value: 'home', label: 'Home Page', icon: Home },
+  { value: 'about', label: 'About Page', icon: Users },
+  { value: 'contact', label: 'Contact Page', icon: Mail },
+] as const;
 
 const schema = z.object({
   client_name: z.string().min(1, 'Client name is required'),
@@ -24,15 +32,26 @@ const schema = z.object({
   status: z.enum(['draft', 'published', 'archived']),
   featured: z.boolean().default(false),
   sort_order: z.coerce.number().optional(),
+  showOnPages: z.array(z.string()).default([]),
 });
 type FormValues = z.infer<typeof schema>;
 
-export default function TestimonialForm({ initialData, mode, projects = [] }: { initialData?: any; mode: 'create' | 'edit'; projects?: { id: string; title: string }[] }) {
+export default function TestimonialForm({
+  initialData,
+  mode,
+  projects = [],
+  pageCounts = {},
+}: {
+  initialData?: any;
+  mode: 'create' | 'edit';
+  projects?: { id: string; title: string }[];
+  pageCounts?: Record<string, number>;
+}) {
   const router = useRouter();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, control, watch, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as any,
     defaultValues: {
       client_name: initialData?.client_name || '', client_title: initialData?.client_title || '',
@@ -41,10 +60,29 @@ export default function TestimonialForm({ initialData, mode, projects = [] }: { 
       project_id: initialData?.project_id || '',
       status: initialData?.status || 'draft', featured: initialData?.featured || false,
       sort_order: initialData?.sort_order || 0,
+      showOnPages: Array.isArray(initialData?.showOnPages) ? initialData?.showOnPages : [],
     },
   });
 
   const rating = watch('rating');
+  const selectedPages = watch('showOnPages') ?? [];
+  const initialPages = Array.isArray(initialData?.showOnPages) ? initialData.showOnPages : [];
+
+  const togglePage = (pageValue: string) => {
+    const isSelected = selectedPages.includes(pageValue);
+    const baseCount = pageCounts[pageValue] ?? 0;
+    const initialSelected = initialPages.includes(pageValue);
+    const excludedCount = baseCount - (initialSelected ? 1 : 0);
+    const disabled = !isSelected && excludedCount >= 4;
+
+    if (disabled) return;
+
+    const next = isSelected
+      ? selectedPages.filter((p) => p !== pageValue)
+      : [...selectedPages, pageValue];
+
+    setValue('showOnPages', next, { shouldDirty: true, shouldValidate: true });
+  };
 
   const onSubmit = async (data: FormValues, status: 'draft' | 'published') => {
     setIsSubmitting(true);
@@ -133,6 +171,63 @@ export default function TestimonialForm({ initialData, mode, projects = [] }: { 
               </select>
             </div>
           )}
+        </div>
+
+        {/* SECTION: Display Settings */}
+        <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-4">
+          <h3 className="font-medium text-gray-800 border-b pb-2">Display Settings</h3>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Show on Pages</label>
+            <p className="text-sm text-gray-500">Select which pages this testimonial appears on (max 4 per page)</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {PAGE_OPTIONS.map((opt) => {
+              const pageValue = opt.value;
+              const Icon = opt.icon;
+              const isSelected = selectedPages.includes(pageValue);
+              const baseCount = pageCounts[pageValue] ?? 0;
+              const initialSelected = initialPages.includes(pageValue);
+              const excludedCount = baseCount - (initialSelected ? 1 : 0);
+              const disabled = !isSelected && excludedCount >= 4;
+
+              const displayCount = baseCount - (initialSelected ? 1 : 0) + (isSelected ? 1 : 0);
+              const tooltip = disabled ? 'Page full (4/4)' : undefined;
+
+              return (
+                <button
+                  key={pageValue}
+                  type="button"
+                  onClick={() => togglePage(pageValue)}
+                  disabled={disabled}
+                  title={tooltip}
+                  className={[
+                    'text-left relative rounded-2xl border p-4 flex items-start gap-3 transition-colors',
+                    disabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-50',
+                    isSelected ? 'border-[#E96429] bg-[#E96429]/10' : 'border-gray-200 bg-white',
+                  ].join(' ')}
+                >
+                  <span className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
+                    <Icon size={18} className={isSelected ? 'text-[#E96429]' : 'text-gray-600'} />
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-semibold text-gray-900">{opt.label}</span>
+                    <span className="inline-flex mt-2 text-xs font-semibold px-2 py-0.5 rounded-full border bg-white">
+                      {displayCount}/4 selected
+                    </span>
+                  </span>
+
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    disabled={disabled}
+                    readOnly
+                    className="sr-only"
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-[0px_8px_20px_-4px_rgba(0,0,0,0.04)] border border-[#F3F4F6] space-y-4">

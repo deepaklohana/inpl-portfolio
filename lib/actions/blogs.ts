@@ -50,7 +50,7 @@ export async function getBlogs(options?: { status?: string; limit?: number; offs
 export async function getBlogById(id: string) {
   try {
     const data = await prisma.blog.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { seo_metadata: true }
     });
     return data;
@@ -127,7 +127,7 @@ export async function createBlog(formData: BlogFormData) {
 export async function updateBlog(id: string, formData: BlogFormData) {
   try {
     const existingBlog = await prisma.blog.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
@@ -167,7 +167,7 @@ export async function updateBlog(id: string, formData: BlogFormData) {
     }
 
     await prisma.blog.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         title: formData.title,
         slug: formData.slug,
@@ -202,12 +202,12 @@ export async function updateBlog(id: string, formData: BlogFormData) {
 export async function deleteBlog(id: string) {
   try {
     const blog = await prisma.blog.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       select: { seo_id: true }
     });
 
     await prisma.blog.delete({
-      where: { id }
+      where: { id: parseInt(id, 10) }
     });
 
     if (blog?.seo_id) {
@@ -233,12 +233,12 @@ export async function toggleBlogStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const blog = await prisma.blog.findUnique({ where: { id }, select: { slug: true } });
+      const blog = await prisma.blog.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
       resolvedSlug = blog?.slug || undefined;
     }
 
     await prisma.blog.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         status,
         published_at: status === 'published' ? new Date() : null

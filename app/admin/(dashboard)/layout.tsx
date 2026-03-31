@@ -18,6 +18,7 @@ import {
   Hexagon,
   Users,
   FolderOpen,
+  Layers,
 } from 'lucide-react'
 
 export default async function AdminLayout({
@@ -57,6 +58,9 @@ export default async function AdminLayout({
             </NavLink>
             <NavLink href="/admin/projects" icon={<Briefcase />}>
               Projects
+            </NavLink>
+            <NavLink href="/admin/products" icon={<Layers />}>
+              Products
             </NavLink>
             <NavLink href="/admin/services" icon={<Settings />}>
               Services

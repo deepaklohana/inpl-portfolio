@@ -58,27 +58,28 @@ model VerificationToken {
 }
 
 model SeoMetadata {
-  id               String      @id @default(uuid())
+  id               Int      @id @default(autoincrement())
   meta_title       String?
   meta_description String?
   og_image         String?
   keywords         String?
-  no_index         Boolean     @default(false)
-  created_at       DateTime    @default(now())
+  no_index         Boolean  @default(false)
+  created_at       DateTime @default(now())
 
-  blogs            Blog[]
-  events           Event[]
-  news             News[]
-  projects         Project[]
-  services         Service[]
+  blogs    Blog[]
+  events   Event[]
+  news     News[]
+  projects Project[]
+  services Service[]
+  product  Product?
 
   @@map("seo_metadata")
 }
 
 model Blog {
-  id           String       @id @default(uuid())
+  id           Int     @id @default(autoincrement())
   title        String
-  slug         String       @unique
+  slug         String  @unique
   excerpt      String?
   content      String?
   cover_image  String?
@@ -86,23 +87,23 @@ model Blog {
   author_image String?
   category     String?
   tags         String?
-  status       String       @default("draft")
-  featured     Boolean      @default(false)
-  
-  seo_id       String?
+  status       String  @default("draft")
+  featured     Boolean @default(false)
+
+  seo_id       Int?
   seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
-  
+
   published_at DateTime?
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@map("blogs")
 }
 
 model Event {
-  id               String       @id @default(uuid())
+  id               Int       @id @default(autoincrement())
   title            String
-  slug             String       @unique
+  slug             String    @unique
   excerpt          String?
   description      String?
   cover_image      String?
@@ -110,51 +111,51 @@ model Event {
   end_date         DateTime?
   location         String?
   location_url     String?
-  is_online        Boolean      @default(false)
+  is_online        Boolean   @default(false)
   event_url        String?
   registration_url String?
   gallery          String[]
-  status           String       @default("draft")
-  featured         Boolean      @default(false)
-  
-  seo_id           String?
-  seo_metadata     SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+  status           String    @default("draft")
+  featured         Boolean   @default(false)
 
-  published_at     DateTime?
-  created_at       DateTime     @default(now())
-  updated_at       DateTime     @updatedAt
+  seo_id       Int?
+  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+
+  published_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@map("events")
 }
 
 model News {
-  id           String       @id @default(uuid())
-  title        String
-  slug         String       @unique
-  excerpt      String?
-  content      String?
-  cover_image  String?
-  source_url   String?
-  category     String?
-  tags         String?
-  author_name  String?
-  status       String       @default("draft")
-  featured     Boolean      @default(false)
+  id          Int     @id @default(autoincrement())
+  title       String
+  slug        String  @unique
+  excerpt     String?
+  content     String?
+  cover_image String?
+  source_url  String?
+  category    String?
+  tags        String?
+  author_name String?
+  status      String  @default("draft")
+  featured    Boolean @default(false)
 
-  seo_id       String?
+  seo_id       Int?
   seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
 
   published_at DateTime?
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@map("news")
 }
 
 model Project {
-  id            String       @id @default(uuid())
+  id            Int       @id @default(autoincrement())
   title         String
-  slug          String       @unique
+  slug          String    @unique
   excerpt       String?
   description   String?
   cover_image   String?
@@ -165,24 +166,24 @@ model Project {
   project_url   String?
   start_date    DateTime?
   end_date      DateTime?
-  sort_order    Int          @default(0)
+  sort_order    Int       @default(0)
   services_used String[]
-  status        String       @default("draft")
-  featured      Boolean      @default(false)
+  status        String    @default("draft")
+  featured      Boolean   @default(false)
 
-  seo_id        String?
-  seo_metadata  SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
-  testimonials  Testimonial[]
+  seo_id       Int?
+  seo_metadata SeoMetadata?  @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+  testimonials Testimonial[]
 
-  published_at  DateTime?
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
+  published_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@map("projects")
 }
 
 model ServiceCategory {
-  id               String    @id @default(uuid())
+  id               Int       @id @default(autoincrement())
   name             String
   slug             String    @unique
   icon             String?
@@ -200,62 +201,83 @@ model ServiceCategory {
 }
 
 model Service {
-  id             String           @id @default(uuid())
-  title          String
-  slug           String           @unique
-  excerpt        String?
-  description    String?
-  cover_image    String?
-  icon           String?
-  features       Json?
-  price_range    String?
-  startingPrice  String?
-  processSteps   Json?
-  toolsUsed      Json?
-  stats          Json?
-  ctaTitle       String?
-  ctaSubtitle    String?
-  sort_order     Int              @default(0)
-  status         String           @default("draft")
-  featured       Boolean          @default(false)
+  id            Int     @id @default(autoincrement())
+  title         String
+  slug          String  @unique
+  excerpt       String?
+  description   String?
+  cover_image   String?
+  icon          String?
+  features      Json?
+  price_range   String?
+  startingPrice String?
+  processSteps  Json?
+  toolsUsed     Json?
+  stats         Json?
+  ctaTitle      String?
+  ctaSubtitle   String?
+  sort_order    Int     @default(0)
+  status        String  @default("draft")
+  featured      Boolean @default(false)
 
-  categoryId     String?
-  category       ServiceCategory? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+  category   ServiceCategory? @relation(fields: [categoryId], references: [id])
 
-  seo_id         String?
-  seo_metadata   SeoMetadata?     @relation(fields: [seo_id], references: [id], onDelete: SetNull)
+  seo_id       Int?
+  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
 
-  published_at   DateTime?
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
+  published_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@map("services")
 }
 
 model Testimonial {
-  id             String   @id @default(uuid())
+  id             Int     @id @default(autoincrement())
   client_name    String
   client_title   String?
   client_company String?
   company_type   String?
   client_image   String?
   content        String
-  rating         Float    @default(5)
-  status         String   @default("draft")
-  featured       Boolean  @default(false)
-  sort_order     Int      @default(0)
+  rating         Float   @default(5)
+  status         String  @default("draft")
+  featured       Boolean @default(false)
+  sort_order     Int     @default(0)
 
-  project_id     String?
-  projects       Project? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  // Which public pages this testimonial should appear on
+  // e.g. ["services", "home", "products"]
+  showOnPages    String[]    @default([])
 
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  // Direct product relations (many-to-many)
+  products       ProductTestimonial[]
+
+  project_id Int?
+  projects   Project? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("testimonials")
 }
 
+model ProductTestimonial {
+  id            Int     @id @default(autoincrement())
+  productId     Int
+  testimonialId Int
+  sortOrder     Int     @default(0)
+
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  testimonial Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, testimonialId])
+
+  @@map("product_testimonials")
+}
+
 model Media {
-  id            String   @id @default(uuid())
+  id            Int      @id @default(autoincrement())
   filename      String   @unique
   original_name String
   url           String
@@ -265,4 +287,64 @@ model Media {
   created_at    DateTime @default(now())
 
   @@map("media")
+}
+
+model Product {
+  id              Int             @id @default(autoincrement())
+  name            String
+  slug            String          @unique
+  icon            String?
+  userCount       String?
+  fullName        String?
+  shortDescription String?
+  tagline         String?
+  description     String?
+  stats           Json?
+  testimonialStats Json?
+  trustedLogos    Json?
+  whyChooseTitle  String?
+  whyChooseDesc   String?
+  whyChoosePoints Json?
+  ctaTitle        String?
+  ctaSubtitle     String?
+  ctaButtonText   String?
+  ctaButtonUrl    String?
+  status          String          @default("draft")
+  featured        Boolean         @default(false)
+  sortOrder       Int             @default(0)
+  modules         ProductModule[]
+  seoId           Int?            @unique
+  seo             SeoMetadata?    @relation(fields: [seoId], references: [id])
+
+  // Direct product relations (many-to-many) to testimonials
+  testimonials    ProductTestimonial[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model ProductModule {
+  id          Int             @id @default(autoincrement())
+  productId   Int
+  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name        String
+  slug        String?
+  shortCode   String?
+  description String?
+  sortOrder   Int             @default(0)
+  status      String          @default("published")
+  features    ModuleFeature[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model ModuleFeature {
+  id               Int           @id @default(autoincrement())
+  moduleId         Int
+  module           ProductModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  name             String
+  icon             String?
+  shortDescription String?
+  sortOrder        Int           @default(0)
+  status           String        @default("published")
+  createdAt        DateTime      @default(now())
 }

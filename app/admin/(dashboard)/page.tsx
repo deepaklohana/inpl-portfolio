@@ -6,25 +6,47 @@ import ScrollReveal from '@/components/animations/ScrollReveal'
 export default async function AdminDashboardPage() {
   const now = new Date()
 
-  const [
-    totalBlogs,
-    publishedBlogs,
-    totalProjects,
-    upcomingEvents,
-    totalTestimonials,
-    recentBlogs,
-  ] = await Promise.all([
-    prisma.blog.count(),
-    prisma.blog.count({ where: { status: 'published' } }),
-    prisma.project.count(),
-    prisma.event.count({ where: { event_date: { gt: now } } }),
-    prisma.testimonial.count(),
-    prisma.blog.findMany({
+  // NOTE: Do not run Prisma queries in parallel here.
+  // With connection pool `connection limit: 1`, Promise.all can exhaust the pool
+  // and cause "Timed out fetching a new connection" (500 error).
+  let totalBlogs = 0
+  let publishedBlogs = 0
+  let totalProjects = 0
+  let upcomingEvents = 0
+  let totalTestimonials = 0
+  let recentBlogs: Array<{ id: number; title: string; status: string; created_at: Date }> = []
+
+  try {
+    totalBlogs = await prisma.blog.count()
+    publishedBlogs = await prisma.blog.count({ where: { status: 'published' } })
+    totalProjects = await prisma.project.count()
+    upcomingEvents = await prisma.event.count({ where: { event_date: { gt: now } } })
+    totalTestimonials = await prisma.testimonial.count()
+    recentBlogs = await prisma.blog.findMany({
       take: 5,
       orderBy: { created_at: 'desc' },
       select: { id: true, title: true, status: true, created_at: true },
-    }),
-  ])
+    })
+  } catch (err: unknown) {
+    const msg =
+      err instanceof Error ? err.message : typeof err === 'string' ? err : ''
+    const lower = String(msg ?? '').toLowerCase()
+    const isPoolTimeout =
+      lower.includes('connection pool') ||
+      lower.includes('timed out fetching')
+
+    if (isPoolTimeout) {
+      return (
+        <div className="min-h-[50vh] flex items-center justify-center bg-white border border-gray-200 rounded-2xl p-6">
+          <p className="text-gray-700 font-medium">
+            Server is busy right now. Please try again in a few seconds.
+          </p>
+        </div>
+      )
+    }
+
+    throw err
+  }
 
   const stats = [
     {

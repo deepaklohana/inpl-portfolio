@@ -17,7 +17,7 @@ import { deleteEvent, toggleEventStatus } from '@/lib/actions/events';
 import { deleteTestimonial, toggleTestimonialStatus } from '@/lib/actions/testimonials';
 import { deleteNews, toggleNewsStatus } from '@/lib/actions/news';
 
-export type ColumnType = 'text' | 'date' | 'datetime' | 'icon' | 'client_info' | 'rating' | 'event_location';
+export type ColumnType = 'text' | 'date' | 'datetime' | 'icon' | 'client_info' | 'rating' | 'event_location' | 'pages';
 
 interface Column {
   key: string;
@@ -131,8 +131,10 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
       case 'client_info':
         return (
           <div>
-            <p className="font-medium">{row.client_name}</p>
-            <p className="text-xs text-gray-500">{[row.client_title, row.client_company].filter(Boolean).join(' @ ')}</p>
+            <p className="font-medium">{row.clientName ?? row.client_name}</p>
+            <p className="text-xs text-gray-500">
+              {[row.clientTitle ?? row.client_title, row.clientCompany ?? row.client_company].filter(Boolean).join(' @ ')}
+            </p>
           </div>
         );
       case 'rating':
@@ -145,6 +147,45 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
         );
       case 'event_location':
         return row.is_online ? '🌐 Online' : (row.location || '—');
+      case 'pages': {
+        const pages: string[] = Array.isArray(val) ? val : [];
+        if (pages.length === 0) return '—';
+
+        const getPill = (page: string) => {
+          const normalized = String(page).toLowerCase();
+          const labelMap: Record<string, string> = {
+            services: 'Services',
+            products: 'Products',
+            home: 'Home',
+            about: 'About',
+            contact: 'Contact',
+            project: 'Project',
+          };
+
+          const label = labelMap[normalized] ?? normalized;
+
+          const styleMap: Record<string, string> = {
+            services: 'bg-[#E96429]/10 text-[#E96429] border-[#E96429]/20',
+            products: 'bg-[#2251B5]/10 text-[#2251B5] border-[#2251B5]/20',
+            home: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
+            about: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+            contact: 'bg-sky-500/10 text-sky-600 border-sky-500/20',
+            project: 'bg-violet-500/10 text-violet-600 border-violet-500/20',
+          };
+
+          const className = styleMap[normalized] ?? 'bg-gray-100 text-gray-600 border-gray-200';
+          return (
+            <span
+              key={normalized}
+              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${className}`}
+            >
+              {label}
+            </span>
+          );
+        };
+
+        return <div className="flex flex-wrap gap-2">{pages.map(getPill)}</div>;
+      }
       default:
         if (col.key === 'title') return <span className="font-medium">{val}</span>;
         if (col.key === 'content') return <span className="text-gray-500 line-clamp-1 max-w-xs">{val}</span>;
