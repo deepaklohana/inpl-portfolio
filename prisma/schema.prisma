@@ -348,3 +348,15 @@ model ModuleFeature {
   status           String        @default("published")
   createdAt        DateTime      @default(now())
 }
+
+model FAQ {
+  id        Int      @id @default(autoincrement())
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  status    String   @default("published")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}

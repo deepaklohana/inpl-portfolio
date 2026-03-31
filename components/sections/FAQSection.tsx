@@ -8,29 +8,6 @@ interface FAQItem {
   answer: string;
 }
 
-const FAQS: FAQItem[] = [
-  {
-    question: "What are your business hours?",
-    answer:
-      "Our offices are open Monday to Friday from 9:00 AM to 6:00 PM, and Saturday from 10:00 AM to 2:00 PM. We are closed on Sundays and public holidays.",
-  },
-  {
-    question: "How quickly will I receive a response?",
-    answer:
-      "We aim to respond to all inquiries within 24 hours during business days. For urgent matters, please call our hotline for immediate assistance.",
-  },
-  {
-    question: "Do you offer on-site consultations?",
-    answer:
-      "Yes, we offer on-site consultations for enterprise clients. Please contact our sales team to schedule a visit.",
-  },
-  {
-    question: "Can I schedule a product demo?",
-    answer:
-      "Absolutely! You can request a personalized product demo by filling out the contact form or calling our sales team directly.",
-  },
-];
-
 function FAQCard({ question, answer }: FAQItem) {
   const [open, setOpen] = useState(false);
 
@@ -62,7 +39,13 @@ function FAQCard({ question, answer }: FAQItem) {
   );
 }
 
-export default function FAQSection() {
+interface FAQSectionProps {
+  faqs: FAQItem[];
+}
+
+export default function FAQSection({ faqs }: FAQSectionProps) {
+  if (faqs.length === 0) return null;
+
   return (
     <section className="relative w-full bg-white py-16 md:py-24 overflow-hidden">
       {/* Decorative blur */}
@@ -81,7 +64,7 @@ export default function FAQSection() {
 
         {/* FAQ Cards */}
         <div className="flex flex-col gap-4 max-w-[860px] mx-auto">
-          {FAQS.map((faq) => (
+          {faqs.map((faq) => (
             <FAQCard key={faq.question} question={faq.question} answer={faq.answer} />
           ))}
         </div>
