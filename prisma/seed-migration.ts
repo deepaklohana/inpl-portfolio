@@ -50,7 +50,7 @@ async function main() {
         processSteps: Prisma.JsonNull,
         techSection: Prisma.JsonNull,
         toolsSection: Prisma.JsonNull,
-      },
+      } as any,
     });
 
     console.log(`  Migrated service: "${service.title}" (slug: ${service.slug})`);
