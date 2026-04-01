@@ -128,6 +128,8 @@ export default async function ServicePage({
     color: index % 2 === 0 ? "orange" : "blue",
   })) || null;
 
+  const sectionType = srv.sectionType || 'technologies';
+
   return (
     <>
       <script
@@ -167,11 +169,11 @@ export default async function ServicePage({
         />
       )}
 
-      {service.sectionType === 'technologies' && techSection && (
+      {sectionType === 'technologies' && techSection && (
         <TechMasterySection data={techSection} />
       )}
 
-      {service.sectionType === 'tools' && toolsSection && (
+      {sectionType === 'tools' && toolsSection && (
         <ToolsWeUseSection data={toolsSection} />
       )}
     </>
