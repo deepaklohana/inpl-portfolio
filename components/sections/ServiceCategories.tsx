@@ -37,7 +37,26 @@ export default function ServiceCategories({ services = [] }: ServiceCategoriesPr
   const activeCategory = services.find((s) => s.slug === activeCategoryId) || services[0];
 
   if (!services || services.length === 0) {
-    return null; // Return null or some fallback if no services
+    return (
+      <section className="w-full bg-white py-20 px-4 md:px-8">
+        <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-12">
+          {/* Header */}
+          <ScrollReveal variant="fadeUp" className="max-w-[672px] mx-auto">
+            <SectionHeader
+              badge="Categories"
+              title="Service Categories"
+              subtitle="Explore our comprehensive range of services across multiple domains"
+              align="center"
+              titleColor="#2251B5"
+            />
+          </ScrollReveal>
+          
+          <div className="text-center py-12 px-4 border border-dashed border-gray-300 rounded-2xl w-full text-gray-500 font-medium">
+            No published services available at the moment. Please go to the admin panel and publish some services.
+          </div>
+        </div>
+      </section>
+    );
   }
 
   // Define colors to cycle for categories to maintain the design
