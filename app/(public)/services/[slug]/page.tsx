@@ -70,11 +70,12 @@ export default async function ServicePage({
   }
 
   // Parse JSON fields with type safety
-  const stats = service.stats as StatItem[] | null;
-  const subServices = service.subServices as SubService[] | null;
-  const processSteps = service.processSteps as ProcessStep[] | null;
-  const techSection = service.techSection as TechSection | null;
-  const toolsSection = service.toolsSection as ToolsSection | null;
+  const srv = service as any;
+  const stats = srv.stats as StatItem[] | null;
+  const subServices = srv.subServices as SubService[] | null;
+  const processSteps = srv.processSteps as ProcessStep[] | null;
+  const techSection = srv.techSection as TechSection | null;
+  const toolsSection = srv.toolsSection as ToolsSection | null;
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 

@@ -8,7 +8,7 @@
  * Or via: npx prisma db seed (if configured in package.json)
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -45,11 +45,11 @@ async function main() {
         published_at: service.published_at ?? null,
         // New fields — set safe defaults
         sectionType: "technologies",
-        stats: null,
-        subServices: null,
-        processSteps: null,
-        techSection: null,
-        toolsSection: null,
+        stats: Prisma.JsonNull,
+        subServices: Prisma.JsonNull,
+        processSteps: Prisma.JsonNull,
+        techSection: Prisma.JsonNull,
+        toolsSection: Prisma.JsonNull,
       },
     });
 

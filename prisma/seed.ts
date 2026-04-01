@@ -17,7 +17,8 @@ async function main() {
 
   console.log('Superadmin created: admin@company.com / Admin@123')
 
-  // Seed Service Categories
+  // Seed Service Categories - (Commented out because serviceCategory model does not exist)
+  /*
   const categories = [
     {
       name: 'Development',
@@ -67,7 +68,7 @@ async function main() {
   ]
 
   for (const cat of categories) {
-    await prisma.serviceCategory.upsert({
+    await (prisma as any).serviceCategory?.upsert({
       where: { slug: cat.slug },
       update: {
         name: cat.name,
@@ -82,6 +83,7 @@ async function main() {
   }
 
   console.log('Service categories seeded:', categories.map((c) => c.name).join(', '))
+  */
 }
 
 main()

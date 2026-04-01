@@ -7,7 +7,7 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import slugify from 'slugify';
 import { Loader2 } from 'lucide-react';
-import { createServiceCategory, updateServiceCategory } from '@/lib/actions/serviceCategories';
+// import { createServiceCategory, updateServiceCategory } from '@/lib/actions/serviceCategories';
 import { toast } from 'sonner';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 
@@ -70,9 +70,12 @@ export default function CategoryForm({ initialData, mode }: { initialData?: any;
   const onSubmit = async (data: FormValues, status: 'draft' | 'published') => {
     setIsSubmitting(true);
     try {
-      const result = mode === 'create'
-        ? await createServiceCategory({ ...data, status })
-        : await updateServiceCategory(initialData.id, { ...data, status });
+      // Temporarily bypass missing backend actions
+      const result = { success: false, error: 'Backend actions not implemented yet.' };
+      
+      // const result = mode === 'create'
+      //  ? await createServiceCategory({ ...data, status })
+      //  : await updateServiceCategory(initialData.id, { ...data, status });
 
       if (result.success) {
         toast.success(`Category ${status === 'published' ? 'published' : 'saved'}!`);
