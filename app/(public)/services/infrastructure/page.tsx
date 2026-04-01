@@ -4,7 +4,6 @@ import ServicesHero from '@/components/sections/ServicesHero';
 import DevStatsBar from '@/components/sections/DevStatsBar';
 import DetailedServicesGrid from '@/components/sections/DetailedServicesGrid';
 import SimpleProcessSection, { ProcessStep } from '@/components/sections/SimpleProcessSection';
-import ToolsWeUseSection, { ToolItem } from '@/components/sections/ToolsWeUseSection';
 import ServicesCTASection from '@/components/sections/ServicesCTASection';
 
 export const metadata: Metadata = {
@@ -124,17 +123,6 @@ const infrastructureProcessSteps: ProcessStep[] = [
     description: "Monitor, optimize, and provide ongoing support",
     color: "blue",
   },
-];
-
-const infrastructureTools: ToolItem[] = [
-  { name: "AWS", category: "Cloud Platforms", iconPath: "/icons/infrastructure/aws.svg" },
-  { name: "Azure", category: "Cloud Platforms", iconPath: "/icons/infrastructure/azure.svg" },
-  { name: "Google Cloud", category: "Cloud Platforms", iconPath: "/icons/infrastructure/gcp.svg" },
-  { name: "DigitalOcean", category: "Cloud Platforms", iconPath: "/icons/infrastructure/digitalocean.svg" },
-  { name: "Docker", category: "DevOps Tools", iconPath: "/icons/infrastructure/docker.svg" },
-  { name: "Kubernetes", category: "DevOps Tools", iconPath: "/icons/infrastructure/kubernetes.svg" },
-  { name: "Terraform", category: "DevOps Tools", iconPath: "/icons/infrastructure/terraform.svg" },
-  { name: "Jenkins", category: "DevOps Tools", iconPath: "/icons/infrastructure/jenkins.svg" },
 ];
 
 export default function InfrastructureServicesPage() {

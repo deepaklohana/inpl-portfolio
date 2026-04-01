@@ -9,6 +9,7 @@ import PublishButton from '@/components/admin/PublishButton';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import ScrollReveal from '@/components/animations/ScrollReveal';
+import DynamicIcon from '@/components/ui/DynamicIcon';
 
 // Import all server actions directly — this is safe because they are 'use server' functions
 import { deleteProject, toggleProjectStatus } from '@/lib/actions/projects';
@@ -124,9 +125,7 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
       case 'datetime':
         return val ? new Date(val).toLocaleString() : '—';
       case 'icon': {
-        if (!val) return '—';
-        const IconComponent = (LucideIcons as any)[val] || LucideIcons.HelpCircle;
-        return <IconComponent className="h-6 w-6 text-gray-600" />;
+        return <DynamicIcon name={val} className="h-5 w-5 text-gray-600" />;
       }
       case 'client_info':
         return (

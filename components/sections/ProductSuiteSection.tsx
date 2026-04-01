@@ -9,6 +9,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import StaggerReveal from "@/components/animations/StaggerReveal";
 import Link from "next/link";
+import DynamicIcon from "@/components/ui/DynamicIcon";
 
 export default function ProductSuiteSection({ products = [] }: { products?: any[] }) {
   return (
@@ -32,7 +33,6 @@ export default function ProductSuiteSection({ products = [] }: { products?: any[
         {/* Cards Grid */}
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {products.map((product, index) => {
-            const IconComponent = (product.icon && (LucideIcons as any)[product.icon]) || LucideIcons.Box;
             const topModules = product.modules?.slice(0, 3) || [];
             const moreCount = Math.max(0, (product.modules?.length || 0) - 3);
 
@@ -47,7 +47,7 @@ export default function ProductSuiteSection({ products = [] }: { products?: any[
                 <div
                   className="w-14 h-14 rounded-[14px] flex items-center justify-center shrink-0 transition-colors duration-300 bg-[#2251B5] group-hover:bg-[#E96429] shadow-sm"
                 >
-                  <IconComponent className="w-6 h-6 text-white" />
+                  <DynamicIcon name={product.icon || 'Box'} className="w-6 h-6 text-white" />
                 </div>
                 {product.userCount && (
                 <div className="flex flex-col items-end gap-0">

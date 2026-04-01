@@ -93,6 +93,28 @@ const developmentServices = [
   },
 ];
 
+const developmentTechData = {
+  heading: "Technologies We Master",
+  categories: [
+    {
+      name: "Frontend",
+      items: ["React", "Next.js", "Vue.js", "Angular", "TypeScript"],
+    },
+    {
+      name: "Backend",
+      items: ["Node.js", "Python", "Django", "FastAPI", "Express"],
+    },
+    {
+      name: "Mobile",
+      items: ["React Native", "Swift", "Kotlin", "Flutter"],
+    },
+    {
+      name: "Database",
+      items: ["PostgreSQL", "MongoDB", "Redis", "Elasticsearch"],
+    },
+  ],
+};
+
 const developmentProcessSteps: ProcessStep[] = [
   {
     num: "01",
@@ -145,8 +167,13 @@ export default function DevelopmentServicesPage() {
         subtitle="A proven methodology that ensures quality and timely delivery"
         steps={developmentProcessSteps}
       />
-      <TechMasterySection />
-      <ServicesCTASection />
+      <TechMasterySection data={developmentTechData} />
+      <ServicesCTASection 
+        title="Ready to Build Something Amazing?"
+        description="Let's turn your ideas into powerful applications"
+        primaryButtonText="Start Your Project"
+        secondaryButtonText="View Portfolio"
+      />
     </>
   );
 }

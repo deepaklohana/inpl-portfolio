@@ -1,97 +1,47 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronRight, Code, Palette, TrendingUp, Settings, Users, ArrowRight, type LucideIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronRight, ArrowRight } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
+import DynamicIcon from "@/components/ui/DynamicIcon";
 
-type ServiceItem = {
-  title: string;
+type SubService = {
+  name: string;
   description: string;
 };
 
-type Category = {
-  id: string;
-  name: string;
-  count: number;
-  icon: LucideIcon;
-  color: string;
-  services: ServiceItem[];
+type ServiceItem = {
+  id: number;
+  slug: string;
+  title: string;
+  description: string | null;
+  icon: string | null;
+  subServices: SubService[] | null;
 };
 
-const categoriesData: Category[] = [
-  {
-    id: "development",
-    name: "Development",
-    count: 4,
-    icon: Code,
-    color: "#E96429",
-    services: [
-      { title: "Web Development", description: "Full-stack solutions with modern frameworks" },
-      { title: "Mobile Apps", description: "Native iOS and Android applications" },
-      { title: "API Development", description: "RESTful and GraphQL APIs" },
-      { title: "E-commerce", description: "Scalable online stores and marketplaces" },
-    ],
-  },
-  {
-    id: "design",
-    name: "Design",
-    count: 4,
-    icon: Palette,
-    color: "#2251B5",
-    services: [
-      { title: "UI/UX Design", description: "Intuitive and engaging user interfaces" },
-      { title: "Brand Identity", description: "Cohesive branding and visual design" },
-      { title: "Prototyping", description: "Interactive wireframes and prototypes" },
-      { title: "Design Systems", description: "Scalable component libraries" },
-    ],
-  },
-  {
-    id: "marketing",
-    name: "Marketing",
-    count: 4,
-    icon: TrendingUp,
-    color: "#E96429",
-    services: [
-      { title: "SEO", description: "Search engine optimization strategies" },
-      { title: "Content Marketing", description: "Engaging content creation" },
-      { title: "Social Media", description: "Social platform management and growth" },
-      { title: "Paid Advertising", description: "Targeted ad campaigns" },
-    ],
-  },
-  {
-    id: "infrastructure",
-    name: "Infrastructure",
-    count: 4,
-    icon: Settings,
-    color: "#2251B5",
-    services: [
-      { title: "Cloud Hosting", description: "Scalable cloud deployment setups" },
-      { title: "DevOps", description: "CI/CD pipelines and automation" },
-      { title: "Security", description: "Audits and vulnerability protection" },
-      { title: "Database Architecture", description: "Optimized data storage solutions" },
-    ],
-  },
-  {
-    id: "consulting",
-    name: "Consulting",
-    count: 4,
-    icon: Users,
-    color: "#E96429",
-    services: [
-      { title: "Technical Strategy", description: "Roadmaps for digital transformation" },
-      { title: "Architecture Review", description: "Evaluate and improve system design" },
-      { title: "Agile Coaching", description: "Process improvements for teams" },
-      { title: "Vendor Selection", description: "Guidance on technology partnerships" },
-    ],
-  },
-];
+interface ServiceCategoriesProps {
+  services?: ServiceItem[];
+}
 
-export default function ServiceCategories() {
-  const [activeCategoryId, setActiveCategoryId] = useState("development");
+export default function ServiceCategories({ services = [] }: ServiceCategoriesProps) {
+  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
 
-  const activeCategory = categoriesData.find((c) => c.id === activeCategoryId) || categoriesData[0];
+  useEffect(() => {
+    if (services.length > 0 && !activeCategoryId) {
+      setActiveCategoryId(services[0].slug);
+    }
+  }, [services, activeCategoryId]);
+
+  const activeCategory = services.find((s) => s.slug === activeCategoryId) || services[0];
+
+  if (!services || services.length === 0) {
+    return null; // Return null or some fallback if no services
+  }
+
+  // Define colors to cycle for categories to maintain the design
+  const colors = ["#E96429", "#2251B5"];
 
   return (
     <section className="w-full bg-white py-20 px-4 md:px-8">
@@ -111,14 +61,15 @@ export default function ServiceCategories() {
         <div className="flex flex-col lg:flex-row w-full gap-[53px] items-start lg:items-center justify-center">
           {/* Left Column: Categories List */}
           <ScrollReveal variant="slideLeft" className="flex flex-col w-full lg:w-[420px] gap-4 shrink-0">
-            {categoriesData.map((category) => {
-              const isActive = category.id === activeCategoryId;
-              const Icon = category.icon;
+            {services.map((category, index) => {
+              const isActive = category.slug === activeCategoryId;
+              const subCount = category.subServices?.length || 0;
+              const categoryColor = colors[index % colors.length];
 
               return (
                 <button
-                  key={category.id}
-                  onClick={() => setActiveCategoryId(category.id)}
+                  key={category.slug}
+                  onClick={() => setActiveCategoryId(category.slug)}
                   className={`flex items-center justify-between px-6 py-[25px] rounded-3xl w-full text-left transition-all duration-300 ${
                     isActive
                       ? "bg-white border-2 border-[#E96429] shadow-[0px_15px_30px_-12px_rgba(0,0,0,0.15)] z-10 relative"
@@ -133,9 +84,9 @@ export default function ServiceCategories() {
                           ? "bg-linear-to-br from-[#E96429] to-[#E96429]/80 text-white"
                           : "bg-[#F3F4F6]"
                       }`}
-                      style={{ color: isActive ? "white" : category.color }}
+                      style={{ color: isActive ? "white" : categoryColor }}
                     >
-                      <Icon className="w-8 h-8" strokeWidth={2} />
+                      <DynamicIcon name={category.icon || "Code"} className="w-8 h-8" strokeWidth={2} />
                     </div>
 
                     <div className="flex flex-col gap-1">
@@ -144,15 +95,15 @@ export default function ServiceCategories() {
                           isActive ? "text-[#E96429]" : "text-[#1F2937]"
                         }`}
                       >
-                        {category.name}
+                        {category.title}
                       </h3>
                       <p className="text-[#6A7282] font-medium text-sm font-['Inter',sans-serif]">
-                        {category.count} Services Available
+                        {subCount} Services Available
                       </p>
                     </div>
                   </div>
                   {/* Chevron Right */}
-                  <div style={{ color: isActive ? "#E96429" : category.color }}>
+                  <div style={{ color: isActive ? "#E96429" : categoryColor }}>
                     <ChevronRight className="w-6 h-6" />
                   </div>
                 </button>
@@ -165,27 +116,27 @@ export default function ServiceCategories() {
             {/* Pane Header */}
             <div className="flex flex-col px-[34px] pt-[32px] pb-6 gap-3">
               <h3 className="font-bold text-[30px] leading-[1.2] text-[#E96429] font-['Inter',sans-serif]">
-                {activeCategory.name} Services
+                {activeCategory?.title} Services
               </h3>
               <div className="w-[80px] h-[4px] bg-[#E96429] rounded-full" />
             </div>
 
             {/* List of services for the active category */}
             <div className="flex flex-col px-[34px] pb-[34px] gap-6">
-              {activeCategory.services.map((service, idx) => (
+              {activeCategory?.subServices?.map((sub, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between h-[90px] px-4 -mx-4 rounded-2xl hover:bg-[#F9FAFB] transition-colors group cursor-pointer"
+                  className="flex items-center justify-between min-h-[90px] py-2 px-4 -mx-4 rounded-2xl hover:bg-[#F9FAFB] transition-colors group cursor-pointer"
                 >
                   <div className="flex items-center gap-4">
                     {/* Orange dot indicator */}
                     <div className="w-3 h-3 rounded-full bg-[#E96429] shrink-0" />
                     <div className="flex flex-col">
                       <h4 className="font-bold text-xl text-[#0A0A0A] font-['Inter',sans-serif] group-hover:text-[#2251B5] transition-colors">
-                        {service.title}
+                        {sub.name}
                       </h4>
                       <p className="text-[#4A5565] text-base leading-relaxed font-['Inter',sans-serif]">
-                        {service.description}
+                        {sub.description}
                       </p>
                     </div>
                   </div>
@@ -194,18 +145,26 @@ export default function ServiceCategories() {
                   </div>
                 </div>
               ))}
+
+              {!activeCategory?.subServices?.length && (
+                <div className="text-center py-8 text-[#6A7282] italic font-medium">
+                  No sub-services available at the moment.
+                </div>
+              )}
               
               {/* Action Button */}
-              <div className="mt-2 flex">
-                <Button 
-                  href={`/services/${activeCategory.id}`}
-                  variant="primary" 
-                  className="w-full"
-                  icon={<ArrowRight className="w-5 h-5 ml-1" />}
-                >
-                  View All {activeCategory.name} Services
-                </Button>
-              </div>
+              {activeCategory && (
+                <div className="mt-2 flex">
+                  <Button 
+                    href={`/services/${activeCategory.slug}`}
+                    variant="primary" 
+                    className="w-full"
+                    icon={<ArrowRight className="w-5 h-5 ml-1" />}
+                  >
+                    View All {activeCategory.title} Services
+                  </Button>
+                </div>
+              )}
             </div>
           </ScrollReveal>
         </div>

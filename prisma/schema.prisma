@@ -182,53 +182,54 @@ model Project {
   @@map("projects")
 }
 
-model ServiceCategory {
-  id               Int       @id @default(autoincrement())
-  name             String
-  slug             String    @unique
-  icon             String?
-  description      String?
-  shortDescription String?
-  heroTitle        String?
-  heroSubtitle     String?
-  sortOrder        Int       @default(0)
-  status           String    @default("draft")
-  services         Service[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  @@map("service_categories")
-}
-
 model Service {
-  id            Int     @id @default(autoincrement())
-  title         String
-  slug          String  @unique
-  excerpt       String?
-  description   String?
-  cover_image   String?
-  icon          String?
-  features      Json?
-  price_range   String?
-  startingPrice String?
-  processSteps  Json?
-  toolsUsed     Json?
-  stats         Json?
-  ctaTitle      String?
-  ctaSubtitle   String?
-  sort_order    Int     @default(0)
-  status        String  @default("draft")
-  featured      Boolean @default(false)
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  description String?
+  
+  // For individual service page header
+  blackHeading String?  // Main heading in black color
+  blueHeading  String?  // Subheading in blue color
 
-  categoryId Int?
-  category   ServiceCategory? @relation(fields: [categoryId], references: [id])
+  // Service header
+  icon        String?  // icon name or URL for the service pill
+  pillText    String?  // text shown in the pill badge on service page
 
+  // Stats bar — max 4 items
+  stats       Json?    // StatItem[]
+
+  // Sub-services section
+  subServicesHeading    String?  // Heading for sub-services section
+  subServicesDescription String? // Description for sub-services section
+  subServices Json?    // SubService[]
+
+  // Development process — exactly 4 steps
+  processStepsHeading     String?
+  processStepsDescription String?
+  processSteps Json?   // ProcessStep[]
+
+  // Conditional section discriminator
+  sectionType  String  @default("technologies") // "technologies" | "tools"
+
+  // Section A: Technology We Master
+  techSection  Json?   // TechSection
+
+  // Section B: Tools We Use
+  toolsSection Json?   // ToolsSection
+
+  // Publishing
+  sort_order   Int      @default(0)
+  status       String   @default("draft")  // "draft" | "published" | "archived"
+  featured     Boolean  @default(false)
+  published_at DateTime?
+
+  // SEO
   seo_id       Int?
   seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
 
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   @@map("services")
 }

@@ -2,9 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import SectionBadge from "@/components/ui/SectionBadge";
-import Button from "@/components/ui/Button";
 
 export interface DetailedServiceItem {
   id: string;
@@ -15,8 +14,8 @@ export interface DetailedServiceItem {
   badgeIcon: React.ReactNode;
   features: string[];
   techStack: string[];
-  price: string;
-  buttonVariant: "primary" | "default" | "outline" | "ghost" | "link";
+  price?: string;
+  buttonVariant?: "primary" | "default" | "outline" | "ghost" | "link";
   themePrimary: string;
   themeSecondary: string;
   borderActive: string;
@@ -35,8 +34,8 @@ export default function DetailedServicesGrid({
   badgeLabel,
   title,
   description,
-  featuresTitle = "Key Features:",
-  tagsTitle = "Technologies:",
+  featuresTitle = "What We Do:",
+  tagsTitle = "Deliverables:",
   services,
 }: DetailedServicesGridProps) {
   return (
@@ -67,7 +66,7 @@ export default function DetailedServicesGrid({
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[30px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[24px]">
           {services.map((service, index) => (
             <motion.div
               key={service.id}
@@ -75,32 +74,37 @@ export default function DetailedServicesGrid({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`bg-white rounded-3xl p-8 border ${service.borderActive} ${index === 0 ? "shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] border-[#E96429]" : "border-[#E0E0E0] hover:border-[#E96429]/50 hover:shadow-lg transition-all"}`}
+              className={`bg-white rounded-[24px] p-8 border ${service.borderActive} ${index === 0 ? "shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] border-[#E96429]" : "border-[#E0E0E0] hover:border-[#E96429]/50 hover:shadow-lg transition-all"}`}
             >
               <div className="flex flex-col gap-6">
-                {/* Header: Icon + Title + Desc */}
-                <div className="flex flex-col gap-4">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${service.iconBg} shadow-sm`}>
-                    {service.icon}
-                  </div>
-                  <h3 className="font-bold text-[24px] text-[#101828] font-['Inter',sans-serif]">
+                {/* 1. Icon */}
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${service.iconBg} shadow-sm shrink-0`}>
+                  {service.icon}
+                </div>
+
+                {/* 2. Title + Desc */}
+                <div className="flex flex-col gap-3">
+                  <h3 className="font-bold text-[24px] text-[#101828] font-['Inter',sans-serif] leading-snug">
                     {service.title}
                   </h3>
-                  <p className="text-base text-[#4A5565] font-['Inter',sans-serif] leading-relaxed min-h-[48px]">
+                  <p className="text-[16px] text-[#4A5565] font-['Inter',sans-serif] leading-[1.625em] min-h-[52px]">
                     {service.description}
                   </p>
                 </div>
 
-                {/* Features */}
-                <div className="flex flex-col gap-4 mt-2">
-                  <h4 className="font-semibold text-base text-[#101828] font-['Inter',sans-serif]">
+                {/* 3. Features */}
+                <div className="flex flex-col gap-3">
+                  <h4 className="font-semibold text-[16px] text-[#101828] font-['Inter',sans-serif]">
                     {featuresTitle}
                   </h4>
-                  <ul className="flex flex-col gap-3">
+                  <ul className="flex flex-col gap-2">
                     {service.features.map((feature, fIndex) => (
-                      <li key={fIndex} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#E96429] shrink-0 mt-0.5" />
-                        <span className="text-[15px] text-[#4A5565] font-['Inter',sans-serif]">
+                      <li key={fIndex} className="flex items-start gap-[8px]">
+                        <Check 
+                          className="w-5 h-5 shrink-0" 
+                          style={{ color: service.themePrimary }} 
+                        />
+                        <span className="text-[14px] text-[#4A5565] font-['Inter',sans-serif] leading-[1.428em]">
                           {feature}
                         </span>
                       </li>
@@ -108,42 +112,25 @@ export default function DetailedServicesGrid({
                   </ul>
                 </div>
 
-                {/* Technologies / Tags */}
-                <div className="flex flex-col gap-3 mt-4">
-                  <h4 className="font-semibold text-base text-[#101828] font-['Inter',sans-serif]">
+                {/* 4. Technologies / Tags */}
+                <div className="flex flex-col gap-3">
+                  <h4 className="font-semibold text-[16px] text-[#101828] font-['Inter',sans-serif]">
                     {tagsTitle}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {service.techStack.map((tech, tIndex) => (
                       <span
                         key={tIndex}
-                        className={`text-[13px] font-medium font-['Inter',sans-serif] px-3 py-1.5 rounded-full ${index === 0 ? "bg-[#FFEDE5] text-[#E96429]" : "bg-[#F0F4FF] text-[#2251B5]"}`}
+                        className="text-[12px] font-semibold font-['Inter',sans-serif] px-3 py-1.5 rounded-full inline-flex items-center justify-center leading-[1.333em]"
+                        style={{
+                          backgroundColor: service.themeSecondary,
+                          color: service.themePrimary,
+                        }}
                       >
                         {tech}
                       </span>
                     ))}
                   </div>
-                </div>
-
-                {/* Price and Action */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-[#EAEAEA] mt-4">
-                  <div className="flex flex-col">
-                    <span className="text-[14px] text-[#6A7282] font-['Inter',sans-serif]">
-                      Starting Price
-                    </span>
-                    <span className="font-bold text-[20px] text-[#101828] font-['Inter',sans-serif]">
-                      Starting at {service.price}
-                    </span>
-                  </div>
-                  
-                  <Button 
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    variant={service.buttonVariant as any}
-                    icon={<ArrowRight className="w-5 h-5" />}
-                    className={index !== 0 ? "bg-[#2251B5] text-white hover:bg-[#1E4399]" : ""}
-                  >
-                    Get Quote
-                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -153,3 +140,4 @@ export default function DetailedServicesGrid({
     </section>
   );
 }
+

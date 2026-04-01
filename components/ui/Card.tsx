@@ -6,7 +6,7 @@ import Button from "./Button";
 // Label: Inter 600, 18px, lh 1.5, color #101828, left-aligned (fill-width)
 
 interface IconFeatureCardProps {
-  icon: LucideIcon;
+  icon: React.ElementType;
   label: string;
 }
 
@@ -34,7 +34,7 @@ export function IconFeatureCard({ icon: Icon, label }: IconFeatureCardProps) {
 interface ProductCardProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: React.ElementType;
   highlight?: boolean;
   buttonLabel?: string;
 }

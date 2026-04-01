@@ -17,7 +17,6 @@ import {
   LogOut,
   Hexagon,
   Users,
-  FolderOpen,
   Layers,
   HelpCircle,
 } from 'lucide-react'
@@ -65,9 +64,6 @@ export default async function AdminLayout({
             </NavLink>
             <NavLink href="/admin/services" icon={<Settings />}>
               Services
-            </NavLink>
-            <NavLink href="/admin/services/categories" icon={<FolderOpen />} indent>
-              Categories
             </NavLink>
             <NavLink href="/admin/testimonials" icon={<MessageSquare />}>
               Testimonials

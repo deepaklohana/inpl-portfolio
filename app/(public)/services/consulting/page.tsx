@@ -4,7 +4,7 @@ import ServicesHero from '@/components/sections/ServicesHero';
 import DevStatsBar from '@/components/sections/DevStatsBar';
 import DetailedServicesGrid, { DetailedServiceItem } from '@/components/sections/DetailedServicesGrid';
 import SimpleProcessSection, { ProcessStep } from '@/components/sections/SimpleProcessSection';
-import ToolsWeUseSection, { ToolItem } from '@/components/sections/ToolsWeUseSection';
+import ToolsWeUseSection, { ToolsSection } from '@/components/sections/ToolsWeUseSection';
 import ServicesCTASection from '@/components/sections/ServicesCTASection';
 
 export const metadata: Metadata = {
@@ -126,16 +126,24 @@ const consultingProcessSteps: ProcessStep[] = [
   },
 ];
 
-const consultingTools: ToolItem[] = [
-  { name: "Cloud Strategy", category: "15+ years", iconPath: "/icons/consulting/cloud-strategy.svg" },
-  { name: "Enterprise Architecture", category: "12+ years", iconPath: "/icons/consulting/enterprise-architecture.svg" },
-  { name: "Digital Transformation", category: "10+ years", iconPath: "/icons/consulting/digital-transformation.svg" },
-  { name: "Agile Methodology", category: "8+ years", iconPath: "/icons/consulting/agile-methodology.svg" },
-  { name: "Security Compliance", category: "10+ years", iconPath: "/icons/consulting/security-compliance.svg" },
-  { name: "Team Training", category: "12+ years", iconPath: "/icons/consulting/team-training.svg" },
-  { name: "Performance Optimization", category: "10+ years", iconPath: "/icons/consulting/performance-optimization.svg" },
-  { name: "Change Management", category: "8+ years", iconPath: "/icons/consulting/change-management.svg" },
-];
+const consultingToolsData: ToolsSection = {
+  description: "Proven methodologies and frameworks we use to guide your digital transformation",
+  categories: [
+    {
+      name: "Consulting Expertise",
+      tools: [
+        { name: "Cloud Strategy", icon: "/icons/consulting/cloud-strategy.svg" },
+        { name: "Enterprise Architecture", icon: "/icons/consulting/enterprise-architecture.svg" },
+        { name: "Digital Transformation", icon: "/icons/consulting/digital-transformation.svg" },
+        { name: "Agile Methodology", icon: "/icons/consulting/agile-methodology.svg" },
+        { name: "Security Compliance", icon: "/icons/consulting/security-compliance.svg" },
+        { name: "Team Training", icon: "/icons/consulting/team-training.svg" },
+        { name: "Performance Optimization", icon: "/icons/consulting/performance-optimization.svg" },
+        { name: "Change Management", icon: "/icons/consulting/change-management.svg" },
+      ],
+    },
+  ],
+};
 
 export default function ConsultingServicesPage() {
   return (
@@ -170,7 +178,7 @@ export default function ConsultingServicesPage() {
         steps={consultingProcessSteps}
       />
       <ToolsWeUseSection 
-        tools={consultingTools} 
+        data={consultingToolsData} 
       />
       <ServicesCTASection 
         title="Let's Transform Your Business Together"

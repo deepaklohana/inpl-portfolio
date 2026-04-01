@@ -4,11 +4,15 @@ import ProcessSection from "@/components/sections/ProcessSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ServicesCTASection from "@/components/sections/ServicesCTASection";
 import { getTestimonials } from "@/lib/actions/testimonials";
+import { getServices } from "@/lib/actions/services";
 
 export const revalidate = 60; // Fallback validation
 
 export default async function ServicesPage() {
-  const dbTestimonials = await getTestimonials({ page: 'services', limit: 4 });
+  const [dbTestimonials, dbServices] = await Promise.all([
+    getTestimonials({ page: 'services', limit: 4 }),
+    getServices({ status: 'published' }),
+  ]);
   
   const formattedTestimonials = dbTestimonials.map((t: any) => ({
     id: String(t.id),
@@ -22,10 +26,19 @@ export default async function ServicesPage() {
     rating: t.rating || 5,
   }));
 
+  const formattedServices = dbServices.map((s: any) => ({
+    id: s.id,
+    slug: s.slug,
+    title: s.title,
+    description: s.description,
+    icon: s.icon,
+    subServices: s.subServices ? (s.subServices as any) : [],
+  }));
+
   return (
     <>
       <ServicesHero />
-      <ServiceCategories />
+      <ServiceCategories services={formattedServices} />
       <ProcessSection />
       <TestimonialsSection testimonials={formattedTestimonials} />
       <ServicesCTASection />

@@ -4,7 +4,7 @@ import ServicesHero from '@/components/sections/ServicesHero';
 import DevStatsBar from '@/components/sections/DevStatsBar';
 import DetailedServicesGrid from '@/components/sections/DetailedServicesGrid';
 import SimpleProcessSection, { ProcessStep } from '@/components/sections/SimpleProcessSection';
-import ToolsWeUseSection, { ToolItem } from '@/components/sections/ToolsWeUseSection';
+import ToolsWeUseSection, { ToolsSection } from '@/components/sections/ToolsWeUseSection';
 import ServicesCTASection from '@/components/sections/ServicesCTASection';
 
 export const metadata: Metadata = {
@@ -126,16 +126,24 @@ const marketingProcessSteps: ProcessStep[] = [
   },
 ];
 
-const marketingTools: ToolItem[] = [
-  { name: "Google Ads", category: "search", iconPath: "/icons/marketing/google-ads.svg" },
-  { name: "Facebook", category: "Social", iconPath: "/icons/marketing/facebook.svg" },
-  { name: "LinkedIn", category: "B2B", iconPath: "/icons/marketing/linkedin.svg" },
-  { name: "Twitter/X", category: "Social", iconPath: "/icons/marketing/twitter.svg" },
-  { name: "TikTok", category: "Social", iconPath: "/icons/marketing/tiktok.svg" },
-  { name: "YouTube", category: "Video", iconPath: "/icons/marketing/youtube.svg" },
-  { name: "Pinterest", category: "Visual", iconPath: "/icons/marketing/pinterest.svg" },
-  { name: "Instagram", category: "Social", iconPath: "/icons/marketing/instagram.svg" },
-];
+const marketingToolsData: ToolsSection = {
+  description: "Leading platforms we leverage to maximize your marketing ROI",
+  categories: [
+    {
+      name: "Marketing Platforms",
+      tools: [
+        { name: "Google Ads", icon: "/icons/marketing/google-ads.svg" },
+        { name: "Facebook", icon: "/icons/marketing/facebook.svg" },
+        { name: "LinkedIn", icon: "/icons/marketing/linkedin.svg" },
+        { name: "Twitter/X", icon: "/icons/marketing/twitter.svg" },
+        { name: "TikTok", icon: "/icons/marketing/tiktok.svg" },
+        { name: "YouTube", icon: "/icons/marketing/youtube.svg" },
+        { name: "Pinterest", icon: "/icons/marketing/pinterest.svg" },
+        { name: "Instagram", icon: "/icons/marketing/instagram.svg" },
+      ],
+    },
+  ],
+};
 
 export default function MarketingServicesPage() {
   return (
@@ -169,7 +177,7 @@ export default function MarketingServicesPage() {
         subtitle="A proven methodology that maximizes ROI"
         steps={marketingProcessSteps}
       />
-      <ToolsWeUseSection tools={marketingTools} />
+      <ToolsWeUseSection data={marketingToolsData} />
       <ServicesCTASection 
         title="Ready to Grow Your Business?"
         description="Let's build a marketing strategy tailored to your goals."

@@ -1,16 +1,35 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
 import { buildMetadata } from '@/lib/seo';
+import { getServiceBySlug, getServices } from '@/lib/actions/services';
+import type {
+  StatItem,
+  SubService,
+  ProcessStep,
+  TechSection,
+  ToolsSection
+} from '@/lib/actions/services';
+
+import ServicesHero from '@/components/sections/ServicesHero';
+import DevStatsBar from '@/components/sections/DevStatsBar';
+import DetailedServicesGrid, { DetailedServiceItem } from '@/components/sections/DetailedServicesGrid';
+import SimpleProcessSection, { ProcessStep as SimpleProcessStep } from '@/components/sections/SimpleProcessSection';
+import TechMasterySection from '@/components/sections/TechMasterySection';
+import ToolsWeUseSection from '@/components/sections/ToolsWeUseSection';
+import DynamicIcon from '@/components/ui/DynamicIcon';
 
 export const revalidate = 86400;
 
-export async function generateStaticParams() {
-  const services = await prisma.service.findMany({
-    where: { status: 'published' },
-    select: { slug: true },
-  });
-  return services.map((s) => ({ slug: s.slug }));
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  try {
+    const services = await getServices({ status: 'published' });
+    return services.map((service) => ({
+      slug: service.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for services:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({
@@ -19,10 +38,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = await prisma.service.findUnique({
-    where: { slug },
-    include: { seo_metadata: true },
-  });
+  const service = await getServiceBySlug(slug);
 
   if (!service || service.status !== 'published') return {};
 
@@ -31,8 +47,8 @@ export async function generateMetadata({
 
   return buildMetadata({
     title: seo?.meta_title ?? service.title,
-    description: seo?.meta_description ?? service.excerpt ?? undefined,
-    image: seo?.og_image ?? service.cover_image ?? undefined,
+    description: seo?.meta_description ?? service.description ?? undefined,
+    image: seo?.og_image ?? undefined,
     url: `${baseUrl}/services/${service.slug}`,
     type: 'website',
     keywords: seo?.keywords ? seo.keywords.split(',').map((k) => k.trim()) : undefined,
@@ -46,12 +62,19 @@ export default async function ServicePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = await prisma.service.findUnique({
-    where: { slug },
-    include: { seo_metadata: true },
-  });
+  const service = await getServiceBySlug(slug);
 
-  if (!service || service.status !== 'published') notFound();
+  // Call notFound() for missing or non-published records
+  if (!service || service.status !== 'published') {
+    notFound();
+  }
+
+  // Parse JSON fields with type safety
+  const stats = service.stats as StatItem[] | null;
+  const subServices = service.subServices as SubService[] | null;
+  const processSteps = service.processSteps as ProcessStep[] | null;
+  const techSection = service.techSection as TechSection | null;
+  const toolsSection = service.toolsSection as ToolsSection | null;
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -59,20 +82,50 @@ export default async function ServicePage({
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: service.title,
-    description: service.excerpt || service.description,
-    image: service.cover_image,
+    description: service.description,
     url: `${baseUrl}/services/${service.slug}`,
     provider: { '@type': 'Organization', name: 'Company Name' },
-    ...(service.price_range && {
-      offers: {
-        '@type': 'Offer',
-        priceSpecification: {
-          '@type': 'PriceSpecification',
-          price: service.price_range,
-        },
-      },
-    }),
   };
+
+  const blackHeading = (service as any).blackHeading;
+  const blueHeading = (service as any).blueHeading;
+  const pillText = (service as any).pillText;
+
+  let titleNode: React.ReactNode = service.title;
+  if (blackHeading || blueHeading) {
+    titleNode = (
+      <>
+        {blackHeading && <>{blackHeading}{' \n'}</>}
+        {blueHeading && <span className="text-[#2251B5]">{blueHeading}</span>}
+      </>
+    );
+  }
+
+  // Map sub-services to DetailedServiceItem format
+  const mappedSubServices: DetailedServiceItem[] | null = subServices?.map((sub, index) => {
+    const isFirst = index === 0;
+    return {
+      id: sub.name,
+      title: sub.name,
+      description: sub.description || sub.shortDescription || "",
+      icon: <DynamicIcon name={sub.icon} className="w-8 h-8 text-white" />,
+      iconBg: isFirst ? "bg-[#E96429]" : "bg-[#2251B5]",
+      badgeIcon: <div className={`w-2 h-2 rounded-full ${isFirst ? "bg-[#E96429]" : "bg-[#2251B5]"}`} />,
+      features: sub.features || [],
+      techStack: sub.technologies || [],
+      themePrimary: isFirst ? "#E96429" : "#2251B5",
+      themeSecondary: isFirst ? "#FFEDE5" : "#F0F4FF",
+      borderActive: isFirst ? "border-[#E96429]" : "border-[#E0E0E0]",
+    };
+  }) || null;
+
+  // Map process steps
+  const mappedProcessSteps: SimpleProcessStep[] | null = processSteps?.map((step, index) => ({
+    num: step.number < 10 ? `0${step.number}` : step.number.toString(),
+    title: step.heading,
+    description: step.description,
+    color: index % 2 === 0 ? "orange" : "blue",
+  })) || null;
 
   return (
     <>
@@ -80,25 +133,46 @@ export default async function ServicePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <article className="max-w-4xl mx-auto px-4 py-12">
-        {service.cover_image && (
-          <img
-            src={service.cover_image}
-            alt={service.title}
-            className="w-full h-64 object-cover rounded-lg mb-8"
-          />
-        )}
-        <h1 className="text-4xl font-bold mb-4">{service.title}</h1>
-        {service.excerpt && (
-          <p className="text-gray-600 text-lg mb-6">{service.excerpt}</p>
-        )}
-        {service.description && (
-          <div
-            className="prose prose-lg mt-8 max-w-none"
-            dangerouslySetInnerHTML={{ __html: service.description }}
-          />
-        )}
-      </article>
+
+      <ServicesHero
+        badgeText={pillText || "Our Services"}
+        badgeIcon={<div className="w-2 h-2 rounded-full bg-[#E96429]" />}
+        title={titleNode}
+        description={service.description || undefined}
+        primaryButtonText="Get Started"
+        secondaryButtonText="Scheduled Consultation"
+        showPartnerMarquee={false}
+      />
+
+      {stats && stats.length > 0 && (
+        <DevStatsBar stats={stats} />
+      )}
+
+      {mappedSubServices && mappedSubServices.length > 0 && (
+        <DetailedServicesGrid
+          badgeLabel={(service as any).subServicesHeading || "Services"}
+          title={(service as any).subServicesHeading || "Our Services"}
+          description={(service as any).subServicesDescription || ""}
+          services={mappedSubServices}
+        />
+      )}
+
+      {mappedProcessSteps && mappedProcessSteps.length > 0 && (
+        <SimpleProcessSection
+          badge="Process"
+          title={(service as any).processStepsHeading || "Development Process"}
+          subtitle={(service as any).processStepsDescription || "How we deliver excellence"}
+          steps={mappedProcessSteps}
+        />
+      )}
+
+      {service.sectionType === 'technologies' && techSection && (
+        <TechMasterySection data={techSection} />
+      )}
+
+      {service.sectionType === 'tools' && toolsSection && (
+        <ToolsWeUseSection data={toolsSection} />
+      )}
     </>
   );
 }

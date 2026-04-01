@@ -6,27 +6,78 @@ import { revalidatePath } from 'next/cache';
 import { triggerRevalidation } from '@/lib/actions/revalidate';
 import { FULL_PUBLIC_REVALIDATION_PATHS } from '@/lib/revalidationPaths';
 
+// ─── TypeScript interfaces for JSON fields ────────────────────────────────────
+
+export interface StatItem {
+  value: string;
+  label: string;
+}
+
+export interface SubService {
+  icon: string;
+  name: string;
+  description: string;
+  shortDescription?: string;
+  featuresHeading?: string;
+  features: string[];
+  technologiesHeading?: string;
+  technologies: string[];
+}
+
+export interface ProcessStep {
+  number: number;
+  heading: string;
+  description: string;
+}
+
+export interface TechCategory {
+  name: string;
+  items: string[];
+}
+
+export interface TechSection {
+  heading: string;
+  categories: TechCategory[];
+}
+
+export interface ToolItem {
+  name: string;
+  icon: string;
+}
+
+export interface ToolCategory {
+  name: string;
+  tools: ToolItem[];
+}
+
+export interface ToolsSection {
+  heading?: string;
+  description: string;
+  categories: ToolCategory[];
+}
+
+// ─── Form Data Interface ──────────────────────────────────────────────────────
+
 export interface ServiceFormData {
   title: string;
   slug: string;
-  excerpt?: string;
+  description?: string;
+  blackHeading?: string;
+  blueHeading?: string;
   icon?: string;
-  // Category
-  categoryId?: string;
-  // Features & tech
-  features?: string; // JSON string -> array of { title, items }
-  // Pricing
-  startingPrice?: string;
-  // Process steps  (JSON string → array of {step, title, description})
-  processSteps?: string;
-  // Tools used     (JSON string → array of {name, icon, category})
-  toolsUsed?: string;
-  // Stats bar       (JSON string → array of {value, label})
-  stats?: string;
-  // CTA
-  ctaTitle?: string;
-  ctaSubtitle?: string;
-  // Meta
+  pillText?: string;
+  // JSON strings for complex fields
+  stats?: string;          // JSON string → StatItem[]
+  subServicesHeading?: string;
+  subServicesDescription?: string;
+  subServices?: string;    // JSON string → SubService[]
+  processStepsHeading?: string;
+  processStepsDescription?: string;
+  processSteps?: string;   // JSON string → ProcessStep[]
+  sectionType?: string;    // "technologies" | "tools"
+  techSection?: string;    // JSON string → TechSection
+  toolsSection?: string;   // JSON string → ToolsSection
+  // Publishing
   sort_order?: number;
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
@@ -38,34 +89,112 @@ export interface ServiceFormData {
   no_index?: boolean;
 }
 
-function parseArray(val?: string): string[] {
-  if (!val) return [];
-  return val.split(',').map(s => s.trim()).filter(Boolean);
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const ALLOWED_SECTION_TYPES = ['technologies', 'tools'] as const;
+
+function normaliseSectionType(value?: string): string {
+  if (value && (ALLOWED_SECTION_TYPES as readonly string[]).includes(value)) {
+    return value;
+  }
+  return 'technologies';
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseJson(val?: string): Prisma.InputJsonValue | typeof Prisma.JsonNull {
-  if (!val) return Prisma.JsonNull;
-  try { return JSON.parse(val) as Prisma.InputJsonValue; } catch { return Prisma.JsonNull; }
+/**
+ * Parse a JSON string field. Returns the parsed value on success.
+ * Returns null if the string is empty/undefined.
+ * Throws an error with the field name if the JSON is malformed.
+ */
+function parseJsonField(val: string | undefined, fieldName: string): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+  if (!val || val.trim() === '') return Prisma.JsonNull;
+  try {
+    return JSON.parse(val) as Prisma.InputJsonValue;
+  } catch {
+    throw new Error(`Invalid JSON in ${fieldName}`);
+  }
 }
 
-function getErrorMessage(e: unknown) {
+function getErrorMessage(e: unknown): string {
   if (e instanceof Error) return e.message;
   return 'Request failed';
 }
 
-// ─── Read ────────────────────────────────────────────────────────────────────
-
-export async function getServiceCategories() {
-  try {
-    return await prisma.serviceCategory.findMany({
-      orderBy: { sortOrder: 'asc' },
-    });
-  } catch (error) {
-    console.error('Error fetching service categories:', error);
-    return [];
-  }
+function isPrismaUniqueConstraintError(e: unknown): boolean {
+  return (
+    e instanceof Prisma.PrismaClientKnownRequestError &&
+    e.code === 'P2002'
+  );
 }
+
+// ─── Validation ───────────────────────────────────────────────────────────────
+
+interface ValidationResult {
+  success: false;
+  error: string;
+}
+
+function validateServiceFormData(formData: ServiceFormData): ValidationResult | null {
+  // Required fields
+  if (!formData.title || formData.title.trim() === '') {
+    return { success: false, error: 'title is required' };
+  }
+  if (!formData.slug || formData.slug.trim() === '') {
+    return { success: false, error: 'slug is required' };
+  }
+
+  // Validate JSON fields are parseable and check array constraints
+  if (formData.stats && formData.stats.trim() !== '') {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(formData.stats);
+    } catch {
+      return { success: false, error: 'Invalid JSON in stats' };
+    }
+    if (Array.isArray(parsed) && parsed.length > 4) {
+      return { success: false, error: 'Stats bar supports a maximum of 4 items' };
+    }
+  }
+
+  if (formData.subServices && formData.subServices.trim() !== '') {
+    try {
+      JSON.parse(formData.subServices);
+    } catch {
+      return { success: false, error: 'Invalid JSON in subServices' };
+    }
+  }
+
+  if (formData.processSteps && formData.processSteps.trim() !== '') {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(formData.processSteps);
+    } catch {
+      return { success: false, error: 'Invalid JSON in processSteps' };
+    }
+    if (Array.isArray(parsed) && parsed.length > 4) {
+      return { success: false, error: 'Process section allows a maximum of 4 steps' };
+    }
+  }
+
+  if (formData.techSection && formData.techSection.trim() !== '') {
+    try {
+      JSON.parse(formData.techSection);
+    } catch {
+      return { success: false, error: 'Invalid JSON in techSection' };
+    }
+  }
+
+  if (formData.toolsSection && formData.toolsSection.trim() !== '') {
+    try {
+      JSON.parse(formData.toolsSection);
+    } catch {
+      return { success: false, error: 'Invalid JSON in toolsSection' };
+    }
+  }
+
+  return null;
+}
+
+// ─── Read ─────────────────────────────────────────────────────────────────────
 
 export async function getServices(options?: { status?: string; limit?: number; offset?: number }) {
   try {
@@ -74,7 +203,7 @@ export async function getServices(options?: { status?: string; limit?: number; o
       take: options?.limit,
       skip: options?.offset,
       orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
-      include: { seo_metadata: true, category: true },
+      include: { seo_metadata: true },
     });
   } catch (error) {
     console.error('Error fetching services:', error);
@@ -86,7 +215,7 @@ export async function getServiceById(id: string | number) {
   try {
     return await prisma.service.findUnique({
       where: { id: typeof id === 'number' ? id : parseInt(id, 10) },
-      include: { seo_metadata: true, category: true },
+      include: { seo_metadata: true },
     });
   } catch (error) {
     console.error('Error fetching service by id:', error);
@@ -96,9 +225,9 @@ export async function getServiceById(id: string | number) {
 
 export async function getServiceBySlug(slug: string) {
   try {
-    return await prisma.service.findFirst({
-      where: { slug, status: 'published' },
-      include: { seo_metadata: true, category: true },
+    return await prisma.service.findUnique({
+      where: { slug },
+      include: { seo_metadata: true },
     });
   } catch (error) {
     console.error('Error fetching service by slug:', error);
@@ -106,11 +235,15 @@ export async function getServiceBySlug(slug: string) {
   }
 }
 
-// ─── Create ──────────────────────────────────────────────────────────────────
+// ─── Create ───────────────────────────────────────────────────────────────────
 
 export async function createService(formData: ServiceFormData) {
+  // Validate before touching the DB
+  const validationError = validateServiceFormData(formData);
+  if (validationError) return validationError;
+
   try {
-    let seo_id = null;
+    let seo_id: number | null = null;
     const hasSeoData = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
     if (hasSeoData) {
       const seoData = await prisma.seoMetadata.create({
@@ -120,31 +253,36 @@ export async function createService(formData: ServiceFormData) {
           og_image: formData.og_image || null,
           keywords: formData.keywords || null,
           no_index: formData.no_index || false,
-        }
+        },
       });
       seo_id = seoData.id;
     }
 
     const serviceData = await prisma.service.create({
       data: {
-        title: formData.title,
-        slug: formData.slug,
-        excerpt: formData.excerpt || null,
+        title: formData.title.trim(),
+        slug: formData.slug.trim(),
+        description: formData.description || null,
+        blackHeading: formData.blackHeading || null,
+        blueHeading: formData.blueHeading || null,
         icon: formData.icon || null,
-        categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : null,
-        features: parseJson(formData.features),
-        startingPrice: formData.startingPrice || null,
-        processSteps: parseJson(formData.processSteps),
-        toolsUsed: parseJson(formData.toolsUsed),
-        stats: parseJson(formData.stats),
-        ctaTitle: formData.ctaTitle || null,
-        ctaSubtitle: formData.ctaSubtitle || null,
-        sort_order: formData.sort_order || 0,
+        pillText: formData.pillText || null,
+        stats: parseJsonField(formData.stats, 'stats'),
+        subServicesHeading: formData.subServicesHeading || null,
+        subServicesDescription: formData.subServicesDescription || null,
+        subServices: parseJsonField(formData.subServices, 'subServices'),
+        processStepsHeading: formData.processStepsHeading || null,
+        processStepsDescription: formData.processStepsDescription || null,
+        processSteps: parseJsonField(formData.processSteps, 'processSteps'),
+        sectionType: normaliseSectionType(formData.sectionType),
+        techSection: parseJsonField(formData.techSection, 'techSection'),
+        toolsSection: parseJsonField(formData.toolsSection, 'toolsSection'),
+        sort_order: formData.sort_order ?? 0,
         status: formData.status,
         featured: formData.featured,
         seo_id,
         published_at: formData.status === 'published' ? new Date() : null,
-      }
+      } as any,
     });
 
     revalidatePath('/services');
@@ -154,16 +292,24 @@ export async function createService(formData: ServiceFormData) {
     if (formData.status === 'published') {
       await triggerRevalidation([...FULL_PUBLIC_REVALIDATION_PATHS, '/services', `/services/${formData.slug}`]);
     }
+
     return { success: true, id: serviceData.id };
   } catch (e: unknown) {
+    if (isPrismaUniqueConstraintError(e)) {
+      return { success: false, error: 'Slug already in use' };
+    }
     console.error('createService failed:', e);
     return { success: false, error: getErrorMessage(e) || 'Failed to create service' };
   }
 }
 
-// ─── Update ──────────────────────────────────────────────────────────────────
+// ─── Update ───────────────────────────────────────────────────────────────────
 
 export async function updateService(id: string | number, formData: ServiceFormData) {
+  // Validate before touching the DB
+  const validationError = validateServiceFormData(formData);
+  if (validationError) return validationError;
+
   try {
     const existing = await prisma.service.findUnique({
       where: { id: typeof id === 'number' ? id : parseInt(id, 10) },
@@ -185,7 +331,7 @@ export async function updateService(id: string | number, formData: ServiceFormDa
             og_image: formData.og_image || null,
             keywords: formData.keywords || null,
             no_index: formData.no_index || false,
-          }
+          },
         });
       } else {
         const newSeo = await prisma.seoMetadata.create({
@@ -195,7 +341,7 @@ export async function updateService(id: string | number, formData: ServiceFormDa
             og_image: formData.og_image || null,
             keywords: formData.keywords || null,
             no_index: formData.no_index || false,
-          }
+          },
         });
         seo_id = newSeo.id;
       }
@@ -204,24 +350,34 @@ export async function updateService(id: string | number, formData: ServiceFormDa
     await prisma.service.update({
       where: { id: Number(id) },
       data: {
-        title: formData.title,
-        slug: formData.slug,
-        excerpt: formData.excerpt || null,
+        title: formData.title.trim(),
+        slug: formData.slug.trim(),
+        description: formData.description || null,
+        blackHeading: formData.blackHeading || null,
+        blueHeading: formData.blueHeading || null,
         icon: formData.icon || null,
-        categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : null,
-        features: parseJson(formData.features),
-        startingPrice: formData.startingPrice || null,
-        processSteps: parseJson(formData.processSteps),
-        toolsUsed: parseJson(formData.toolsUsed),
-        stats: parseJson(formData.stats),
-        ctaTitle: formData.ctaTitle || null,
-        ctaSubtitle: formData.ctaSubtitle || null,
-        sort_order: formData.sort_order || 0,
+        pillText: formData.pillText || null,
+        stats: parseJsonField(formData.stats, 'stats'),
+        subServicesHeading: formData.subServicesHeading || null,
+        subServicesDescription: formData.subServicesDescription || null,
+        subServices: parseJsonField(formData.subServices, 'subServices'),
+        processStepsHeading: formData.processStepsHeading || null,
+        processStepsDescription: formData.processStepsDescription || null,
+        processSteps: parseJsonField(formData.processSteps, 'processSteps'),
+        sectionType: normaliseSectionType(formData.sectionType),
+        techSection: parseJsonField(formData.techSection, 'techSection'),
+        toolsSection: parseJsonField(formData.toolsSection, 'toolsSection'),
+        sort_order: formData.sort_order ?? 0,
         status: formData.status,
         featured: formData.featured,
         seo_id,
-        published_at: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
-      }
+        published_at:
+          formData.status === 'published'
+            ? new Date()
+            : formData.status === 'draft'
+            ? null
+            : undefined,
+      } as any,
     });
 
     revalidatePath('/services');
@@ -231,14 +387,18 @@ export async function updateService(id: string | number, formData: ServiceFormDa
     if (formData.status === 'published') {
       await triggerRevalidation([...FULL_PUBLIC_REVALIDATION_PATHS, '/services', `/services/${formData.slug}`]);
     }
+
     return { success: true };
   } catch (e: unknown) {
+    if (isPrismaUniqueConstraintError(e)) {
+      return { success: false, error: 'Slug already in use' };
+    }
     console.error('updateService failed:', e);
     return { success: false, error: getErrorMessage(e) || 'Failed to update service' };
   }
 }
 
-// ─── Delete ──────────────────────────────────────────────────────────────────
+// ─── Delete ───────────────────────────────────────────────────────────────────
 
 export async function deleteService(id: string | number) {
   try {
@@ -267,7 +427,7 @@ export async function deleteService(id: string | number) {
 export async function toggleServiceStatus(
   id: string | number,
   status: 'published' | 'draft' | 'archived',
-  slug?: string
+  slug?: string,
 ) {
   try {
     let resolvedSlug = slug;
@@ -278,7 +438,7 @@ export async function toggleServiceStatus(
 
     await prisma.service.update({
       where: { id: Number(id) },
-      data: { status, published_at: status === 'published' ? new Date() : null }
+      data: { status, published_at: status === 'published' ? new Date() : null },
     });
 
     revalidatePath('/services');
@@ -288,6 +448,7 @@ export async function toggleServiceStatus(
     if (status === 'published' && resolvedSlug) {
       await triggerRevalidation([...FULL_PUBLIC_REVALIDATION_PATHS, '/services', `/services/${resolvedSlug}`]);
     }
+
     return { success: true };
   } catch (e: unknown) {
     console.error('toggleServiceStatus failed:', e);

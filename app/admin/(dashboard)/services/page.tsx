@@ -24,7 +24,6 @@ export default async function AdminServicesPage() {
         columns={[
           { key: 'icon', label: 'Icon', type: 'icon' },
           { key: 'title', label: 'Title', type: 'text' },
-          { key: 'startingPrice', label: 'Starting Price', type: 'text' },
           { key: 'sort_order', label: 'Order', type: 'text' },
         ]}
       />

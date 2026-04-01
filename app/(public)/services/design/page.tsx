@@ -4,7 +4,7 @@ import ServicesHero from '@/components/sections/ServicesHero';
 import DevStatsBar from '@/components/sections/DevStatsBar';
 import DetailedServicesGrid from '@/components/sections/DetailedServicesGrid';
 import SimpleProcessSection, { ProcessStep } from '@/components/sections/SimpleProcessSection';
-import ToolsWeUseSection, { ToolItem } from '@/components/sections/ToolsWeUseSection';
+import ToolsWeUseSection, { ToolsSection } from '@/components/sections/ToolsWeUseSection';
 import ServicesCTASection from '@/components/sections/ServicesCTASection';
 
 export const metadata: Metadata = {
@@ -126,16 +126,23 @@ const designProcessSteps: ProcessStep[] = [
   },
 ];
 
-const designTools: ToolItem[] = [
-  { name: "Figma", category: "Design", iconPath: "/icons/tools/figma.svg" },
-  { name: "Adobe XD", category: "Design", iconPath: "/icons/tools/adobe-xd.svg" },
-  { name: "After Effects", category: "Motion", iconPath: "/icons/tools/after-effects.svg" },
-  { name: "Adobe Illustrator", category: "Graphics", iconPath: "/icons/tools/illustrator.svg" },
-  { name: "Adobe Photoshop", category: "Graphics", iconPath: "/icons/tools/photoshop.svg" },
-  { name: "InVision", category: "Prototyping", iconPath: "/icons/tools/invision.svg" },
-  { name: "Figma", category: "Design", iconPath: "/icons/tools/figma.svg" },
-  { name: "Sketch", category: "Design", iconPath: "/icons/tools/sketch.svg" },
-];
+const designToolsData: ToolsSection = {
+  description: "Industry-leading design tools we use to bring your vision to life",
+  categories: [
+    {
+      name: "Design Tools",
+      tools: [
+        { name: "Figma", icon: "/icons/tools/figma.svg" },
+        { name: "Adobe XD", icon: "/icons/tools/adobe-xd.svg" },
+        { name: "After Effects", icon: "/icons/tools/after-effects.svg" },
+        { name: "Adobe Illustrator", icon: "/icons/tools/illustrator.svg" },
+        { name: "Adobe Photoshop", icon: "/icons/tools/photoshop.svg" },
+        { name: "InVision", icon: "/icons/tools/invision.svg" },
+        { name: "Sketch", icon: "/icons/tools/sketch.svg" },
+      ],
+    },
+  ],
+};
 
 export default function DesignServicesPage() {
   return (
@@ -169,7 +176,7 @@ export default function DesignServicesPage() {
         subtitle="A collaborative approach that puts users first"
         steps={designProcessSteps}
       />
-      <ToolsWeUseSection tools={designTools} />
+      <ToolsWeUseSection data={designToolsData} />
       <ServicesCTASection 
         title="Let's Create Something Beautiful"
         description="Transform your vision into stunning designs that users love"
