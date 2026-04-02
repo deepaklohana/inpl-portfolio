@@ -9,10 +9,31 @@ import { getServices } from "@/lib/actions/services";
 export const dynamic = 'force-dynamic';
 
 export default async function ServicesPage() {
-  const [dbTestimonials, dbServices] = await Promise.all([
-    getTestimonials({ page: 'services', limit: 4 }),
-    getServices({ status: 'published' }),
-  ]);
+  let dbTestimonials: any[] = [];
+  let dbServices: any[] = [];
+  let errorMsg: string | null = null;
+
+  try {
+    const results = await Promise.all([
+      getTestimonials({ page: 'services', limit: 4 }),
+      getServices({ status: 'published' }),
+    ]);
+    dbTestimonials = results[0];
+    dbServices = results[1];
+  } catch (e: any) {
+    errorMsg = e?.message || String(e);
+  }
+
+  if (errorMsg) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-24 bg-red-50 text-red-900 p-8">
+        <div className="max-w-2xl">
+          <h1 className="text-2xl font-bold mb-4">CRITICAL ERROR ON SERVICES PAGE</h1>
+          <p className="font-mono bg-white p-4 rounded border border-red-200 break-words">{errorMsg}</p>
+        </div>
+      </div>
+    );
+  }
   
   const formattedTestimonials = dbTestimonials.map((t: any) => ({
     id: String(t.id),
