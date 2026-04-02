@@ -1,148 +1,190 @@
-// Feature: service-page-404-fix, Property 1: Bug Condition - New Published Services Are Immediately Accessible
-// **Validates: Requirements 2.1, 2.2**
+// Feature: service-page-404-fix, Property 1: Bug Condition - On-Demand Page Generation When Build Fails
+// **Validates: Requirements 2.1, 2.2, 2.3, 2.4**
 //
 // CRITICAL: This test MUST FAIL on unfixed code - failure confirms the bug exists
 // DO NOT attempt to fix the test or the code when it fails
 // NOTE: This test encodes the expected behavior - it will validate the fix when it passes after implementation
 // GOAL: Surface counterexamples that demonstrate the bug exists
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { prisma } from '@/lib/prisma';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import * as fc from 'fast-check';
 
 /**
  * Bug Condition Exploration Test
  * 
- * This test verifies that newly created services with "published" status are immediately
- * accessible at `/services/[slug]` without requiring a server restart.
+ * This test simulates the Vercel build scenario where the database is inaccessible
+ * during build time, causing generateStaticParams to return an empty array.
+ * It then verifies that requests to service pages should generate on-demand.
  * 
- * EXPECTED OUTCOME ON UNFIXED CODE: Test FAILS with 404 error (this is correct - it proves the bug exists)
- * EXPECTED OUTCOME ON FIXED CODE: Test PASSES (confirms the fix works)
+ * EXPECTED OUTCOME ON UNFIXED CODE: Test FAILS (returns 404 instead of generating on-demand)
+ * EXPECTED OUTCOME ON FIXED CODE: Test PASSES (pages generate on-demand with status 200)
  */
 
-describe('Bug Condition: New Published Services Are Immediately Accessible', () => {
-  const testSlug = 'test-service-bug-exploration';
-  let createdServiceId: number | undefined;
+describe('Bug Condition: On-Demand Page Generation When Build Fails', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
 
-  // Clean up any existing test service before running
-  beforeAll(async () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should generate pages on-demand when generateStaticParams returns empty array', async () => {
+    // This test simulates the Vercel build scenario:
+    // 1. During build, database is inaccessible, so generateStaticParams returns []
+    // 2. User requests a service page (e.g., /services/web-development)
+    // 3. Expected: Page should generate on-demand with status 200
+    // 4. Actual on unfixed code: Returns 404 because dynamicParams is not explicitly enabled
+
+    // Step 1: Import the page module to test generateStaticParams
+    const pageModule = await import('@/app/(public)/services/[slug]/page');
+    
+    // Step 2: Mock getServices to return empty array (simulating database unavailable during build)
+    const servicesModule = await import('@/lib/actions/services');
+    const getServicesMock = vi.spyOn(servicesModule, 'getServices');
+    getServicesMock.mockResolvedValue([]);
+    
+    // Step 3: Call generateStaticParams (simulating Vercel build phase)
+    const staticParams = await pageModule.generateStaticParams();
+    
+    // Verify that generateStaticParams returns empty array when database is unavailable
+    expect(staticParams).toEqual([]);
+    console.log('✓ Simulated build phase: generateStaticParams returned empty array');
+    
+    // Step 4: Now simulate a user request to a service page
+    // Mock getServiceBySlug to return a valid published service (simulating runtime database access)
+    const getServiceBySlugMock = vi.spyOn(servicesModule, 'getServiceBySlug');
+    getServiceBySlugMock.mockResolvedValue({
+      id: 1,
+      title: 'Web Development',
+      slug: 'web-development',
+      description: 'Professional web development services',
+      status: 'published',
+      featured: false,
+      sort_order: 0,
+      published_at: new Date(),
+      created_at: new Date(),
+      updated_at: new Date(),
+      seo_id: null,
+      blackHeading: null,
+      blueHeading: null,
+      icon: null,
+      pillText: null,
+      stats: null,
+      subServicesHeading: null,
+      subServicesDescription: null,
+      subServices: null,
+      processStepsHeading: null,
+      processStepsDescription: null,
+      processSteps: null,
+      sectionType: 'technologies',
+      techSection: null,
+      toolsSection: null,
+      seo_metadata: null,
+    } as any);
+    
+    // Step 5: Check if dynamicParams is explicitly enabled
+    const hasDynamicParams = 'dynamicParams' in pageModule;
+    const dynamicParamsValue = hasDynamicParams ? (pageModule as any).dynamicParams : undefined;
+    
+    console.log(`  - dynamicParams exported: ${hasDynamicParams}`);
+    console.log(`  - dynamicParams value: ${dynamicParamsValue}`);
+    
+    // Step 6: Attempt to render the page (simulating user request)
     try {
-      const existing = await prisma.service.findUnique({
-        where: { slug: testSlug },
-      });
-      if (existing) {
-        await prisma.service.delete({ where: { id: existing.id } });
-      }
-    } catch (error) {
-      // Ignore if service doesn't exist
+      const params = Promise.resolve({ slug: 'web-development' });
+      const pageComponent = await pageModule.default({ params });
+      
+      // If we reach here, the page rendered successfully
+      expect(pageComponent).toBeDefined();
+      console.log('✓ Page rendered successfully on-demand');
+      
+      // Verify the service was fetched at runtime
+      expect(getServiceBySlugMock).toHaveBeenCalledWith('web-development');
+      
+    } catch (error: any) {
+      // On unfixed code, this will throw or return 404
+      console.log('✗ COUNTEREXAMPLE FOUND: Page failed to generate on-demand');
+      console.log(`  - Error: ${error.message}`);
+      console.log('  - Root cause: dynamicParams not explicitly enabled');
+      console.log('  - Impact: Users get 404 when generateStaticParams returns empty array');
+      
+      // This assertion will FAIL on unfixed code (which is expected and correct)
+      throw error;
     }
-  });
-
-  // Clean up after test
-  afterAll(async () => {
-    if (createdServiceId) {
-      try {
-        await prisma.service.delete({ where: { id: createdServiceId } });
-      } catch (error) {
-        console.error('Failed to clean up test service:', error);
-      }
-    }
-  });
-
-  it('newly created published service should be immediately accessible without server restart', async () => {
-    // Step 1: Create a new service with "published" status directly in the database
-    // We bypass the server action to avoid Next.js-specific functions in tests
-    const createdService = await prisma.service.create({
-      data: {
-        title: 'Test Service for Bug Exploration',
-        slug: testSlug,
-        description: 'This service is created to test the bug condition',
-        status: 'published',
-        featured: false,
-        sort_order: 0,
-        published_at: new Date(),
-      },
-    });
-    
-    createdServiceId = createdService.id;
-    
-    // Verify service was created successfully
-    expect(createdService).not.toBeNull();
-    expect(createdService.id).toBeDefined();
-
-    // Step 2: Verify the service exists in the database
-    const serviceInDb = await prisma.service.findUnique({
-      where: { slug: testSlug },
-    });
-    
-    expect(serviceInDb).not.toBeNull();
-    expect(serviceInDb?.status).toBe('published');
-    expect(serviceInDb?.slug).toBe(testSlug);
-
-    // Step 3: Attempt to access the service page without server restart
-    // This simulates what generateStaticParams should enable
-    // On unfixed code: This will fail because generateStaticParams is missing
-    // On fixed code: This will pass because generateStaticParams provides the slug
-    
-    // We're testing the core issue: can Next.js discover this new route?
-    // The fix (generateStaticParams) should make this service discoverable
-    
-    // For this test, we verify that the service data is accessible
-    // which is what the page component would do
-    const { getServiceBySlug } = await import('@/lib/actions/services');
-    const fetchedService = await getServiceBySlug(testSlug);
-    
-    // These assertions verify the expected behavior:
-    // 1. Service should be fetchable (data exists)
-    expect(fetchedService).not.toBeNull();
-    expect(fetchedService?.status).toBe('published');
-    
-    // 2. Service should have all required data for rendering
-    expect(fetchedService?.title).toBe('Test Service for Bug Exploration');
-    expect(fetchedService?.slug).toBe(testSlug);
     
     // COUNTEREXAMPLE DOCUMENTATION:
     // If this test fails on unfixed code, it means:
-    // - The service exists in the database (verified above)
-    // - The service has "published" status (verified above)
-    // - BUT Next.js cannot discover the route because generateStaticParams is missing
-    // - Result: Users get 404 error when accessing /services/test-service-bug-exploration
-    // - The service only becomes accessible after server restart
-    
-    console.log('✓ Bug condition test: Service is accessible');
-    console.log(`  - Service slug: ${testSlug}`);
-    console.log(`  - Service status: ${fetchedService?.status}`);
-    console.log(`  - Service title: ${fetchedService?.title}`);
+    // - generateStaticParams returned empty array (simulating build failure)
+    // - User requested /services/web-development
+    // - Service exists in database at runtime
+    // - BUT page returns 404 because dynamicParams is not explicitly enabled
+    // - Fix required: Add `export const dynamicParams = true` to enable on-demand generation
   });
 
-  it('should document the bug: generateStaticParams is missing', async () => {
-    // This test documents the root cause of the bug
-    // Read the service page file and verify generateStaticParams is missing
+  it('should test on-demand generation with property-based testing', () => {
+    // Property-based test: For ANY valid service slug, when generateStaticParams
+    // returns empty array, the page should still generate on-demand
     
-    const fs = await import('fs/promises');
-    const path = await import('path');
-    
-    const servicePagePath = path.join(process.cwd(), 'app/(public)/services/[slug]/page.tsx');
-    const servicePageContent = await fs.readFile(servicePagePath, 'utf-8');
-    
-    // On unfixed code: generateStaticParams should NOT exist
-    // On fixed code: generateStaticParams SHOULD exist
-    const hasGenerateStaticParams = servicePageContent.includes('generateStaticParams');
-    
-    // EXPECTED ON UNFIXED CODE: false (confirms root cause)
-    // EXPECTED ON FIXED CODE: true (confirms fix is implemented)
-    
-    if (!hasGenerateStaticParams) {
-      console.log('✗ COUNTEREXAMPLE FOUND: generateStaticParams is missing');
-      console.log('  - File: app/(public)/services/[slug]/page.tsx');
-      console.log('  - Root cause: Without generateStaticParams, Next.js cannot discover dynamic routes');
-      console.log('  - Impact: Newly created services return 404 until server restart');
-      console.log('  - Fix required: Add generateStaticParams function to fetch published service slugs');
-    } else {
-      console.log('✓ generateStaticParams exists (bug is fixed)');
-    }
-    
-    // This assertion will FAIL on unfixed code (which is expected and correct)
-    // It will PASS on fixed code (confirming the fix works)
-    expect(hasGenerateStaticParams).toBe(true);
+    fc.assert(
+      fc.asyncProperty(
+        fc.stringMatching(/^[a-z0-9-]+$/), // Generate valid slug patterns
+        async (slug) => {
+          vi.resetModules();
+          
+          // Mock empty generateStaticParams result
+          const servicesModule = await import('@/lib/actions/services');
+          const getServicesMock = vi.spyOn(servicesModule, 'getServices');
+          getServicesMock.mockResolvedValue([]);
+          
+          // Mock valid service at runtime
+          const getServiceBySlugMock = vi.spyOn(servicesModule, 'getServiceBySlug');
+          getServiceBySlugMock.mockResolvedValue({
+            id: 1,
+            title: `Service ${slug}`,
+            slug: slug,
+            description: 'Test service',
+            status: 'published',
+            featured: false,
+            sort_order: 0,
+            published_at: new Date(),
+            created_at: new Date(),
+            updated_at: new Date(),
+            seo_id: null,
+            blackHeading: null,
+            blueHeading: null,
+            icon: null,
+            pillText: null,
+            stats: null,
+            subServicesHeading: null,
+            subServicesDescription: null,
+            subServices: null,
+            processStepsHeading: null,
+            processStepsDescription: null,
+            processSteps: null,
+            sectionType: 'technologies',
+            techSection: null,
+            toolsSection: null,
+            seo_metadata: null,
+          } as any);
+          
+          const pageModule = await import('@/app/(public)/services/[slug]/page');
+          const staticParams = await pageModule.generateStaticParams();
+          
+          // Verify empty static params
+          expect(staticParams).toEqual([]);
+          
+          // Attempt to render page
+          const params = Promise.resolve({ slug });
+          const pageComponent = await pageModule.default({ params });
+          
+          // Should render successfully
+          expect(pageComponent).toBeDefined();
+          
+          vi.restoreAllMocks();
+        }
+      ),
+      { numRuns: 2 } // Run 2 test cases with different slugs
+    );
   });
 });

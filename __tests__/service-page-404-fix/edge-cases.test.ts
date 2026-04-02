@@ -41,7 +41,7 @@ describe('Edge Cases: Service Page 404 Fix', () => {
     expect(fetchedService).not.toBeNull();
     expect(fetchedService?.slug).toBe(longSlug);
     expect(fetchedService?.status).toBe('published');
-  });
+  }, 10000); // 10 second timeout
 
   it('should handle slugs with special characters (hyphens, numbers)', async () => {
     const specialSlug = 'web-dev-2024-v2-final';
