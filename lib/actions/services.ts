@@ -194,17 +194,53 @@ function validateServiceFormData(formData: ServiceFormData): ValidationResult | 
   return null;
 }
 
+// ─── Retry helper (mirrors products.ts) ─────────────────────────────────────
+
+function isConnectionPoolTimeout(err: unknown): boolean {
+  const msg =
+    err instanceof Error
+      ? err.message
+      : typeof err === 'string'
+        ? err
+        : typeof err === 'object' && err !== null && 'message' in err
+          ? (err as { message?: unknown }).message
+          : undefined;
+  const lower = String(msg ?? '').toLowerCase();
+  return (
+    lower.includes('connection pool') ||
+    lower.includes('timed out fetching a new connection') ||
+    lower.includes('timed out fetching')
+  );
+}
+
+async function retryPrismaOperation<T>(operation: () => Promise<T>): Promise<T> {
+  const maxAttempts = 3;
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await operation();
+    } catch (err) {
+      lastErr = err;
+      if (!isConnectionPoolTimeout(err) || attempt === maxAttempts) break;
+      await new Promise((r) => setTimeout(r, attempt * 500));
+    }
+  }
+  throw lastErr;
+}
+
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
 export async function getServices(options?: { status?: string; limit?: number; offset?: number }) {
   try {
-    return await prisma.service.findMany({
-      where: options?.status ? { status: options.status } : undefined,
-      take: options?.limit,
-      skip: options?.offset,
-      orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
-      include: { seo_metadata: true },
-    });
+    return await retryPrismaOperation(() =>
+      prisma.service.findMany({
+        where: options?.status ? { status: options.status } : undefined,
+        take: options?.limit,
+        skip: options?.offset,
+        orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
+        include: { seo_metadata: true },
+      })
+    );
   } catch (error) {
     console.error('Error fetching services:', error);
     return [];
@@ -213,10 +249,12 @@ export async function getServices(options?: { status?: string; limit?: number; o
 
 export async function getServiceById(id: string | number) {
   try {
-    return await prisma.service.findUnique({
-      where: { id: typeof id === 'number' ? id : parseInt(id, 10) },
-      include: { seo_metadata: true },
-    });
+    return await retryPrismaOperation(() =>
+      prisma.service.findUnique({
+        where: { id: typeof id === 'number' ? id : parseInt(id, 10) },
+        include: { seo_metadata: true },
+      })
+    );
   } catch (error) {
     console.error('Error fetching service by id:', error);
     return null;
@@ -225,10 +263,12 @@ export async function getServiceById(id: string | number) {
 
 export async function getServiceBySlug(slug: string) {
   try {
-    return await prisma.service.findUnique({
-      where: { slug },
-      include: { seo_metadata: true },
-    });
+    return await retryPrismaOperation(() =>
+      prisma.service.findUnique({
+        where: { slug },
+        include: { seo_metadata: true },
+      })
+    );
   } catch (error) {
     console.error('Error fetching service by slug:', error);
     return null;

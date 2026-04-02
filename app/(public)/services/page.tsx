@@ -6,7 +6,7 @@ import ServicesCTASection from "@/components/sections/ServicesCTASection";
 import { getTestimonials } from "@/lib/actions/testimonials";
 import { getServices } from "@/lib/actions/services";
 
-export const revalidate = 60; // Fallback validation
+export const dynamic = 'force-dynamic';
 
 export default async function ServicesPage() {
   const [dbTestimonials, dbServices] = await Promise.all([

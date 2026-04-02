@@ -18,30 +18,7 @@ import TechMasterySection from '@/components/sections/TechMasterySection';
 import ToolsWeUseSection from '@/components/sections/ToolsWeUseSection';
 import DynamicIcon from '@/components/ui/DynamicIcon';
 
-export const revalidate = 86400;
-export const dynamicParams = true; // Enable on-demand generation for slugs not in generateStaticParams
-
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  try {
-    console.log('[generateStaticParams] Attempting to fetch published services from database...');
-    const services = await getServices({ status: 'published' });
-    
-    console.log(`[generateStaticParams] Database connection successful. Found ${services.length} published service(s).`);
-    
-    if (services.length === 0) {
-      console.warn('[generateStaticParams] No published services found in database. This may be expected if the database is empty or if no services are published yet.');
-    }
-    
-    return services.map((service) => ({
-      slug: service.slug,
-    }));
-  } catch (error) {
-    console.error('[generateStaticParams] Database error: Failed to fetch services during build phase.', error);
-    console.error('[generateStaticParams] This may indicate database is inaccessible, environment variables are missing, or connection failed.');
-    console.error('[generateStaticParams] Returning empty array - pages will be generated on-demand at request time due to dynamicParams=true.');
-    return [];
-  }
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
