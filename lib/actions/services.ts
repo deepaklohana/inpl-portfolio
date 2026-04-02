@@ -241,8 +241,11 @@ export async function getServices(options?: { status?: string; limit?: number; o
         include: { seo_metadata: true },
       })
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching services:', error);
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(`getServices Prisma Error: ${error?.message || String(error)}`);
+    }
     return [];
   }
 }
