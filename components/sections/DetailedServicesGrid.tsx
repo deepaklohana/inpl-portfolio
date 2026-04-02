@@ -10,15 +10,8 @@ export interface DetailedServiceItem {
   title: string;
   description: string;
   icon: React.ReactNode;
-  iconBg: string;
-  badgeIcon: React.ReactNode;
   features: string[];
   techStack: string[];
-  price?: string;
-  buttonVariant?: "primary" | "default" | "outline" | "ghost" | "link";
-  themePrimary: string;
-  themeSecondary: string;
-  borderActive: string;
 }
 
 interface DetailedServicesGridProps {
@@ -54,8 +47,7 @@ export default function DetailedServicesGrid({
         {/* Section Header */}
         <div className="flex flex-col items-center text-center gap-4 max-w-[672px] mx-auto">
           <SectionBadge 
-            label={badgeLabel} 
-            icon={<div className="w-2 h-2 rounded-full bg-[#E96429]" />} 
+            label="Services"
           />
           <h2 className="font-bold text-[38px] text-[#101828] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
             {title}
@@ -74,17 +66,17 @@ export default function DetailedServicesGrid({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`bg-white rounded-[24px] p-8 border ${service.borderActive} ${index === 0 ? "shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] border-[#E96429]" : "border-[#E0E0E0] hover:border-[#E96429]/50 hover:shadow-lg transition-all"}`}
+              className="group bg-white rounded-[24px] p-8 border border-[#E0E0E0] hover:border-[#E96429] hover:shadow-[0px_10px_20px_-5px_rgba(233,100,41,0.15)] transition-all duration-300"
             >
               <div className="flex flex-col gap-6">
                 {/* 1. Icon */}
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${service.iconBg} shadow-sm shrink-0`}>
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[#2251B5] group-hover:bg-[#E96429] transition-colors duration-300 shadow-sm shrink-0">
                   {service.icon}
                 </div>
 
                 {/* 2. Title + Desc */}
                 <div className="flex flex-col gap-3">
-                  <h3 className="font-bold text-[24px] text-[#101828] font-['Inter',sans-serif] leading-snug">
+                  <h3 className="font-bold text-[24px] text-[#101828] font-['Inter',sans-serif] leading-snug group-hover:text-[#E96429] transition-colors duration-300">
                     {service.title}
                   </h3>
                   <p className="text-[16px] text-[#4A5565] font-['Inter',sans-serif] leading-[1.625em] min-h-[52px]">
@@ -101,8 +93,7 @@ export default function DetailedServicesGrid({
                     {service.features.map((feature, fIndex) => (
                       <li key={fIndex} className="flex items-start gap-[8px]">
                         <Check 
-                          className="w-5 h-5 shrink-0" 
-                          style={{ color: service.themePrimary }} 
+                          className="w-5 h-5 shrink-0 text-[#2251B5] group-hover:text-[#E96429] transition-colors duration-300" 
                         />
                         <span className="text-[14px] text-[#4A5565] font-['Inter',sans-serif] leading-[1.428em]">
                           {feature}
@@ -121,11 +112,7 @@ export default function DetailedServicesGrid({
                     {service.techStack.map((tech, tIndex) => (
                       <span
                         key={tIndex}
-                        className="text-[12px] font-semibold font-['Inter',sans-serif] px-3 py-1.5 rounded-full inline-flex items-center justify-center leading-[1.333em]"
-                        style={{
-                          backgroundColor: service.themeSecondary,
-                          color: service.themePrimary,
-                        }}
+                        className="text-[12px] font-semibold font-['Inter',sans-serif] px-3 py-1.5 rounded-full inline-flex items-center justify-center leading-[1.333em] bg-[#F0F4FF] text-[#2251B5] group-hover:bg-[#FFEDE5] group-hover:text-[#E96429] transition-colors duration-300"
                       >
                         {tech}
                       </span>

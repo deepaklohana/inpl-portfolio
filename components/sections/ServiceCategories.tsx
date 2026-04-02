@@ -10,6 +10,7 @@ import DynamicIcon from "@/components/ui/DynamicIcon";
 type SubService = {
   name: string;
   description: string;
+  shortDescription?: string;
 };
 
 type ServiceItem = {
@@ -61,6 +62,11 @@ export default function ServiceCategories({ services = [] }: ServiceCategoriesPr
 
   // Define colors to cycle for categories to maintain the design
   const colors = ["#E96429", "#2251B5"];
+
+  const formatTitle = (title: string | undefined) => {
+    if (!title) return '';
+    return title.replace(/\s+Services?$/i, '');
+  };
 
   return (
     <section className="w-full bg-white py-20 px-4 md:px-8">
@@ -114,7 +120,7 @@ export default function ServiceCategories({ services = [] }: ServiceCategoriesPr
                           isActive ? "text-[#E96429]" : "text-[#1F2937]"
                         }`}
                       >
-                        {category.title}
+                        {formatTitle(category.title)}
                       </h3>
                       <p className="text-[#6A7282] font-medium text-sm font-['Inter',sans-serif]">
                         {subCount} Services Available
@@ -135,7 +141,7 @@ export default function ServiceCategories({ services = [] }: ServiceCategoriesPr
             {/* Pane Header */}
             <div className="flex flex-col px-[34px] pt-[32px] pb-6 gap-3">
               <h3 className="font-bold text-[30px] leading-[1.2] text-[#E96429] font-['Inter',sans-serif]">
-                {activeCategory?.title} Services
+                {formatTitle(activeCategory?.title)} Services
               </h3>
               <div className="w-[80px] h-[4px] bg-[#E96429] rounded-full" />
             </div>
@@ -155,13 +161,13 @@ export default function ServiceCategories({ services = [] }: ServiceCategoriesPr
                         {sub.name}
                       </h4>
                       <p className="text-[#4A5565] text-base leading-relaxed font-['Inter',sans-serif]">
-                        {sub.description}
+                        {sub.shortDescription || sub.description}
                       </p>
                     </div>
                   </div>
-                  <div className="text-[#99A1AF] group-hover:text-[#E96429] transition-colors shrink-0">
+                  {/* <div className="text-[#99A1AF] group-hover:text-[#E96429] transition-colors shrink-0">
                     <ChevronRight className="w-5 h-5" />
-                  </div>
+                  </div> */}
                 </div>
               ))}
 
@@ -180,7 +186,7 @@ export default function ServiceCategories({ services = [] }: ServiceCategoriesPr
                     className="w-full"
                     icon={<ArrowRight className="w-5 h-5 ml-1" />}
                   >
-                    View All {activeCategory.title} Services
+                    View All {formatTitle(activeCategory.title)} Services
                   </Button>
                 </div>
               )}

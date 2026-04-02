@@ -37,6 +37,7 @@ const processStepSchema = z.object({
 });
 
 const techCategorySchema = z.object({
+  icon: z.string().optional().or(z.literal('')),
   name: z.string().min(1, 'Category name required'),
   items: z.array(z.string()).optional(),
 });
@@ -62,6 +63,15 @@ const toolsSectionSchema = z.object({
   categories: z.array(toolCategorySchema).optional(),
 });
 
+const ctaSectionSchema = z.object({
+  heading: z.string().optional().or(z.literal('')),
+  description: z.string().optional().or(z.literal('')),
+  button1Name: z.string().optional().or(z.literal('')),
+  button1Slug: z.string().optional().or(z.literal('')),
+  button2Name: z.string().optional().or(z.literal('')),
+  button2Slug: z.string().optional().or(z.literal('')),
+});
+
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   slug: z.string().min(1, 'Slug is required'),
@@ -80,6 +90,7 @@ const schema = z.object({
   sectionType: z.enum(['technologies', 'tools']),
   techSection: techSectionSchema.optional(),
   toolsSection: toolsSectionSchema.optional(),
+  ctaSection: ctaSectionSchema.optional(),
   sort_order: z.coerce.number().optional(),
   status: z.enum(['draft', 'published', 'archived']),
   featured: z.boolean().default(false),
@@ -358,16 +369,23 @@ function TechSectionEditor({ control, register, errors }: any) {
               <Trash2 size={16} />
             </button>
             <div className="space-y-3 pr-10">
-              <div>
-                <Label>Category Name</Label>
-                <Input {...register(`techSection.categories.${i}.name`)} placeholder="Frontend Development" />
-                {errors?.techSection?.categories?.[i]?.name && <p className="text-xs text-red-600 mt-1">{errors.techSection.categories[i].name.message}</p>}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Icon <span className="text-gray-400 font-normal">(name or URL)</span></Label>
+                  <Input {...register(`techSection.categories.${i}.icon`)} placeholder="Monitor" />
+                  {errors?.techSection?.categories?.[i]?.icon && <p className="text-xs text-red-600 mt-1">{errors.techSection.categories[i].icon.message}</p>}
+                </div>
+                <div>
+                  <Label>Category Name</Label>
+                  <Input {...register(`techSection.categories.${i}.name`)} placeholder="Frontend Development" />
+                  {errors?.techSection?.categories?.[i]?.name && <p className="text-xs text-red-600 mt-1">{errors.techSection.categories[i].name.message}</p>}
+                </div>
               </div>
               <TechItemsField control={control} register={register} categoryIndex={i} />
             </div>
           </div>
         ))}
-        <button type="button" onClick={() => append({ name: '', items: [''] })}
+        <button type="button" onClick={() => append({ icon: '', name: '', items: [''] })}
           className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium">
           <Plus size={16} /> Add Category
         </button>
@@ -478,6 +496,47 @@ function ToolItemsField({ control, register, errors, categoryIndex }: any) {
   );
 }
 
+function CtaSectionEditor({ register, errors }: any) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Heading</Label>
+        <Input {...register('ctaSection.heading')} placeholder="Ready to start your project?" />
+        {errors?.ctaSection?.heading && <p className="text-xs text-red-600 mt-1">{errors.ctaSection.heading.message}</p>}
+      </div>
+      <div>
+        <Label>Description</Label>
+        <Textarea {...register('ctaSection.description')} rows={2} placeholder="Let's build something amazing together..." />
+        {errors?.ctaSection?.description && <p className="text-xs text-red-600 mt-1">{errors.ctaSection.description.message}</p>}
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 border border-gray-100 bg-gray-50 rounded-lg space-y-3">
+          <h4 className="font-semibold text-gray-800 text-sm">Primary Button (Button 1)</h4>
+          <div>
+            <Label>Name</Label>
+            <Input {...register('ctaSection.button1Name')} placeholder="Get Started" />
+          </div>
+          <div>
+            <Label>Directory / Slug</Label>
+            <Input {...register('ctaSection.button1Slug')} placeholder="/contact" />
+          </div>
+        </div>
+        <div className="p-4 border border-gray-100 bg-gray-50 rounded-lg space-y-3">
+          <h4 className="font-semibold text-gray-800 text-sm">Secondary Button (Button 2)</h4>
+          <div>
+            <Label>Name</Label>
+            <Input {...register('ctaSection.button2Name')} placeholder="View Portfolio" />
+          </div>
+          <div>
+            <Label>Directory / Slug</Label>
+            <Input {...register('ctaSection.button2Slug')} placeholder="/projects" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -507,6 +566,7 @@ export default function ServiceForm({ initialData, mode }: { initialData?: any; 
         sectionType: initialData?.sectionType || 'technologies',
         techSection: safeParseJson<FormValues['techSection']>(initialData?.techSection, { heading: '', categories: [] }),
         toolsSection: safeParseJson<FormValues['toolsSection']>(initialData?.toolsSection, { heading: '', description: '', categories: [] }),
+        ctaSection: safeParseJson<FormValues['ctaSection']>(initialData?.ctaSection, { heading: '', description: '', button1Name: '', button1Slug: '', button2Name: '', button2Slug: '' }),
         sort_order: initialData?.sort_order || 0,
         status: initialData?.status || 'draft',
         featured: initialData?.featured || false,
@@ -543,6 +603,7 @@ export default function ServiceForm({ initialData, mode }: { initialData?: any; 
         processSteps: JSON.stringify(data.processSteps || []),
         techSection: JSON.stringify(data.techSection || null),
         toolsSection: JSON.stringify(data.toolsSection || null),
+        ctaSection: JSON.stringify(data.ctaSection || null),
         status,
       };
       
@@ -710,6 +771,11 @@ export default function ServiceForm({ initialData, mode }: { initialData?: any; 
                 <ToolsSectionEditor control={control} register={register} errors={errors} />
               </Card>
             )}
+
+            {/* CTA Section */}
+            <Card title="Call to Action Section">
+              <CtaSectionEditor register={register} errors={errors} />
+            </Card>
 
             {/* SEO */}
             <Card title="SEO Settings" defaultOpen={false}>

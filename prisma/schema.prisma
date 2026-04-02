@@ -218,6 +218,9 @@ model Service {
   // Section B: Tools We Use
   toolsSection Json?   // ToolsSection
 
+  // CTA Section
+  ctaSection   Json?   // CtaSection
+
   // Publishing
   sort_order   Int      @default(0)
   status       String   @default("draft")  // "draft" | "published" | "archived"

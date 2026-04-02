@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import SectionBadge from "../ui/SectionBadge";
+import DynamicIcon from "../ui/DynamicIcon";
 
 interface TechCategory {
+  icon?: string;
   name: string;
   items: string[];
 }
@@ -20,6 +23,9 @@ export default function TechMasterySection({ data }: TechMasterySectionProps) {
   return (
     <section className="w-full bg-white py-20 px-4 md:px-8">
       <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-12">
+        <SectionBadge 
+          label="Tools"
+        />
         <h2 className="font-bold text-[38px] text-[#2251B5] font-['Plus_Jakarta_Sans',sans-serif] leading-tight text-center">
           {data.heading}
         </h2>
@@ -34,14 +40,22 @@ export default function TechMasterySection({ data }: TechMasterySectionProps) {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className={`flex flex-col gap-4 p-6 rounded-3xl border border-[#E0E0E0] hover:shadow-lg transition-shadow bg-white`}
             >
-              <h3 className="font-bold text-xl text-[#101828] font-['Inter',sans-serif]">
+              <h3 
+                className={`font-bold text-xl ${
+                  index % 2 === 0 ? "text-[#E96429]" : "text-[#2251B5]"
+                } font-['Inter',sans-serif] mb-2`}
+              >
                 {category.name}
               </h3>
               
               <div className="flex flex-col gap-3">
                 {category.items.map((tech, tIndex) => (
                   <div key={tIndex} className="flex items-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#E96429]" />
+                    {category.icon ? (
+                      <DynamicIcon name={category.icon} className="w-5 h-5 text-[#99A1AF] shrink-0" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#E96429] shrink-0" />
+                    )}
                     <span className="text-base text-[#4A5565] font-['Inter',sans-serif]">
                       {tech}
                     </span>

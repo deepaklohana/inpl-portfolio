@@ -233,6 +233,9 @@ export default function AdminListClient({ items, section, columns, hasStatus = t
                         currentStatus={row.status}
                         contentType={section as any}
                         publishedAt={row.published_at}
+                        onSuccess={(newStatus) => {
+                          setRows(prev => prev.map(r => r.id === row.id ? { ...r, status: newStatus } : r));
+                        }}
                       />
                     )}
                   </td>

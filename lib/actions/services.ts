@@ -31,6 +31,7 @@ export interface ProcessStep {
 }
 
 export interface TechCategory {
+  icon?: string;
   name: string;
   items: string[];
 }
@@ -77,6 +78,7 @@ export interface ServiceFormData {
   sectionType?: string;    // "technologies" | "tools"
   techSection?: string;    // JSON string → TechSection
   toolsSection?: string;   // JSON string → ToolsSection
+  ctaSection?: string;     // JSON string -> CtaSection
   // Publishing
   sort_order?: number;
   status: 'draft' | 'published' | 'archived';
@@ -115,7 +117,16 @@ function parseJsonField(val: string | undefined, fieldName: string): Prisma.Inpu
 }
 
 function getErrorMessage(e: unknown): string {
-  if (e instanceof Error) return e.message;
+  if (e instanceof Error) {
+    if (
+      e.name === 'PrismaClientValidationError' ||
+      e.message.includes('Invalid `prisma.') ||
+      e.message.includes('Unknown argument')
+    ) {
+      return 'A database schema error occurred. The system might be out of sync. Please run prisma generate and db push.';
+    }
+    return e.message;
+  }
   return 'Request failed';
 }
 
@@ -188,6 +199,14 @@ function validateServiceFormData(formData: ServiceFormData): ValidationResult | 
       JSON.parse(formData.toolsSection);
     } catch {
       return { success: false, error: 'Invalid JSON in toolsSection' };
+    }
+  }
+
+  if (formData.ctaSection && formData.ctaSection.trim() !== '') {
+    try {
+      JSON.parse(formData.ctaSection);
+    } catch {
+      return { success: false, error: 'Invalid JSON in ctaSection' };
     }
   }
 
@@ -320,6 +339,7 @@ export async function createService(formData: ServiceFormData) {
         sectionType: normaliseSectionType(formData.sectionType),
         techSection: parseJsonField(formData.techSection, 'techSection'),
         toolsSection: parseJsonField(formData.toolsSection, 'toolsSection'),
+        ctaSection: parseJsonField(formData.ctaSection, 'ctaSection'),
         sort_order: formData.sort_order ?? 0,
         status: formData.status,
         featured: formData.featured,
@@ -410,6 +430,7 @@ export async function updateService(id: string | number, formData: ServiceFormDa
         sectionType: normaliseSectionType(formData.sectionType),
         techSection: parseJsonField(formData.techSection, 'techSection'),
         toolsSection: parseJsonField(formData.toolsSection, 'toolsSection'),
+        ctaSection: parseJsonField(formData.ctaSection, 'ctaSection'),
         sort_order: formData.sort_order ?? 0,
         status: formData.status,
         featured: formData.featured,

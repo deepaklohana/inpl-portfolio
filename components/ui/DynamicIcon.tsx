@@ -11,6 +11,8 @@ import { SiNextdotjs, SiTailwindcss, SiTypescript, SiFigma, SiVercel, SiNestjs, 
 import { TbBrandAdobeXd,TbBrandAdobeAfterEffect,TbBrandAdobeIllustrator,TbBrandAdobePhotoshop } from "react-icons/tb";
 import { PiSketchLogoLight } from "react-icons/pi";
 import { RiInvisionLine } from "react-icons/ri";
+import { RxSketchLogo } from "react-icons/rx";
+
 
 
 
@@ -45,10 +47,13 @@ export const iconRegistry: Record<string, React.ElementType> = {
   TbBrandAdobePhotoshop,
 
   // Pi
-  PiSketchLogoLight,
+  PiSketchLogoLight, 
 
   // Ri
   RiInvisionLine,
+
+  // Rx
+  RxSketchLogo,
 };
 
 // ============================================================================

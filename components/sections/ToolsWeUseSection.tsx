@@ -49,8 +49,7 @@ export default function ToolsWeUseSection({ data }: ToolsWeUseSectionProps) {
         {/* Section Header */}
         <div className="flex flex-col items-center text-center gap-4 max-w-[672px] mx-auto">
           <SectionBadge 
-            label="Tools" 
-            icon={<div className="w-2 h-2 rounded-full bg-[#E96429]" />} 
+            label="Tools"
           />
           <h2 className="font-bold text-[38px] text-[#2251B5] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
             {data.heading || "Tools We Use"}

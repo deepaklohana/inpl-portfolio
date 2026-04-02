@@ -16,6 +16,7 @@ import DetailedServicesGrid, { DetailedServiceItem } from '@/components/sections
 import SimpleProcessSection, { ProcessStep as SimpleProcessStep } from '@/components/sections/SimpleProcessSection';
 import TechMasterySection from '@/components/sections/TechMasterySection';
 import ToolsWeUseSection from '@/components/sections/ToolsWeUseSection';
+import InnerServiceCTASection from '@/components/sections/InnerServiceCTASection';
 import DynamicIcon from '@/components/ui/DynamicIcon';
 
 export const dynamic = 'force-dynamic';
@@ -64,6 +65,14 @@ export default async function ServicePage({
   const processSteps = srv.processSteps as ProcessStep[] | null;
   const techSection = srv.techSection as TechSection | null;
   const toolsSection = srv.toolsSection as ToolsSection | null;
+  const ctaSection = srv.ctaSection as {
+    heading?: string;
+    description?: string;
+    button1Name?: string;
+    button1Slug?: string;
+    button2Name?: string;
+    button2Slug?: string;
+  } | null;
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -91,20 +100,14 @@ export default async function ServicePage({
   }
 
   // Map sub-services to DetailedServiceItem format
-  const mappedSubServices: DetailedServiceItem[] | null = subServices?.map((sub, index) => {
-    const isFirst = index === 0;
+  const mappedSubServices: DetailedServiceItem[] | null = subServices?.map((sub) => {
     return {
       id: sub.name,
       title: sub.name,
       description: sub.description || sub.shortDescription || "",
       icon: <DynamicIcon name={sub.icon} className="w-8 h-8 text-white" />,
-      iconBg: isFirst ? "bg-[#E96429]" : "bg-[#2251B5]",
-      badgeIcon: <div className={`w-2 h-2 rounded-full ${isFirst ? "bg-[#E96429]" : "bg-[#2251B5]"}`} />,
       features: sub.features || [],
       techStack: sub.technologies || [],
-      themePrimary: isFirst ? "#E96429" : "#2251B5",
-      themeSecondary: isFirst ? "#FFEDE5" : "#F0F4FF",
-      borderActive: isFirst ? "border-[#E96429]" : "border-[#E0E0E0]",
     };
   }) || null;
 
@@ -127,7 +130,7 @@ export default async function ServicePage({
 
       <ServicesHero
         badgeText={pillText || "Our Services"}
-        badgeIcon={<div className="w-2 h-2 rounded-full bg-[#E96429]" />}
+        badgeIcon={service.icon ? <DynamicIcon name={service.icon} className="w-4 h-4 text-[#E96429]" /> : <div className="w-2 h-2 rounded-full bg-[#E96429]" />}
         title={titleNode}
         description={service.description || undefined}
         primaryButtonText="Get Started"
@@ -163,6 +166,17 @@ export default async function ServicePage({
 
       {sectionType === 'tools' && toolsSection && (
         <ToolsWeUseSection data={toolsSection} />
+      )}
+
+      {ctaSection && (ctaSection.heading || ctaSection.description) && (
+        <InnerServiceCTASection
+          title={ctaSection.heading || "Let's Create Something Beautiful"}
+          description={ctaSection.description || "Transform your vision into stunning designs that users love"}
+          primaryButtonText={ctaSection.button1Name || "Start Your Design Project"}
+          primaryButtonSlug={ctaSection.button1Slug || "/contact"}
+          secondaryButtonText={ctaSection.button2Name || "Explore All Services"}
+          secondaryButtonSlug={ctaSection.button2Slug || "/services"}
+        />
       )}
     </>
   );
