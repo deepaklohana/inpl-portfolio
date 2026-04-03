@@ -28,11 +28,6 @@ export interface EventFormData {
   no_index?: boolean;
 }
 
-function parseArray(val?: string): string[] {
-  if (!val) return [];
-  return val.split(',').map(s => s.trim()).filter(Boolean);
-}
-
 function getErrorMessage(e: unknown) {
   if (e instanceof Error) return e.message;
   return 'Request failed';
@@ -40,12 +35,15 @@ function getErrorMessage(e: unknown) {
 
 export async function getEvents(options?: { status?: string; limit?: number; offset?: number }) {
   try {
-    const data = await prisma.event.findMany({
-      where: options?.status ? { status: options.status } : undefined,
+    const data = await prisma.article.findMany({
+      where: {
+        type: 'event',
+        ...(options?.status ? { status: options.status } : {})
+      },
       take: options?.limit,
       skip: options?.offset,
-      orderBy: { event_date: 'desc' },
-      include: { seo_metadata: true }
+      orderBy: { eventDate: 'desc' },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -56,9 +54,9 @@ export async function getEvents(options?: { status?: string; limit?: number; off
 
 export async function getEventById(id: string) {
   try {
-    const data = await prisma.event.findUnique({
-      where: { id: parseInt(id, 10) },
-      include: { seo_metadata: true }
+    const data = await prisma.article.findUnique({
+      where: { id },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -69,9 +67,9 @@ export async function getEventById(id: string) {
 
 export async function getEventBySlug(slug: string) {
   try {
-    const data = await prisma.event.findFirst({
-      where: { slug, status: 'published' },
-      include: { seo_metadata: true }
+    const data = await prisma.article.findFirst({
+      where: { type: 'event', slug, status: 'published' },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -82,7 +80,7 @@ export async function getEventBySlug(slug: string) {
 
 export async function createEvent(formData: EventFormData) {
   try {
-    let seo_id = null;
+    let seoId = null;
     const hasSeoData = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
     if (hasSeoData) {
       const seoData = await prisma.seoMetadata.create({
@@ -94,28 +92,28 @@ export async function createEvent(formData: EventFormData) {
           no_index: formData.no_index || false,
         }
       });
-      seo_id = seoData.id;
+      seoId = seoData.id;
     }
 
-    const eventData = await prisma.event.create({
+    const eventData = await prisma.article.create({
       data: {
+        type: 'event',
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
-        description: formData.description || null,
-        cover_image: formData.cover_image || null,
-        event_date: formData.event_date ? new Date(formData.event_date) : null,
-        end_date: formData.end_date ? new Date(formData.end_date) : null,
+        content: formData.description || null,
+        coverImage: formData.cover_image || null,
+        eventDate: formData.event_date ? new Date(formData.event_date) : null,
+        eventEndDate: formData.end_date ? new Date(formData.end_date) : null,
         location: formData.location || null,
-        location_url: formData.location_url || null,
-        is_online: formData.is_online,
-        event_url: formData.event_url || null,
-        registration_url: formData.registration_url || null,
-        gallery: parseArray(formData.gallery),
+        locationUrl: formData.location_url || null,
+        isOnline: formData.is_online,
+        eventUrl: formData.event_url || null,
+        registrationUrl: formData.registration_url || null,
         status: formData.status,
         featured: formData.featured,
-        seo_id: seo_id,
-        published_at: formData.status === 'published' ? new Date() : null,
+        seoId: seoId,
+        publishedAt: formData.status === 'published' ? new Date() : null,
       }
     });
 
@@ -135,20 +133,20 @@ export async function createEvent(formData: EventFormData) {
 
 export async function updateEvent(id: string, formData: EventFormData) {
   try {
-    const existing = await prisma.event.findUnique({
-      where: { id: parseInt(id, 10) },
-      select: { seo_id: true }
+    const existing = await prisma.article.findUnique({
+      where: { id },
+      select: { seoId: true }
     });
 
     if (!existing) return { success: false, error: 'Event not found' };
 
-    let seo_id = existing.seo_id;
+    let seoId = existing.seoId;
     const hasSeo = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
     
     if (hasSeo) {
-      if (seo_id) {
+      if (seoId) {
         await prisma.seoMetadata.update({
-          where: { id: seo_id },
+          where: { id: seoId },
           data: {
             meta_title: formData.meta_title || null,
             meta_description: formData.meta_description || null,
@@ -167,30 +165,29 @@ export async function updateEvent(id: string, formData: EventFormData) {
             no_index: formData.no_index || false,
           }
         });
-        seo_id = newSeo.id;
+        seoId = newSeo.id;
       }
     }
 
-    await prisma.event.update({
-      where: { id: parseInt(id, 10) },
+    await prisma.article.update({
+      where: { id },
       data: {
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
-        description: formData.description || null,
-        cover_image: formData.cover_image || null,
-        event_date: formData.event_date ? new Date(formData.event_date) : null,
-        end_date: formData.end_date ? new Date(formData.end_date) : null,
+        content: formData.description || null,
+        coverImage: formData.cover_image || null,
+        eventDate: formData.event_date ? new Date(formData.event_date) : null,
+        eventEndDate: formData.end_date ? new Date(formData.end_date) : null,
         location: formData.location || null,
-        location_url: formData.location_url || null,
-        is_online: formData.is_online,
-        event_url: formData.event_url || null,
-        registration_url: formData.registration_url || null,
-        gallery: parseArray(formData.gallery),
+        locationUrl: formData.location_url || null,
+        isOnline: formData.is_online,
+        eventUrl: formData.event_url || null,
+        registrationUrl: formData.registration_url || null,
         status: formData.status,
         featured: formData.featured,
-        seo_id: seo_id,
-        published_at: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
+        seoId: seoId,
+        publishedAt: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
       }
     });
 
@@ -210,18 +207,18 @@ export async function updateEvent(id: string, formData: EventFormData) {
 
 export async function deleteEvent(id: string) {
   try {
-    const data = await prisma.event.findUnique({
-      where: { id: parseInt(id, 10) },
-      select: { seo_id: true }
+    const data = await prisma.article.findUnique({
+      where: { id },
+      select: { seoId: true }
     });
 
-    await prisma.event.delete({
-      where: { id: parseInt(id, 10) }
+    await prisma.article.delete({
+      where: { id }
     });
 
-    if (data?.seo_id) {
+    if (data?.seoId) {
       await prisma.seoMetadata.delete({
-        where: { id: data.seo_id }
+        where: { id: data.seoId }
       });
     }
 
@@ -242,15 +239,15 @@ export async function toggleEventStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const data = await prisma.event.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
+      const data = await prisma.article.findUnique({ where: { id }, select: { slug: true } });
       resolvedSlug = data?.slug || undefined;
     }
     
-    await prisma.event.update({
-      where: { id: parseInt(id, 10) },
+    await prisma.article.update({
+      where: { id },
       data: {
         status,
-        published_at: status === 'published' ? new Date() : null
+        publishedAt: status === 'published' ? new Date() : null
       }
     });
 

@@ -31,12 +31,15 @@ function getErrorMessage(e: unknown) {
 
 export async function getNews(options?: { status?: string; limit?: number; offset?: number }) {
   try {
-    const data = await prisma.news.findMany({
-      where: options?.status ? { status: options.status } : undefined,
+    const data = await prisma.article.findMany({
+      where: {
+        type: 'news',
+        ...(options?.status ? { status: options.status } : {})
+      },
       take: options?.limit,
       skip: options?.offset,
-      orderBy: { created_at: 'desc' },
-      include: { seo_metadata: true }
+      orderBy: { createdAt: 'desc' },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -47,9 +50,9 @@ export async function getNews(options?: { status?: string; limit?: number; offse
 
 export async function getNewsById(id: string) {
   try {
-    const data = await prisma.news.findUnique({
-      where: { id: parseInt(id, 10) },
-      include: { seo_metadata: true }
+    const data = await prisma.article.findUnique({
+      where: { id },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -60,9 +63,9 @@ export async function getNewsById(id: string) {
 
 export async function getNewsBySlug(slug: string) {
   try {
-    const data = await prisma.news.findFirst({
-      where: { slug, status: 'published' },
-      include: { seo_metadata: true }
+    const data = await prisma.article.findFirst({
+      where: { type: 'news', slug, status: 'published' },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -73,7 +76,7 @@ export async function getNewsBySlug(slug: string) {
 
 export async function createNews(formData: NewsFormData) {
   try {
-    let seo_id = null;
+    let seoId = null;
     const hasSeoData = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
     if (hasSeoData) {
       const seoData = await prisma.seoMetadata.create({
@@ -85,24 +88,24 @@ export async function createNews(formData: NewsFormData) {
           no_index: formData.no_index || false,
         }
       });
-      seo_id = seoData.id;
+      seoId = seoData.id;
     }
 
-    const newsData = await prisma.news.create({
+    const newsData = await prisma.article.create({
       data: {
+        type: 'news',
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
         content: formData.content || null,
-        cover_image: formData.cover_image || null,
-        source_url: formData.source_url || null,
+        coverImage: formData.cover_image || null,
         category: formData.category || null,
-        tags: formData.tags || null,
-        author_name: formData.author_name || null,
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
+        authorName: formData.author_name || null,
         status: formData.status,
         featured: formData.featured,
-        seo_id: seo_id,
-        published_at: formData.status === 'published' ? new Date() : null,
+        seoId: seoId,
+        publishedAt: formData.status === 'published' ? new Date() : null,
       }
     });
 
@@ -122,20 +125,20 @@ export async function createNews(formData: NewsFormData) {
 
 export async function updateNews(id: string, formData: NewsFormData) {
   try {
-    const existing = await prisma.news.findUnique({
-      where: { id: parseInt(id, 10) },
-      select: { seo_id: true }
+    const existing = await prisma.article.findUnique({
+      where: { id },
+      select: { seoId: true }
     });
 
     if (!existing) return { success: false, error: 'News not found' };
 
-    let seo_id = existing.seo_id;
+    let seoId = existing.seoId;
     const hasSeo = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
     
     if (hasSeo) {
-      if (seo_id) {
+      if (seoId) {
         await prisma.seoMetadata.update({
-          where: { id: seo_id },
+          where: { id: seoId },
           data: {
             meta_title: formData.meta_title || null,
             meta_description: formData.meta_description || null,
@@ -154,26 +157,25 @@ export async function updateNews(id: string, formData: NewsFormData) {
             no_index: formData.no_index || false,
           }
         });
-        seo_id = newSeo.id;
+        seoId = newSeo.id;
       }
     }
 
-    await prisma.news.update({
-      where: { id: parseInt(id, 10) },
+    await prisma.article.update({
+      where: { id },
       data: {
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
         content: formData.content || null,
-        cover_image: formData.cover_image || null,
-        source_url: formData.source_url || null,
+        coverImage: formData.cover_image || null,
         category: formData.category || null,
-        tags: formData.tags || null,
-        author_name: formData.author_name || null,
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
+        authorName: formData.author_name || null,
         status: formData.status,
         featured: formData.featured,
-        seo_id: seo_id,
-        published_at: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
+        seoId: seoId,
+        publishedAt: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
       }
     });
 
@@ -193,18 +195,18 @@ export async function updateNews(id: string, formData: NewsFormData) {
 
 export async function deleteNews(id: string) {
   try {
-    const data = await prisma.news.findUnique({
-      where: { id: parseInt(id, 10) },
-      select: { seo_id: true }
+    const data = await prisma.article.findUnique({
+      where: { id },
+      select: { seoId: true }
     });
 
-    await prisma.news.delete({
-      where: { id: parseInt(id, 10) }
+    await prisma.article.delete({
+      where: { id }
     });
 
-    if (data?.seo_id) {
+    if (data?.seoId) {
       await prisma.seoMetadata.delete({
-        where: { id: data.seo_id }
+        where: { id: data.seoId }
       });
     }
 
@@ -225,15 +227,15 @@ export async function toggleNewsStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const data = await prisma.news.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
+      const data = await prisma.article.findUnique({ where: { id }, select: { slug: true } });
       resolvedSlug = data?.slug || undefined;
     }
     
-    await prisma.news.update({
-      where: { id: parseInt(id, 10) },
+    await prisma.article.update({
+      where: { id },
       data: {
         status,
-        published_at: status === 'published' ? new Date() : null
+        publishedAt: status === 'published' ? new Date() : null
       }
     });
 

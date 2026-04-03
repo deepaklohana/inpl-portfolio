@@ -11,11 +11,11 @@ import Button from '@/components/ui/Button';
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const news = await prisma.news.findMany({
-    where: { status: 'published' },
+  const news = await prisma.article.findMany({
+    where: { type: 'news', status: 'published' },
     select: { slug: true },
   });
-  return news.map((n) => ({ slug: n.slug }));
+  return news.map((n: { slug: string }) => ({ slug: n.slug }));
 }
 
 export async function generateMetadata({
@@ -24,24 +24,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const news = await prisma.news.findUnique({
-    where: { slug },
-    include: { seo_metadata: true },
+  const news = await prisma.article.findFirst({
+    where: { slug, type: 'news' },
+    include: { seo: true },
   });
 
   if (!news || news.status !== 'published') return {};
 
-  const seo = news.seo_metadata;
+  const seo = news.seo;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
   return buildMetadata({
     title: seo?.meta_title ?? news.title,
     description: seo?.meta_description ?? news.excerpt ?? undefined,
-    image: seo?.og_image ?? news.cover_image ?? undefined,
+    image: seo?.og_image ?? news.coverImage ?? undefined,
     url: `${baseUrl}/news/${news.slug}`,
     type: 'article',
-    publishedAt: news.published_at?.toISOString(),
-    keywords: seo?.keywords ? seo.keywords.split(',').map((k) => k.trim()) : undefined,
+    publishedAt: news.publishedAt?.toISOString(),
+    keywords: seo?.keywords ? seo.keywords.split(',').map((k: string) => k.trim()) : undefined,
     noIndex: seo?.no_index || false,
   });
 }
@@ -52,9 +52,9 @@ export default async function NewsArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const news = await prisma.news.findUnique({
-    where: { slug },
-    include: { seo_metadata: true },
+  const news = await prisma.article.findFirst({
+    where: { slug, type: 'news' },
+    include: { seo: true },
   });
 
   if (!news || news.status !== 'published') notFound();
@@ -65,12 +65,11 @@ export default async function NewsArticlePage({
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: news.title,
-    image: news.cover_image,
-    author: { '@type': 'Person', name: news.author_name || 'Company Name' },
-    datePublished: news.published_at,
-    dateModified: news.updated_at,
+    image: news.coverImage,
+    author: { '@type': 'Person', name: news.authorName || 'Company Name' },
+    datePublished: news.publishedAt,
+    dateModified: news.updatedAt,
     url: `${baseUrl}/news/${news.slug}`,
-    ...(news.source_url && { isBasedOn: news.source_url }),
   };
 
   return (

@@ -33,12 +33,15 @@ function getErrorMessage(e: unknown) {
 
 export async function getBlogs(options?: { status?: string; limit?: number; offset?: number }) {
   try {
-    const data = await prisma.blog.findMany({
-      where: options?.status ? { status: options.status } : undefined,
+    const data = await prisma.article.findMany({
+      where: {
+        type: 'blog',
+        ...(options?.status ? { status: options.status } : {})
+      },
       take: options?.limit,
       skip: options?.offset,
-      orderBy: { created_at: 'desc' },
-      include: { seo_metadata: true }
+      orderBy: { createdAt: 'desc' },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -49,9 +52,9 @@ export async function getBlogs(options?: { status?: string; limit?: number; offs
 
 export async function getBlogById(id: string) {
   try {
-    const data = await prisma.blog.findUnique({
-      where: { id: parseInt(id, 10) },
-      include: { seo_metadata: true }
+    const data = await prisma.article.findUnique({
+      where: { id },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -62,9 +65,9 @@ export async function getBlogById(id: string) {
 
 export async function getBlogBySlug(slug: string) {
   try {
-    const data = await prisma.blog.findFirst({
-      where: { slug, status: 'published' },
-      include: { seo_metadata: true }
+    const data = await prisma.article.findFirst({
+      where: { type: 'blog', slug, status: 'published' },
+      include: { seo: true }
     });
     return data;
   } catch (error) {
@@ -75,7 +78,7 @@ export async function getBlogBySlug(slug: string) {
 
 export async function createBlog(formData: BlogFormData) {
   try {
-    let seo_id = null;
+    let seoId = null;
 
     // Check if SEO fields present
     const hasSeoData = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
@@ -89,24 +92,25 @@ export async function createBlog(formData: BlogFormData) {
           no_index: formData.no_index || false,
         }
       });
-      seo_id = seoData.id;
+      seoId = seoData.id;
     }
 
-    const blogData = await prisma.blog.create({
+    const blogData = await prisma.article.create({
       data: {
+        type: 'blog',
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
         content: formData.content || null,
-        cover_image: formData.cover_image || null,
-        author_name: formData.author_name || null,
-        author_image: formData.author_image || null,
+        coverImage: formData.cover_image || null,
+        authorName: formData.author_name || null,
+        authorImage: formData.author_image || null,
         category: formData.category || null,
-        tags: formData.tags || null,
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         status: formData.status,
         featured: formData.featured,
-        seo_id: seo_id,
-        published_at: formData.status === 'published' ? new Date() : null,
+        seoId: seoId,
+        publishedAt: formData.status === 'published' ? new Date() : null,
       }
     });
 
@@ -126,23 +130,23 @@ export async function createBlog(formData: BlogFormData) {
 
 export async function updateBlog(id: string, formData: BlogFormData) {
   try {
-    const existingBlog = await prisma.blog.findUnique({
-      where: { id: parseInt(id, 10) },
-      select: { seo_id: true }
+    const existingBlog = await prisma.article.findUnique({
+      where: { id },
+      select: { seoId: true }
     });
 
     if (!existingBlog) {
       return { success: false, error: 'Blog not found' };
     }
 
-    let seo_id = existingBlog.seo_id;
+    let seoId = existingBlog.seoId;
     const hasSeoData = formData.meta_title || formData.meta_description || formData.og_image || formData.keywords || formData.no_index;
 
     if (hasSeoData) {
-      if (seo_id) {
+      if (seoId) {
         // Update existing SEO metadata
         await prisma.seoMetadata.update({
-          where: { id: seo_id },
+          where: { id: seoId },
           data: {
             meta_title: formData.meta_title || null,
             meta_description: formData.meta_description || null,
@@ -162,26 +166,26 @@ export async function updateBlog(id: string, formData: BlogFormData) {
             no_index: formData.no_index || false,
           }
         });
-        seo_id = newSeo.id;
+        seoId = newSeo.id;
       }
     }
 
-    await prisma.blog.update({
-      where: { id: parseInt(id, 10) },
+    await prisma.article.update({
+      where: { id },
       data: {
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
         content: formData.content || null,
-        cover_image: formData.cover_image || null,
-        author_name: formData.author_name || null,
-        author_image: formData.author_image || null,
+        coverImage: formData.cover_image || null,
+        authorName: formData.author_name || null,
+        authorImage: formData.author_image || null,
         category: formData.category || null,
-        tags: formData.tags || null,
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         status: formData.status,
         featured: formData.featured,
-        seo_id: seo_id,
-        published_at: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
+        seoId: seoId,
+        publishedAt: formData.status === 'published' ? new Date() : (formData.status === 'draft' ? null : undefined),
       }
     });
 
@@ -201,18 +205,18 @@ export async function updateBlog(id: string, formData: BlogFormData) {
 
 export async function deleteBlog(id: string) {
   try {
-    const blog = await prisma.blog.findUnique({
-      where: { id: parseInt(id, 10) },
-      select: { seo_id: true }
+    const blog = await prisma.article.findUnique({
+      where: { id },
+      select: { seoId: true }
     });
 
-    await prisma.blog.delete({
-      where: { id: parseInt(id, 10) }
+    await prisma.article.delete({
+      where: { id }
     });
 
-    if (blog?.seo_id) {
+    if (blog?.seoId) {
       await prisma.seoMetadata.delete({
-        where: { id: blog.seo_id }
+        where: { id: blog.seoId }
       });
     }
 
@@ -233,15 +237,15 @@ export async function toggleBlogStatus(
   try {
     let resolvedSlug = slug;
     if (!resolvedSlug) {
-      const blog = await prisma.blog.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
+      const blog = await prisma.article.findUnique({ where: { id }, select: { slug: true } });
       resolvedSlug = blog?.slug || undefined;
     }
 
-    await prisma.blog.update({
-      where: { id: parseInt(id, 10) },
+    await prisma.article.update({
+      where: { id },
       data: {
         status,
-        published_at: status === 'published' ? new Date() : null
+        publishedAt: status === 'published' ? new Date() : null
       }
     });
 

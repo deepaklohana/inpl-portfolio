@@ -5,8 +5,6 @@ import ERPHRMSection from "@/components/sections/ERPHRMSection";
 import ERPCRMSection from "@/components/sections/ERPCRMSection";
 import ERPWhyChooseSection from "@/components/sections/ERPWhyChooseSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
-import { getTestimonialsByProjectId } from "@/lib/actions/testimonials";
-import { getProjectBySlug } from "@/lib/actions/projects";
 import { getProductBySlug } from "@/lib/actions/products";
 import { Metadata } from "next";
 import TeamStatsSection from "@/components/sections/TeamStatsSection";

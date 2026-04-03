@@ -4,18 +4,18 @@ import { prisma } from '@/lib/prisma';
 export const revalidate = 3600;
 
 export default async function BlogListPage() {
-  const blogs = await prisma.blog.findMany({
+  const blogs = await prisma.article.findMany({
     where: { status: 'published' },
     select: {
       id: true,
       title: true,
       slug: true,
       excerpt: true,
-      cover_image: true,
-      published_at: true,
-      created_at: true,
+      coverImage: true,
+      publishedAt: true,
+      createdAt: true,
     },
-    orderBy: [{ published_at: 'desc' }, { created_at: 'desc' }],
+    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
   });
 
   return (
@@ -30,16 +30,16 @@ export default async function BlogListPage() {
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         {blogs.map((b) => (
           <article key={b.id} className="border border-gray-100 bg-white rounded-xl overflow-hidden shadow-sm">
-            {b.cover_image ? (
-              <img src={b.cover_image} alt={b.title} className="h-44 w-full object-cover" />
+            {b.coverImage ? (
+              <img src={b.coverImage} alt={b.title} className="h-44 w-full object-cover" />
             ) : (
               <div className="h-44 w-full bg-gray-100" />
             )}
             <div className="p-5">
               <h2 className="text-lg font-semibold text-gray-900 line-clamp-2">{b.title}</h2>
-              {b.published_at ? (
+              {b.publishedAt ? (
                 <p className="mt-2 text-xs text-gray-500">
-                  {new Date(b.published_at).toLocaleDateString()}
+                  {new Date(b.publishedAt).toLocaleDateString()}
                 </p>
               ) : null}
               {b.excerpt ? <p className="mt-3 text-sm text-gray-600 line-clamp-3">{b.excerpt}</p> : null}
