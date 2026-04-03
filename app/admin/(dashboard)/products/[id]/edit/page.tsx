@@ -1,6 +1,4 @@
 import { getProductById } from '@/lib/actions/products';
-import { getTestimonialsByProjectId } from '@/lib/actions/testimonials';
-import { getProjectBySlugAny } from '@/lib/actions/projects';
 import ProductForm from '../../ProductForm';
 import { notFound } from 'next/navigation';
 
@@ -16,8 +14,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     notFound();
   }
 
-  const relatedProject = await getProjectBySlugAny(product.slug);
-  const testimonials = relatedProject ? await getTestimonialsByProjectId(relatedProject.id) : [];
+  const testimonials: any[] = [];
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">

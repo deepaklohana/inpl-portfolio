@@ -15,7 +15,6 @@ export interface TestimonialFormData {
   client_image?: string;
   content: string;
   rating: number;
-  project_id?: string;
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
   sort_order?: number;
@@ -48,11 +47,6 @@ export async function getTestimonials(options?: {
         },
         take,
         orderBy: [{ featured: 'desc' }, { sort_order: 'asc' }],
-        include: {
-          projects: {
-            select: { id: true, title: true },
-          },
-        },
       });
     }
 
@@ -67,13 +61,7 @@ export async function getTestimonials(options?: {
         orderBy: { sortOrder: 'asc' },
         take: 4,
         include: {
-          testimonial: {
-            include: {
-              projects: {
-                select: { id: true, title: true },
-              },
-            },
-          },
+          testimonial: true,
         },
       });
 
@@ -88,11 +76,6 @@ export async function getTestimonials(options?: {
       },
       take: options?.limit,
       orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
-      include: {
-        projects: {
-          select: { id: true, title: true },
-        },
-      },
     });
   } catch (error) {
     console.error('Error fetching testimonials:', error);
@@ -114,12 +97,6 @@ export async function getTestimonialsForAdmin() {
         status: true,
         featured: true,
         showOnPages: true,
-        projects: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
         products: {
           select: {
             product: {
@@ -145,8 +122,6 @@ export async function getTestimonialsForAdmin() {
       status: t.status,
       featured: t.featured,
       showOnPages: t.showOnPages,
-      projectId: t.projects?.id ? String(t.projects.id) : null,
-      projectTitle: t.projects?.title ?? null,
       products: t.products,
     }));
   } catch (error) {
@@ -261,8 +236,7 @@ export async function getServiceTestimonials(options?: { status?: string; limit?
     const status = options?.status ?? 'published';
     const take = Math.min(options?.limit ?? 4, 4);
 
-    // Primary query: page-based filtering
-    const primary = await prisma.testimonial.findMany({
+    return await prisma.testimonial.findMany({
       where: {
         showOnPages: { has: 'services' },
         status,
@@ -273,59 +247,9 @@ export async function getServiceTestimonials(options?: { status?: string; limit?
         { sort_order: 'asc' },
         { created_at: 'desc' },
       ],
-      include: {
-        projects: {
-          select: { id: true, title: true },
-        },
-      },
-    });
-
-    // Fallback so old content still shows during migration.
-    if (primary.length > 0) return primary;
-
-    return prisma.testimonial.findMany({
-      where: {
-        project_id: null,
-        status,
-      },
-      take,
-      skip: options?.offset,
-      orderBy: [
-        { sort_order: 'asc' },
-        { created_at: 'desc' },
-      ],
-      include: {
-        projects: {
-          select: { id: true, title: true },
-        },
-      },
     });
   } catch (error) {
     console.error('Error fetching service testimonials:', error)
-    return []
-  }
-}
-
-export async function getTestimonialsByProjectId(projectId: number, options?: { status?: string }) {
-  try {
-    const data = await prisma.testimonial.findMany({
-      where: {
-        project_id: projectId,
-        ...(options?.status ? { status: options.status } : {}),
-      },
-      orderBy: [
-        { sort_order: 'asc' },
-        { created_at: 'desc' },
-      ],
-      include: {
-        projects: {
-          select: { id: true, title: true },
-        },
-      },
-    })
-    return data
-  } catch (error) {
-    console.error('Error fetching testimonials by project id:', error)
     return []
   }
 }
@@ -347,13 +271,7 @@ export async function getProductTestimonialsForDisplay(
       skip: options?.offset,
       orderBy: { sortOrder: 'asc' },
       include: {
-        testimonial: {
-          include: {
-            projects: {
-              select: { id: true, title: true },
-            },
-          },
-        },
+        testimonial: true,
       },
     });
 
@@ -369,11 +287,6 @@ export async function getTestimonialById(id: string | number) {
   try {
     const data = await prisma.testimonial.findUnique({
       where: { id: numericId },
-      include: {
-        projects: {
-          select: { id: true, title: true }
-        }
-      }
     });
     return data;
   } catch (error) {
@@ -384,7 +297,6 @@ export async function getTestimonialById(id: string | number) {
 
 export async function createTestimonial(formData: TestimonialFormData) {
   try {
-    const parsedProjectId = formData.project_id ? Number(formData.project_id) : null
     const showOnPages = formData.showOnPages ?? []
     const uniquePages = Array.from(new Set(showOnPages.map((p) => String(p).trim()).filter(Boolean)))
 
@@ -399,7 +311,6 @@ export async function createTestimonial(formData: TestimonialFormData) {
         client_image: formData.client_image || null,
         content: formData.content,
         rating: formData.rating,
-        project_id: parsedProjectId,
         status: formData.status,
         featured: formData.featured,
         sort_order: formData.sort_order || 0,
@@ -422,7 +333,6 @@ export async function createTestimonial(formData: TestimonialFormData) {
 export async function updateTestimonial(id: string | number, formData: TestimonialFormData) {
   const numericId = typeof id === 'number' ? id : Number(id)
   try {
-    const parsedProjectId = formData.project_id ? Number(formData.project_id) : null
     const showOnPages = formData.showOnPages ?? []
     const uniquePages = Array.from(new Set(showOnPages.map((p) => String(p).trim()).filter(Boolean)))
 
@@ -437,7 +347,6 @@ export async function updateTestimonial(id: string | number, formData: Testimoni
         client_image: formData.client_image || null,
         content: formData.content,
         rating: formData.rating,
-        project_id: parsedProjectId,
         status: formData.status,
         featured: formData.featured,
         sort_order: formData.sort_order || 0,

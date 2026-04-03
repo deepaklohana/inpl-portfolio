@@ -28,7 +28,6 @@ const schema = z.object({
   client_image: z.string().optional().or(z.literal('')),
   content: z.string().min(1, 'Testimonial content is required'),
   rating: z.coerce.number().min(1).max(5).default(5),
-  project_id: z.string().optional().or(z.literal('')),
   status: z.enum(['draft', 'published', 'archived']),
   featured: z.boolean().default(false),
   sort_order: z.coerce.number().optional(),
@@ -39,12 +38,10 @@ type FormValues = z.infer<typeof schema>;
 export default function TestimonialForm({
   initialData,
   mode,
-  projects = [],
   pageCounts = {},
 }: {
   initialData?: any;
   mode: 'create' | 'edit';
-  projects?: { id: string; title: string }[];
   pageCounts?: Record<string, number>;
 }) {
   const router = useRouter();
@@ -57,7 +54,6 @@ export default function TestimonialForm({
       client_name: initialData?.client_name || '', client_title: initialData?.client_title || '',
       client_company: initialData?.client_company || '', company_type: initialData?.company_type || '', client_image: initialData?.client_image || '',
       content: initialData?.content || '', rating: initialData?.rating || 5,
-      project_id: initialData?.project_id || '',
       status: initialData?.status || 'draft', featured: initialData?.featured || false,
       sort_order: initialData?.sort_order || 0,
       showOnPages: Array.isArray(initialData?.showOnPages) ? initialData?.showOnPages : [],
@@ -162,15 +158,7 @@ export default function TestimonialForm({
             <textarea {...register('content')} rows={5} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="What did the client say?" />
             {errors.content && <p className="mt-1 text-sm text-red-600">{errors.content.message}</p>}
           </div>
-          {projects.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Related Project</label>
-              <select {...register('project_id')} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white">
-                <option value="">— None —</option>
-                {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-              </select>
-            </div>
-          )}
+
         </div>
 
         {/* SECTION: Display Settings */}

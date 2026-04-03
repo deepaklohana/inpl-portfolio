@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { toggleBlogStatus } from '@/lib/actions/blogs';
-import { toggleProjectStatus } from '@/lib/actions/projects';
 import { toggleEventStatus } from '@/lib/actions/events';
 import { toggleNewsStatus } from '@/lib/actions/news';
 import { toggleServiceStatus } from '@/lib/actions/services';
@@ -12,7 +11,7 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Loader2 } from 'lucide-react';
 
 type Status = 'draft' | 'published' | 'archived';
-type ContentType = 'blogs' | 'projects' | 'events' | 'news' | 'services';
+type ContentType = 'blogs' | 'events' | 'news' | 'services';
 
 type Props = {
   id: string;
@@ -32,7 +31,6 @@ type ToggleAction = (
 function getToggleAction(contentType: ContentType) {
   switch (contentType) {
     case 'blogs': return toggleBlogStatus;
-    case 'projects': return toggleProjectStatus;
     case 'events': return toggleEventStatus;
     case 'news': return toggleNewsStatus;
     case 'services': return toggleServiceStatus;

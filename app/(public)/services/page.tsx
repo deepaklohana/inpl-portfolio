@@ -29,7 +29,7 @@ export default async function ServicesPage() {
       <div className="min-h-screen flex items-center justify-center pt-24 bg-red-50 text-red-900 p-8">
         <div className="max-w-2xl">
           <h1 className="text-2xl font-bold mb-4">CRITICAL ERROR ON SERVICES PAGE</h1>
-          <p className="font-mono bg-white p-4 rounded border border-red-200 break-words">{errorMsg}</p>
+          <p className="font-mono bg-white p-4 rounded border border-red-200 wrap-break-word">{errorMsg}</p>
         </div>
       </div>
     );

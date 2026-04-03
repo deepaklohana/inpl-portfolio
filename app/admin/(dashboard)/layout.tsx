@@ -8,11 +8,8 @@ import AdminPageTransition from '@/components/animations/AdminPageTransition'
 import {
   LayoutDashboard,
   FileText,
-  Briefcase,
   Settings,
   MessageSquare,
-  Calendar,
-  Newspaper,
   Image as ImageIcon,
   LogOut,
   Hexagon,
@@ -34,7 +31,7 @@ export default async function AdminLayout({
 
   return (
     <AuthProvider session={session}>
-      <div className="flex min-h-screen bg-gray-50 text-gray-900 font-sans">
+      <div className="flex h-screen overflow-hidden bg-gray-50 text-gray-900 font-sans">
         {/* Sidebar */}
         <aside className="fixed inset-y-0 left-0 w-[260px] bg-white flex flex-col z-50 shadow-[4px_0_24px_rgba(0,0,0,0.03)] border-r border-[#F3F4F6]">
           <div className="p-6 border-b border-[#F3F4F6] flex items-center gap-3">
@@ -53,11 +50,8 @@ export default async function AdminLayout({
               <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Content</p>
             </div>
             
-            <NavLink href="/admin/blogs" icon={<FileText />}>
-              Blogs
-            </NavLink>
-            <NavLink href="/admin/projects" icon={<Briefcase />}>
-              Projects
+            <NavLink href="/admin/articles" icon={<FileText />}>
+              Articles
             </NavLink>
             <NavLink href="/admin/products" icon={<Layers />}>
               Products
@@ -67,12 +61,6 @@ export default async function AdminLayout({
             </NavLink>
             <NavLink href="/admin/testimonials" icon={<MessageSquare />}>
               Testimonials
-            </NavLink>
-            <NavLink href="/admin/events" icon={<Calendar />}>
-              Events
-            </NavLink>
-            <NavLink href="/admin/news" icon={<Newspaper />}>
-              News
             </NavLink>
             <NavLink href="/admin/faqs" icon={<HelpCircle />}>
               FAQs
@@ -117,10 +105,12 @@ export default async function AdminLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 ml-[260px] p-8 max-w-[1600px] overflow-x-hidden">
+        <main className="flex-1 ml-[260px] overflow-y-auto overflow-x-hidden h-screen">
+          <div className="p-8 max-w-[1600px]">
           <AdminPageTransition>
             {children}
           </AdminPageTransition>
+          </div>
         </main>
       </div>
     </AuthProvider>

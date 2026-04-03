@@ -40,7 +40,7 @@ export default function InnerServiceCTASection({
           className="flex flex-col items-center gap-4 w-full"
         >
           {/* Headline */}
-          <h2 className="font-bold text-[40px] md:text-[48px] leading-[1.25] text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-[-0.02em]">
+          <h2 className="font-bold text-[40px] md:text-[48px] leading-tight text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-[-0.02em]">
             {title}
           </h2>
 
@@ -69,7 +69,7 @@ export default function InnerServiceCTASection({
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="w-full flex items-center justify-center gap-3 px-[25px] py-[16px] bg-white rounded-[12px] shadow-[0px_8px_10px_-6px_rgba(0,0,0,0.1),0px_20px_25px_-5px_rgba(0,0,0,0.1)] font-semibold text-[16px] leading-[1.5] text-[#2251B5] font-['Inter',sans-serif]"
+                className="w-full flex items-center justify-center gap-3 px-[25px] py-[16px] bg-white rounded-[12px] shadow-[0px_8px_10px_-6px_rgba(0,0,0,0.1),0px_20px_25px_-5px_rgba(0,0,0,0.1)] font-semibold text-[16px] leading-normal text-[#2251B5] font-['Inter',sans-serif]"
               >
                 {primaryButtonText}
               </motion.button>
@@ -81,7 +81,7 @@ export default function InnerServiceCTASection({
               <motion.button
                 whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.1)" }}
                 whileTap={{ scale: 0.97 }}
-                className="w-full flex items-center justify-center border-2 border-white gap-2 px-[27px] py-[14px] rounded-[12px] font-semibold text-[16px] leading-[1.5] text-white font-['Inter',sans-serif]"
+                className="w-full flex items-center justify-center border-2 border-white gap-2 px-[27px] py-[14px] rounded-[12px] font-semibold text-[16px] leading-normal text-white font-['Inter',sans-serif]"
               >
                 {secondaryButtonText}
               </motion.button>

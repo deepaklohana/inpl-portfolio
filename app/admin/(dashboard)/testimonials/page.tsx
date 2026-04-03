@@ -6,8 +6,6 @@ import { Plus } from 'lucide-react';
 const VIEW_FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'services', label: 'Services Page' },
-  { value: 'project', label: 'Project Linked' },
-  { value: 'both', label: 'Services + Project' },
 ] as const;
 
 type PageProps = {
@@ -22,21 +20,16 @@ export default async function AdminTestimonialsPage(props: PageProps) {
   const filterPage = VIEW_FILTERS.some((p) => p.value === activePage) ? activePage : 'all';
 
   const hasServicesPage = (t: any) => Array.isArray(t.showOnPages) && t.showOnPages.includes('services');
-  const hasProjectLink = (t: any) => Boolean(t.projectId);
 
   const countForPage = (pageValue: string) => {
     if (pageValue === 'all') return testimonials.length;
     if (pageValue === 'services') return testimonials.filter((t: any) => hasServicesPage(t)).length;
-    if (pageValue === 'project') return testimonials.filter((t: any) => hasProjectLink(t)).length;
-    if (pageValue === 'both') return testimonials.filter((t: any) => hasServicesPage(t) && hasProjectLink(t)).length;
     return 0;
   };
 
   const filtered = testimonials.filter((t: any) => {
     if (filterPage === 'all') return true;
     if (filterPage === 'services') return hasServicesPage(t);
-    if (filterPage === 'project') return hasProjectLink(t);
-    if (filterPage === 'both') return hasServicesPage(t) && hasProjectLink(t);
     return true;
   });
 
@@ -44,7 +37,6 @@ export default async function AdminTestimonialsPage(props: PageProps) {
   const visibilityKey = (t: any) => {
     const tags = [];
     if (hasServicesPage(t)) tags.push('services');
-    if (hasProjectLink(t)) tags.push('project');
     return tags.join(',');
   };
 
@@ -66,7 +58,6 @@ export default async function AdminTestimonialsPage(props: PageProps) {
     ...t,
     visibilityTags: [
       ...(hasServicesPage(t) ? ['services'] : []),
-      ...(hasProjectLink(t) ? ['project'] : []),
     ],
   }));
 
@@ -107,7 +98,6 @@ export default async function AdminTestimonialsPage(props: PageProps) {
         columns={[
           { key: 'clientName', label: 'Client', type: 'client_info' },
           { key: 'visibilityTags', label: 'Visibility', type: 'pages' },
-          { key: 'projectTitle', label: 'Project', type: 'text' },
           { key: 'rating', label: 'Rating', type: 'rating' },
           { key: 'content', label: 'Preview', type: 'text' },
         ]}

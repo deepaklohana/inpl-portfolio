@@ -12,7 +12,6 @@ import ScrollReveal from '@/components/animations/ScrollReveal';
 import DynamicIcon from '@/components/ui/DynamicIcon';
 
 // Import all server actions directly — this is safe because they are 'use server' functions
-import { deleteProject, toggleProjectStatus } from '@/lib/actions/projects';
 import { deleteService, toggleServiceStatus } from '@/lib/actions/services';
 import { deleteEvent, toggleEventStatus } from '@/lib/actions/events';
 import { deleteTestimonial, toggleTestimonialStatus } from '@/lib/actions/testimonials';
@@ -33,11 +32,8 @@ interface AdminListClientProps {
   hasStatus?: boolean;
 }
 
-// Map section name to the correct server actions
 function getActions(section: string) {
   switch (section) {
-    case 'projects':
-      return { deleteFn: deleteProject, toggleFn: toggleProjectStatus };
     case 'services':
       return { deleteFn: deleteService, toggleFn: toggleServiceStatus };
     case 'events':

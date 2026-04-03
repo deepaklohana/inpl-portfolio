@@ -66,121 +66,69 @@ model SeoMetadata {
   no_index         Boolean  @default(false)
   created_at       DateTime @default(now())
 
-  blogs    Blog[]
-  events   Event[]
-  news     News[]
-  projects Project[]
+  article  Article?
   services Service[]
   product  Product?
 
   @@map("seo_metadata")
 }
 
-model Blog {
-  id           Int     @id @default(autoincrement())
-  title        String
-  slug         String  @unique
-  excerpt      String?
-  content      String?
-  cover_image  String?
-  author_name  String?
-  author_image String?
-  category     String?
-  tags         String?
-  status       String  @default("draft")
-  featured     Boolean @default(false)
-
-  seo_id       Int?
-  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
-
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  @@map("blogs")
+model Article {
+  id              String       @id @default(uuid())
+  
+  // Type distinguishes content
+  type            String       // 'news' | 'blog' | 'event'
+  
+  // Core fields
+  title           String
+  slug            String       @unique
+  excerpt         String?
+  content         String?      // TipTap HTML content
+  coverImage      String?
+  
+  // Author
+  authorName      String?
+  authorTitle     String?      // e.g. "Chief Product Officer"
+  authorImage     String?
+  authorBio       String?      // shown at bottom of article
+  authorSocials   Json?        // e.g. [{ platform: 'Twitter', url: '...' }, ...]
+  
+  // Meta display (shown under title)
+  readTime        String?      // e.g. "5 min read"
+  views           Int          @default(0)
+  
+  // Category + Tags
+  category        String?      // e.g. "Product Update", "Press Release"
+  tags            String[]     @default([])
+  
+  // Event-specific fields (only used when type = 'event')
+  eventDate       DateTime?
+  eventEndDate    DateTime?
+  location        String?
+  locationUrl     String?
+  isOnline        Boolean      @default(false)
+  eventUrl        String?
+  registrationUrl String?
+  
+  // Publishing
+  status          String       @default("draft")
+  // 'draft' | 'published' | 'archived'
+  featured        Boolean      @default(false)
+  publishedAt     DateTime?
+  sortOrder       Int          @default(0)
+  
+  // SEO
+  seoId           Int?         @unique
+  seo             SeoMetadata? @relation(fields: [seoId], references: [id])
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  @@index([type, status])
+  @@index([slug])
+  @@index([type, publishedAt(sort: Desc)])
 }
 
-model Event {
-  id               Int       @id @default(autoincrement())
-  title            String
-  slug             String    @unique
-  excerpt          String?
-  description      String?
-  cover_image      String?
-  event_date       DateTime?
-  end_date         DateTime?
-  location         String?
-  location_url     String?
-  is_online        Boolean   @default(false)
-  event_url        String?
-  registration_url String?
-  gallery          String[]
-  status           String    @default("draft")
-  featured         Boolean   @default(false)
-
-  seo_id       Int?
-  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
-
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  @@map("events")
-}
-
-model News {
-  id          Int     @id @default(autoincrement())
-  title       String
-  slug        String  @unique
-  excerpt     String?
-  content     String?
-  cover_image String?
-  source_url  String?
-  category    String?
-  tags        String?
-  author_name String?
-  status      String  @default("draft")
-  featured    Boolean @default(false)
-
-  seo_id       Int?
-  seo_metadata SeoMetadata? @relation(fields: [seo_id], references: [id], onDelete: SetNull)
-
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  @@map("news")
-}
-
-model Project {
-  id            Int       @id @default(autoincrement())
-  title         String
-  slug          String    @unique
-  excerpt       String?
-  description   String?
-  cover_image   String?
-  client_name   String?
-  industry      String?
-  tech_stack    String[]
-  gallery       String[]
-  project_url   String?
-  start_date    DateTime?
-  end_date      DateTime?
-  sort_order    Int       @default(0)
-  services_used String[]
-  status        String    @default("draft")
-  featured      Boolean   @default(false)
-
-  seo_id       Int?
-  seo_metadata SeoMetadata?  @relation(fields: [seo_id], references: [id], onDelete: SetNull)
-  testimonials Testimonial[]
-
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  @@map("projects")
-}
 
 model Service {
   id          Int      @id @default(autoincrement())
@@ -256,9 +204,6 @@ model Testimonial {
 
   // Direct product relations (many-to-many)
   products       ProductTestimonial[]
-
-  project_id Int?
-  projects   Project? @relation(fields: [project_id], references: [id], onDelete: SetNull)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

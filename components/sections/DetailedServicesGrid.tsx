@@ -12,6 +12,8 @@ export interface DetailedServiceItem {
   icon: React.ReactNode;
   features: string[];
   techStack: string[];
+  featuresHeading?: string;
+  techStackHeading?: string;
 }
 
 interface DetailedServicesGridProps {
@@ -87,7 +89,7 @@ export default function DetailedServicesGrid({
                 {/* 3. Features */}
                 <div className="flex flex-col gap-3">
                   <h4 className="font-semibold text-[16px] text-[#101828] font-['Inter',sans-serif]">
-                    {featuresTitle}
+                    {service.featuresHeading || featuresTitle}:
                   </h4>
                   <ul className="flex flex-col gap-2">
                     {service.features.map((feature, fIndex) => (
@@ -106,7 +108,7 @@ export default function DetailedServicesGrid({
                 {/* 4. Technologies / Tags */}
                 <div className="flex flex-col gap-3">
                   <h4 className="font-semibold text-[16px] text-[#101828] font-['Inter',sans-serif]">
-                    {tagsTitle}
+                    {service.techStackHeading || tagsTitle}:
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {service.techStack.map((tech, tIndex) => (

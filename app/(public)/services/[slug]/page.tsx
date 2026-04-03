@@ -100,7 +100,7 @@ export default async function ServicePage({
   }
 
   // Map sub-services to DetailedServiceItem format
-  const mappedSubServices: DetailedServiceItem[] | null = subServices?.map((sub) => {
+  const mappedSubServices: DetailedServiceItem[] | null = subServices?.map((sub: any) => {
     return {
       id: sub.name,
       title: sub.name,
@@ -108,6 +108,8 @@ export default async function ServicePage({
       icon: <DynamicIcon name={sub.icon} className="w-8 h-8 text-white" />,
       features: sub.features || [],
       techStack: sub.technologies || [],
+      featuresHeading: sub.featuresHeading,
+      techStackHeading: sub.technologiesHeading,
     };
   }) || null;
 
