@@ -1,21 +1,31 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { buildMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Clock, Eye, Link as LinkIcon, Share2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Eye, Share2, ArrowLeft, Link as LinkIcon, ExternalLink } from 'lucide-react';
+import { getArticleBySlug, getRelatedArticles, getArticles } from '@/lib/actions/articles';
+import { generateTOC, addHeadingIds } from '@/lib/utils/generateTOC';
+import { TableOfContents } from '@/components/article/TableOfContents';
+import { HTMLContent } from '@/components/article/HTMLContent';
 import NewsletterCTASection from '@/components/sections/NewsletterCTASection';
-import Button from '@/components/ui/Button';
 
 export const revalidate = 3600;
 
+const TYPE_LABEL: Record<string, string> = {
+  news: 'News',
+  blog: 'Blog',
+  event: 'Event',
+};
+
+const TYPE_COLOR: Record<string, string> = {
+  news: 'bg-[#2251B5]',
+  blog: 'bg-[#7C3AED]',
+  event: 'bg-[#059669]',
+};
+
 export async function generateStaticParams() {
-  const news = await prisma.article.findMany({
-    where: { type: 'news', status: 'published' },
-    select: { slug: true },
-  });
-  return news.map((n: { slug: string }) => ({ slug: n.slug }));
+  const articles = await getArticles({ status: 'published' });
+  return articles.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -24,53 +34,61 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const news = await prisma.article.findFirst({
-    where: { slug, type: 'news' },
-    include: { seo: true },
-  });
+  const article = await getArticleBySlug(slug);
+  if (!article) return {};
 
-  if (!news || news.status !== 'published') return {};
-
-  const seo = news.seo;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const seo = article.seo;
 
-  return buildMetadata({
-    title: seo?.meta_title ?? news.title,
-    description: seo?.meta_description ?? news.excerpt ?? undefined,
-    image: seo?.og_image ?? news.coverImage ?? undefined,
-    url: `${baseUrl}/news/${news.slug}`,
-    type: 'article',
-    publishedAt: news.publishedAt?.toISOString(),
-    keywords: seo?.keywords ? seo.keywords.split(',').map((k: string) => k.trim()) : undefined,
-    noIndex: seo?.no_index || false,
-  });
+  return {
+    title: seo?.meta_title ?? article.title.replace(/\*/g, ''),
+    description: seo?.meta_description ?? article.excerpt ?? undefined,
+    openGraph: {
+      title: seo?.meta_title ?? article.title.replace(/\*/g, ''),
+      description: seo?.meta_description ?? article.excerpt ?? undefined,
+      images: seo?.og_image ?? article.coverImage ? [seo?.og_image ?? article.coverImage!] : [],
+      url: `${baseUrl}/articles/${article.slug}`,
+      type: 'article',
+      publishedTime: article.publishedAt?.toISOString(),
+    },
+    robots: seo?.no_index ? { index: false, follow: false } : undefined,
+  };
 }
 
-export default async function NewsArticlePage({
+export default async function ArticleDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const news = await prisma.article.findFirst({
-    where: { slug, type: 'news' },
-    include: { seo: true },
-  });
+  const article = await getArticleBySlug(slug);
 
-  if (!news || news.status !== 'published') notFound();
+  if (!article) notFound();
+
+  // Add IDs to headings and generate TOC
+  const contentWithIds = addHeadingIds(article.content ?? '');
+  const tocItems = generateTOC(contentWithIds);
+
+  const related = await getRelatedArticles(article.id, article.type as 'news' | 'blog' | 'event', article.category ?? undefined, 3);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const articleUrl = `${baseUrl}/articles/${article.slug}`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
-    headline: news.title,
-    image: news.coverImage,
-    author: { '@type': 'Person', name: news.authorName || 'Company Name' },
-    datePublished: news.publishedAt,
-    dateModified: news.updatedAt,
-    url: `${baseUrl}/news/${news.slug}`,
+    '@type': article.type === 'news' ? 'NewsArticle' : 'Article',
+    headline: article.title,
+    image: article.coverImage,
+    author: { '@type': 'Person', name: article.authorName || 'Innovative Network' },
+    datePublished: article.publishedAt,
+    dateModified: article.updatedAt,
+    url: articleUrl,
   };
+
+  const typeLabel = TYPE_LABEL[article.type] ?? article.type;
+  const typeBg = TYPE_COLOR[article.type] ?? 'bg-[#2251B5]';
+
+  const authorInitial = article.authorName ? article.authorName.charAt(0).toUpperCase() : 'A';
 
   return (
     <>
@@ -78,243 +96,287 @@ export default async function NewsArticlePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       <main className="w-full bg-white pt-10 sm:pt-16 pb-0">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Back Button */}
-          <div className="mb-10">
-            <Link 
-              href="/news" 
-              className="inline-flex items-center text-[#4A5565] font-semibold text-sm hover:text-[#101828] transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to News
-            </Link>
-          </div>
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* Header Metadata */}
-          <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
-            {/* Category Pill */}
-            <div className="bg-[#E96429] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
-              Product Launch
+          {/* Hero Section Container */}
+          <div className="max-w-[864px] mx-auto mb-16 flex flex-col gap-8">
+            
+            {/* Back Button */}
+            <div>
+              <Link
+                href="/news"
+                className="inline-flex items-center text-[#4A5565] font-medium text-base hover:text-[#101828] transition-colors gap-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Back to {typeLabel}
+              </Link>
             </div>
 
-            {/* Title */}
-            <h1 
-              className="text-[32px] sm:text-[40px] md:text-[48px] font-bold text-[#101828] leading-[1.2] mb-6"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              Innovative Network Launches Revolutionary AI-Powered Analytics Platform
-            </h1>
+            <div className="flex flex-col gap-6 w-full">
+              {/* Category + Meta Row */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 flex-wrap">
+                {/* Category Pill */}
+                <span className={`${typeBg} text-white px-4 py-2 rounded-full text-sm font-bold`}>
+                  {article.category ?? typeLabel}
+                </span>
 
-            {/* Subtitle / Excerpt */}
-            <p className="text-[18px] text-[#4A5565] leading-relaxed max-w-3xl mb-8">
-              Our latest product combines machine learning with intuitive design to deliver unprecedented business insights in real-time
-            </p>
-
-            {/* Meta Row: Date, Read Time, Views */}
-            <div className="flex items-center justify-center gap-6 text-[#6A7282] text-sm font-medium mb-12 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>March 5, 2026</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>5 min read</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                <span>12.5K views</span>
-              </div>
-            </div>
-
-            {/* Author Row & Share */}
-            <div className="w-full border-y border-gray-200 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              {/* Author */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden shrink-0">
-                  <div className="w-full h-full bg-[#E96429]/10 flex items-center justify-center text-[#E96429] font-bold text-lg">
-                    A
+                {/* Meta Items */}
+                <div className="flex items-center gap-4 text-[#4A5565] text-sm font-medium flex-wrap">
+                  {article.publishedAt && (
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      <span>
+                        {new Date(article.publishedAt).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  {article.readTime && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>{article.readTime}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
+                    <span>{article.views?.toLocaleString() ?? 0} views</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Title & Excerpt */}
+              <div className="flex flex-col gap-4">
+                <h1
+                  className="text-[36px] sm:text-[48px] md:text-[60px] font-bold text-[#101828] leading-tight font-['Plus_Jakarta_Sans',sans-serif] text-left tracking-tight"
+                >
+                  {(() => {
+                    const parts = article.title.split('*');
+                    if (parts.length >= 3) {
+                      return (
+                        <>
+                          {parts[0]}
+                          <span className="text-[#2251B5]">{parts[1]}</span>
+                          {parts.slice(2).join('*')}
+                        </>
+                      );
+                    }
+                    return article.title;
+                  })()}
+                </h1>
+
+                {article.excerpt && (
+                  <p className="text-[20px] sm:text-[24px] text-[#4A5565] leading-relaxed text-left font-['Inter',sans-serif]">
+                    {article.excerpt}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Author Row + Share */}
+            <div className="w-full border-b border-[#E5E7EB] pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-2">
+              {/* Author */}
+              <div className="flex items-center gap-4">
+                {article.authorImage ? (
+                  <Image
+                    src={article.authorImage}
+                    alt={article.authorName ?? 'Author'}
+                    width={64}
+                    height={64}
+                    className="w-16 h-16 rounded-full object-cover shrink-0 ring-4 ring-[#F3F4F6]"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-[#E96429]/10 flex items-center justify-center text-[#E96429] font-bold text-xl shrink-0 ring-4 ring-[#F3F4F6]">
+                    {authorInitial}
+                  </div>
+                )}
                 <div className="text-left">
-                  <div className="font-bold text-[#101828] text-base">Ahmed</div>
-                  <div className="text-[#6A7282] text-sm">Chief Product Officer</div>
+                  <div className="font-bold text-[#101828] text-lg leading-tight mb-1 font-['Inter',sans-serif]">
+                    {article.authorName ?? 'Innovative Network'}
+                  </div>
+                  {article.authorTitle && (
+                    <div className="text-[#4A5565] text-sm font-['Inter',sans-serif]">
+                      {article.authorTitle}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Share */}
               <div className="flex items-center gap-3">
-                <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#4A5565] hover:bg-gray-200 transition-colors">
-                  <LinkIcon className="w-4 h-4" />
+                <button
+                  onClick={undefined}
+                  className="w-11 h-11 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#4A5565] hover:bg-gray-200 transition-colors"
+                  title="Copy link"
+                >
+                  <LinkIcon className="w-5 h-5" />
                 </button>
-                <button className="h-10 px-4 rounded-full bg-[#E96429] text-white font-semibold text-sm flex items-center gap-2 hover:bg-[#d8551f] transition-colors">
-                  <Share2 className="w-4 h-4" />
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(articleUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-12 px-6 rounded-full bg-[#E96429] text-white font-semibold text-base flex items-center justify-center gap-2 hover:bg-[#d8551f] transition-colors"
+                >
+                  <Share2 className="w-5 h-5" />
                   Share
-                </button>
+                </a>
               </div>
             </div>
           </div>
 
           {/* Cover Image */}
-          <div className="w-full max-w-5xl mx-auto mt-12 mb-16 h-[300px] sm:h-[400px] md:h-[500px] bg-gray-100 rounded-3xl overflow-hidden relative">
-            {/* Fallback pattern / image */}
-            <div className="absolute inset-0 bg-linear-to-tr from-[#2251B5]/20 to-[#E96429]/20" />
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-              [Cover Image Placeholder]
+          {article.coverImage && (
+            <div className="w-full max-w-5xl mx-auto mb-16 rounded-3xl overflow-hidden relative aspect-16/7">
+              <Image
+                src={article.coverImage}
+                alt={article.title}
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
-          </div>
+          )}
 
-          {/* Content Layout Grid */}
+          {/* Content Layout — TOC + Article */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1200px] mx-auto pb-20">
-            {/* Left Sidebar: Table of Contents */}
-            <aside className="lg:col-span-3 hidden lg:block">
-              <div className="sticky top-24">
-                <h3 className="font-bold text-lg text-[#101828] mb-4">Table of Contents</h3>
-                <nav className="flex flex-col gap-3">
-                  <a href="#challenge" className="text-[#2251B5] font-medium text-sm border-l-2 border-[#2251B5] pl-4">The Challenge We Set Out to Solve</a>
-                  <a href="#solution" className="text-[#6A7282] hover:text-[#101828] text-sm border-l-2 border-transparent pl-4 transition-colors">Introducing the Solution</a>
-                  <a href="#features" className="text-[#6A7282] hover:text-[#101828] text-sm border-l-2 border-transparent pl-4 transition-colors">Key Features and Capabilities</a>
-                  <a href="#impact" className="text-[#6A7282] hover:text-[#101828] text-sm border-l-2 border-transparent pl-4 transition-colors">Real-World Impact</a>
-                  <a href="#whats-next" className="text-[#6A7282] hover:text-[#101828] text-sm border-l-2 border-transparent pl-4 transition-colors">What's Next</a>
-                </nav>
-              </div>
-            </aside>
 
-            {/* Right Content: Main Article */}
-            <article className="lg:col-span-8 lg:col-start-5 prose prose-lg prose-blue max-w-none text-[#4A5565]">
-              <p className="text-xl leading-relaxed text-[#101828] mb-10">
-                Today marks a significant milestone in our journey to empower businesses with cutting-edge technology. We're thrilled to announce the launch of our revolutionary AI-Powered Analytics Platform, a game-changing solution designed to transform how organizations understand and leverage their data.
-              </p>
+            {/* Left Sidebar — TOC (desktop only) */}
+            {tocItems.length > 0 && (
+              <aside className="lg:col-span-3 hidden lg:block">
+                <TableOfContents items={tocItems} />
+              </aside>
+            )}
 
-              <h2 id="challenge" className="text-3xl font-bold text-[#101828] mt-12 mb-6">The Challenge We Set Out to Solve</h2>
-              <p>
-                In today's data-driven world, businesses are drowning in information but starving for insights. Traditional analytics tools are complex, time-consuming, and require specialized expertise. Teams spend weeks waiting for reports that are often outdated by the time they're delivered.
-              </p>
-              <p>
-                We recognized that organizations needed a solution that could democratize data analytics—making powerful insights accessible to everyone, not just data scientists. The vision was clear: create a platform that combines the sophistication of enterprise-grade analytics with the simplicity of consumer applications.
-              </p>
+            {/* Main Article Content */}
+            <article className={`${tocItems.length > 0 ? 'lg:col-span-9' : 'lg:col-span-12'}`}>
 
-              {/* Blockquote */}
-              <div className="my-10 p-8 rounded-2xl bg-[#E96429]/5 border-l-4 border-[#E96429]">
-                <p className="text-xl font-bold text-[#E96429] mb-4 italic">
-                  "Our mission was to put the power of AI-driven analytics in the hands of every business user, regardless of their technical background."
-                </p>
-                <footer className="text-sm font-semibold text-[#101828]">
-                  — Ahmed, Chief Product Officer
-                </footer>
-              </div>
-
-              <h2 id="solution" className="text-3xl font-bold text-[#101828] mt-12 mb-6">Introducing the Solution</h2>
-              <p>
-                Our new AI-Powered Analytics Platform represents the culmination of two years of research, development, and collaboration with industry leaders. Built on advanced machine learning algorithms, the platform automatically analyzes your data, identifies trends, and delivers actionable insights in real-time.
-              </p>
-
-              {/* Embedded Image Area */}
-              <figure className="my-10 rounded-2xl overflow-hidden border border-gray-200">
-                <div className="w-full h-[350px] bg-slate-100 flex items-center justify-center">
-                  <span className="text-slate-400 font-medium">[Dashboard Interface Image]</span>
+              {/* Mobile TOC accordion */}
+              {tocItems.length > 0 && (
+                <div className="lg:hidden mb-8 bg-gray-50 border border-gray-200 rounded-2xl p-4">
+                  <TableOfContents items={tocItems} />
                 </div>
-                <figcaption className="text-center text-sm text-[#6A7282] py-4 bg-gray-50 border-t border-gray-200">
-                  The intuitive dashboard provides real-time insights at a glance
-                </figcaption>
-              </figure>
+              )}
 
-              <h2 id="features" className="text-3xl font-bold text-[#101828] mt-12 mb-6">Key Features and Capabilities</h2>
-              <p className="mb-8">
-                The platform comes packed with innovative features designed to make analytics effortless:
-              </p>
+              {/* Rich HTML Content */}
+              {contentWithIds ? (
+                <HTMLContent content={contentWithIds} />
+              ) : (
+                <p className="text-[#6A7282] italic">No content available.</p>
+              )}
 
-              {/* Features Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-10 not-prose">
-                <div className="p-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
-                  <h3 className="text-xl font-bold text-[#101828] mb-3">🤖 AI-Powered Insights</h3>
-                  <p className="text-[#4A5565] text-sm">Our machine learning engine continuously analyzes your data, automatically detecting patterns, anomalies, and opportunities. No configuration required—just connect your data and let the AI do the work.</p>
+              {/* Tags */}
+              {article.tags && article.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-gray-100">
+                  {article.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="bg-[#2251B5]/8 text-[#2251B5] text-xs font-semibold px-3 py-1.5 rounded-full border border-[#2251B5]/15"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
                 </div>
-                <div className="p-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
-                  <h3 className="text-xl font-bold text-[#101828] mb-3">📊 Natural Language Queries</h3>
-                  <p className="text-[#4A5565] text-sm">Ask questions in plain English and get instant answers. "What were our best-performing products last quarter?" transforms into detailed visualizations and insights in seconds.</p>
-                </div>
-                <div className="p-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
-                  <h3 className="text-xl font-bold text-[#101828] mb-3">⚡ Real-Time Processing</h3>
-                  <p className="text-[#4A5565] text-sm">Stream processing capabilities ensure you're always working with the latest data. Make decisions based on what's happening right now, not what happened yesterday.</p>
-                </div>
-                <div className="p-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
-                  <h3 className="text-xl font-bold text-[#101828] mb-3">🎨 Interactive Visualizations</h3>
-                  <p className="text-[#4A5565] text-sm">Beautiful, customizable charts and dashboards that update in real-time. Drag, drop, and configure to create the perfect view for your needs.</p>
-                </div>
-              </div>
+              )}
 
-              <h2 id="impact" className="text-3xl font-bold text-[#101828] mt-12 mb-6">Real-World Impact</h2>
-              <p className="mb-8">
-                Early adopters are already seeing remarkable results. During our beta program, companies reported:
-              </p>
-
-              {/* Stats Row */}
-              <div className="flex flex-col sm:flex-row gap-4 my-8 not-prose">
-                <div className="flex-1 bg-gray-50 rounded-2xl p-6 text-center border border-gray-100">
-                  <div className="text-4xl font-bold text-[#2251B5] mb-2">85%</div>
-                  <div className="text-sm font-medium text-[#101828]">Faster Decision Making</div>
-                </div>
-                <div className="flex-1 bg-[#2251B5] rounded-2xl p-6 text-center text-white">
-                  <div className="text-4xl font-bold mb-2">3x</div>
-                  <div className="text-sm font-medium text-white/90">More Insights Generated</div>
-                </div>
-                <div className="flex-1 bg-gray-50 rounded-2xl p-6 text-center border border-gray-100">
-                  <div className="text-4xl font-bold text-[#2251B5] mb-2">60%</div>
-                  <div className="text-sm font-medium text-[#101828]">Cost Reduction</div>
-                </div>
-              </div>
-
-              <h2 id="whats-next" className="text-3xl font-bold text-[#101828] mt-12 mb-6">What's Next</h2>
-              <p>
-                This launch is just the beginning. Our product roadmap includes exciting enhancements like predictive analytics, automated report generation, and deeper integrations with popular business tools. We're committed to continuous innovation based on customer feedback and emerging AI capabilities.
-              </p>
-              <p>
-                We invite you to experience the future of analytics firsthand. Visit our platform page to start your free trial and join the thousands of businesses already transforming their data into actionable insights.
-              </p>
-
-              {/* Inline CTA Box */}
-              <div className="mt-16 p-8 sm:p-12 rounded-3xl bg-[#2251B5] text-center not-prose text-white overflow-hidden relative">
-                {/* Decorative background ellipses */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#E96429] opacity-30 blur-[80px] rounded-full pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#E96429] opacity-30 blur-2xl rounded-full pointer-events-none" />
-                
-                <div className="relative z-10">
-                  <h3 className="text-3xl font-bold mb-4">Ready to Transform Your Analytics?</h3>
-                  <p className="text-white/80 mb-8 max-w-xl mx-auto">
-                    Start your free 30-day trial today. No credit card required.
-                  </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button variant="white" className="w-full sm:w-auto">Start Free Trial</Button>
-                    <Button variant="glass" className="w-full sm:w-auto">Schedule Demo</Button>
+              {/* Author Bio Card */}
+              {(article.authorName || article.authorBio) && (
+                <div className="mt-12 p-8 rounded-[24px] bg-white shadow-xl flex flex-col sm:flex-row items-center sm:items-start gap-6 border border-gray-100">
+                  {article.authorImage ? (
+                    <Image
+                      src={article.authorImage}
+                      alt={article.authorName ?? 'Author'}
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 rounded-full object-cover shrink-0 ring-4 ring-[#E96429]/20"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-[#E96429]/10 flex items-center justify-center text-[#E96429] font-bold text-3xl shrink-0 ring-4 ring-[#E96429]/20">
+                      {authorInitial}
+                    </div>
+                  )}
+                  <div className="text-center sm:text-left flex-1 w-full">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                      <div>
+                        <h3 className="font-bold text-[#101828] text-2xl leading-snug">{article.authorName}</h3>
+                        {article.authorTitle && (
+                          <p className="font-semibold text-[#E96429] text-base mt-1">{article.authorTitle}</p>
+                        )}
+                      </div>
+                      
+                      {/* Social Links */}
+                      {Array.isArray((article as any).authorSocials) && (article as any).authorSocials.length > 0 && (
+                        <div className="flex flex-wrap gap-2 justify-center sm:justify-end">
+                          {((article as any).authorSocials as { platform: string; url: string }[]).map((social, i) => (
+                            <a
+                              key={i}
+                              href={social.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-9 h-9 rounded-full bg-[#F3F4F6] text-[#4A5565] flex items-center justify-center hover:bg-gray-200 transition-colors"
+                              title={social.platform}
+                            >
+                              <ExternalLink size={16} />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {article.authorBio && (
+                      <p className="text-[#364153] leading-relaxed text-base mt-4 max-w-3xl">
+                        {article.authorBio}
+                      </p>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Author Bio Box */}
-              <div className="mt-16 p-8 rounded-3xl bg-[#101828] flex flex-col sm:flex-row items-center sm:items-start gap-6 not-prose text-white">
-                <div className="w-20 h-20 bg-gray-700 rounded-full overflow-hidden shrink-0">
-                  <div className="w-full h-full bg-slate-600 flex items-center justify-center text-white font-bold text-2xl">
-                    A
+              {/* Related Articles */}
+              {related.length > 0 && (
+                <div className="mt-16">
+                  <h2 className="text-2xl font-bold text-[#101828] mb-8 font-['Plus_Jakarta_Sans',sans-serif]">
+                    Related {typeLabel}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {related.map((rel) => (
+                      <Link
+                        key={rel.id}
+                        href={`/articles/${rel.slug}`}
+                        className="group block bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+                      >
+                        {rel.coverImage && (
+                          <div className="relative w-full h-40 overflow-hidden">
+                            <Image src={rel.coverImage} alt={rel.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                          </div>
+                        )}
+                        <div className="p-5">
+                          {rel.category && (
+                            <span className={`${typeBg} text-white px-2.5 py-0.5 rounded-full text-xs font-semibold mb-3 inline-block`}>
+                              {rel.category}
+                            </span>
+                          )}
+                          <h3 className="text-base font-bold text-[#101828] line-clamp-2 group-hover:text-[#2251B5] transition-colors">
+                            {rel.title}
+                          </h3>
+                          {rel.publishedAt && (
+                            <p className="text-xs text-[#6A7282] mt-2">
+                              {new Date(rel.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
                   </div>
                 </div>
-                <div className="text-center sm:text-left">
-                  <div className="font-bold text-xl mb-1">Ahmed Khan</div>
-                  <div className="text-white/60 text-sm mb-4">Chief Product Officer</div>
-                  <p className="text-white/80 leading-relaxed text-sm max-w-2xl">
-                    Ahmed leads our product innovation team with over 15 years of experience in enterprise software development and digital transformation.
-                  </p>
-                </div>
-              </div>
-
+              )}
             </article>
           </div>
         </div>
       </main>
 
-      {/* Newsletter Section Footer */}
       <NewsletterCTASection />
     </>
   );

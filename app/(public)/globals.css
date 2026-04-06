@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -292,6 +293,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
   html {
     @apply font-sans;
@@ -323,24 +325,25 @@
   font-size: 1.0625rem;
 }
 .article-prose blockquote {
-  background: rgb(233 100 41 / 0.06);
+  background: linear-gradient(90deg, rgba(233, 100, 41, 0.1) 0%, rgba(34, 81, 181, 0.1) 100%);
   border-left: 4px solid #E96429;
   border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  padding: 2rem;
   margin: 2.5rem 0;
   font-style: normal !important;
 }
 .article-prose blockquote p {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #E96429 !important;
-  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #101828 !important;
+  line-height: 1.33;
+  margin: 0 0 1rem;
 }
 .article-prose blockquote footer,
 .article-prose blockquote cite {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #101828;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #4A5565;
 }
 .article-prose ul {
   list-style: none;
@@ -399,6 +402,7 @@
   font-size: 0.875em;
 }
 .article-prose img {
+  border: 1px solid #E0E0E0;
   border-radius: 1rem;
   margin: 2rem 0;
 }

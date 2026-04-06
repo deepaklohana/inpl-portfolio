@@ -15,10 +15,15 @@ export default function AboutPage() {
   return (
     <main className="flex min-h-screen flex-col items-center w-full bg-white">
       <AboutHero />
+      <DevStatsBar stats={[
+        { value: "10+", label: "Years Experience" },
+        { value: "1000+", label: "Happy Clients" },
+        { value: "50+", label: "Countries Served" },
+        { value: "99.9%", label: "Customer Satisfaction" }
+      ]} />
       <WhoWeAreSection />
       <CoreValuesSection />
       <JourneySection />
-      <DevStatsBar />
       <TeamStatsSection />
       <ServicesCTASection 
         title="Join Our Success Story"

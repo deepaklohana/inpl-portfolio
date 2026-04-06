@@ -46,9 +46,8 @@ export default function ProductHero() {
 
         {/* Headline — Figma: Inter 700, 72px, lh 1.1, letter-spacing -2.5%, color #101828 */}
         <h1 className="text-4xl sm:text-5xl md:text-[72px] font-bold text-[#101828] leading-[1.1] tracking-[-0.025em] font-['Inter',sans-serif] w-full max-w-[885px] mb-[-15px] md:mb-[-20px]">
-          Enterprise Solutions
-          <br className="hidden sm:block" />
-          {" "}for Modern Business
+          <span className="block">Enterprise Solutions</span>
+          <span className="block text-[#2251B5]">for Modern Business</span>
         </h1>
         {/* Sub — Figma: Inter 400, 20px, lh 1.6, color #4A5565 */}
         <p className="text-base sm:text-lg md:text-[20px] text-[#4A5565] leading-[1.6] max-w-[990px] font-['Inter',sans-serif]">
@@ -66,7 +65,7 @@ export default function ProductHero() {
             Get Started
           </Button>
           {/* Outline: Inter 500 16px, px-8, py-4, border-2 #D1D5DC, rounded-[10px], color #101828 */}
-          <Button variant="outline" className="w-full sm:w-auto">
+          <Button href="/contact-us" variant="outline" className="w-full sm:w-auto">
             Scheduled Demo
           </Button>
         </div>

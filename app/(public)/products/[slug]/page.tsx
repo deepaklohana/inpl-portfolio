@@ -48,13 +48,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <ERPHero 
-        title={product.name} 
-        tagline={product.tagline} 
-        description={product.description} 
-        
-       
-      />
+      <ERPHero />
       <DevStatsBar 
       stats={product.stats}
       />

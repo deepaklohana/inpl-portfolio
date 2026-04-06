@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import NewsletterSubscribeForm from "@/components/sections/NewsletterSubscribeForm";
 
 interface NewsletterCTASectionProps {
   title?: string;
@@ -12,8 +11,6 @@ export default function NewsletterCTASection({
   title = "Never Miss an Update",
   subtitle = "Subscribe to our newsletter for the latest news, insights, product updates, and event announcements",
 }: NewsletterCTASectionProps) {
-  const [email, setEmail] = useState("");
-
   return (
     <section
       className="relative w-full overflow-hidden"
@@ -48,7 +45,7 @@ export default function NewsletterCTASection({
       />
 
       {/* ── Content — centered, max-w 628px ────────────────────────────────── */}
-      <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-6 py-[120px]">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-4 sm:px-6 py-16 md:py-[120px]">
         {/* Text block */}
         <div className="flex flex-col items-center gap-4 text-center max-w-[628px]">
           {/* Title — Plus Jakarta Sans 700 48px lh 1.25 letter-spacing -2.5% */}
@@ -72,30 +69,9 @@ export default function NewsletterCTASection({
           </p>
         </div>
 
-        {/* Email input row — 470px wide, 60px height, border-white, br-12 */}
-        <div
-          className="flex w-full max-w-[470px] rounded-xl overflow-hidden border border-white"
-          style={{ height: 60 }}
-        >
-          {/* Input field */}
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email address"
-            className="flex-1 bg-transparent text-white placeholder:text-white/60 text-[14px] px-4 outline-none"
-            style={{ fontFamily: "Inter, sans-serif" }}
-          />
-
-          {/* Submit button — white bg, blue text, br-12, px-6 py-4 */}
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 px-6 shrink-0 rounded-xl font-semibold text-[16px] leading-normal bg-white text-[#2251B5] hover:bg-white/90 transition-colors duration-200"
-            style={{ fontFamily: "Inter, sans-serif", margin: 6 }}
-            onClick={() => setEmail("")}
-          >
-            Subscribe Now
-          </button>
+        {/* Email input row */}
+        <div className="w-full max-w-[470px]">
+          <NewsletterSubscribeForm source="cta" theme="dark" />
         </div>
       </div>
     </section>

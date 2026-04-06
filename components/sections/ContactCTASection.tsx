@@ -49,7 +49,7 @@ export default function ContactCTASection() {
         {/* Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
-            href="/contact"
+            href="/contact-us"
             className="inline-flex items-center justify-center px-6 py-4 rounded-[12px] text-[#2251B5] bg-white font-semibold text-[16px] leading-normal transition-opacity hover:opacity-90"
             style={{
               fontFamily: "Inter, sans-serif",
@@ -59,7 +59,7 @@ export default function ContactCTASection() {
             Schedule Free Demo
           </Link>
           <Link
-            href="/services"
+            href="/products"
             className="inline-flex items-center justify-center px-6 py-4 rounded-[12px] text-white font-semibold text-[16px] leading-normal border-2 border-white transition-colors hover:bg-white/10"
             style={{ fontFamily: "Inter, sans-serif" }}
           >

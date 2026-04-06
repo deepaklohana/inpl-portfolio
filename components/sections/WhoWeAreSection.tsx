@@ -20,22 +20,16 @@ export default function WhoWeAreSection() {
 
           <div className="flex flex-col gap-4">
             <p className="text-[#4A5565] text-base lg:text-[18px] leading-relaxed font-['Inter',sans-serif]">
-              Founded in 2010, Innovative Network started with a simple
-              mission: to help businesses harness the power of technology to
-              achieve extraordinary results.
+              Founded in 2016, INPL is a full-service, technology-driven IT market leader that highly promotes ideas, entrepreneurship, and invention. Through expertise in AI, INPL enable national and international organizations and innovative scale-ups to create and execute their business strategies on a global scale.
             </p>
             <p className="text-[#4A5565] text-base lg:text-[18px] leading-relaxed font-['Inter',sans-serif]">
-              Today, we've grown into a global leader in digital
-              transformation, serving over 1000 clients across 50 countries.
-              Our team of 200+ experts brings together deep technical
-              expertise with industry knowledge to deliver solutions that
-              drive real business value.
+              With a strong local presence in Pakistan, Innovative Network has positioned itself as a well-established and sound company led by the industry's most professional and trained individuals, and is on its way to becoming a leading organization that facilitates, enhances, and provides measurable business value to organizations globally through the most effective use of technology and resources.
             </p>
-            <p className="text-[#4A5565] text-base lg:text-[18px] leading-relaxed font-['Inter',sans-serif]">
+            {/* <p className="text-[#4A5565] text-base lg:text-[18px] leading-relaxed font-['Inter',sans-serif]">
               We believe in building long-term partnerships, not just
               delivering projects. Every solution we create is designed with
               your unique challenges and goals in mind.
-            </p>
+            </p> */}
           </div>
         </div>
 

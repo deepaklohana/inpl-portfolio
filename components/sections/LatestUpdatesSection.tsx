@@ -1,44 +1,52 @@
+import Link from "next/link";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { EventCard } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import StaggerReveal from "@/components/animations/StaggerReveal";
 
-const UPDATES = [
-  {
-    id: 1,
-    title: "New ERP Module Launch",
-    date: "March 2, 2026",
-    description:
-      "Introducing advanced analytics and AI-powered insights to our ERP platform.",
-    imageSrc: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
-    isHighlighted: true,
-  },
-  {
-    id: 2,
-    title: "Strategic Partnership Announcement",
-    date: "February 28, 2026",
-    description:
-      "Innovative Network signs major partnership agreement with leading tech provider.",
-    imageSrc: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&auto=format&fit=crop",
-    isHighlighted: false,
-  },
-  {
-    id: 3,
-    title: "Digital Transformation Summit 2026",
-    date: "February 20, 2026",
-    description:
-      "Our team showcased cutting-edge solutions at the annual Digital Transformation Summit.",
-    imageSrc: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop",
-    isHighlighted: false,
-  },
-];
 
-export default function LatestUpdatesSection() {
+function formatDate(dateValue: string | Date | null | undefined): string {
+  if (!dateValue) return "";
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+
+
+interface LatestUpdatesSectionProps {
+  articles?: any[];
+}
+
+export default function LatestUpdatesSection({ articles }: LatestUpdatesSectionProps) {
+  if (!articles || articles.length === 0) {
+    return null;
+  }
+
+  const updates = articles.map((a: any, i: number) => ({
+    id: a.id,
+    title: a.title,
+    date: formatDate(a.type === "event" ? a.eventDate || a.publishedAt : a.publishedAt),
+    description: a.excerpt || "",
+    imageSrc: a.coverImage || "",
+    isHighlighted: i === 0,
+    href:
+      a.type === "event"
+        ? `/events/${a.slug}`
+        : a.type === "blog"
+        ? `/blog/${a.slug}`
+        : `/news/${a.slug}`,
+  }));
+
   return (
     <section className="bg-[#F5F5F5] w-full py-20 md:py-[80px] flex justify-center">
       <div className="w-full max-w-[1200px] px-6 mx-auto flex flex-col items-center gap-[48px]">
-        {/* Header section (layout_MP4LJY) */}
+        {/* Header section */}
         <ScrollReveal variant="fadeUp" className="max-w-[672px] mx-auto">
           <SectionHeader
             badge="Latest Updates"
@@ -49,23 +57,24 @@ export default function LatestUpdatesSection() {
           />
         </ScrollReveal>
 
-        {/* Cards row (layout_L92J7R) */}
+        {/* Cards row */}
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-          {UPDATES.map((update) => (
-            <EventCard
-              key={update.id}
-              title={update.title}
-              date={update.date}
-              description={update.description}
-              imageSrc={update.imageSrc}
-              isHighlighted={update.isHighlighted}
-            />
+          {updates.map((update: any) => (
+            <Link key={update.id} href={update.href} className="block h-full no-underline">
+              <EventCard
+                title={update.title}
+                date={update.date}
+                description={update.description}
+                imageSrc={update.imageSrc}
+                isHighlighted={update.isHighlighted}
+              />
+            </Link>
           ))}
         </StaggerReveal>
 
         {/* Button */}
         <div>
-          <Button variant="primary">View All News & Events</Button>
+          <Button variant="primary" href="/news">View All News &amp; Events</Button>
         </div>
       </div>
     </section>

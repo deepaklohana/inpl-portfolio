@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildMetadata } from '@/lib/seo';
+import NewsletterCTASection from '@/components/sections/NewsletterCTASection';
+
 
 export const revalidate = 3600;
 
@@ -110,6 +112,8 @@ export default async function EventPage({
           />
         )}
       </article>
+
+      <NewsletterCTASection />
     </>
   );
 }

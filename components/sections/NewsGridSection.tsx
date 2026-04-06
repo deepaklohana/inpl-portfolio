@@ -1,10 +1,11 @@
 import { NewsArticleCard } from "@/components/ui/NewsArticleCard";
 import Button from "@/components/ui/Button";
+import { Newspaper } from "lucide-react";
 
 type ArticleVariant = "orange" | "blue";
 
-interface NewsArticle {
-  id: number;
+export interface NewsArticle {
+  id: string;
   imageSrc: string;
   imageAlt?: string;
   category: string;
@@ -16,75 +17,6 @@ interface NewsArticle {
   href?: string;
 }
 
-const NEWS_ARTICLES: NewsArticle[] = [
-  {
-    id: 1,
-    imageSrc: "/images/news/news-card-cover.png",
-    category: "Partnership",
-    categoryVariant: "orange",
-    date: "March 2, 2026",
-    readTime: "4 min read",
-    title: "Partnership Announcement: Strategic Alliance with Global Tech Leader",
-    description: "We're excited to announce our partnership with a Fortune 100 technology company to deliver next-generation cloud solutions.",
-    href: "/news/partnership-global-tech",
-  },
-  {
-    id: 2,
-    imageSrc: "/images/news/news-card-cover.png",
-    category: "Partnership",
-    categoryVariant: "blue",
-    date: "March 2, 2026",
-    readTime: "4 min read",
-    title: "Partnership Announcement: Strategic Alliance with Global Tech Leader",
-    description: "We're excited to announce our partnership with a Fortune 100 technology company to deliver next-generation cloud solutions.",
-    href: "/news/partnership-global-tech-2",
-  },
-  {
-    id: 3,
-    imageSrc: "/images/news/news-card-cover.png",
-    category: "Partnership",
-    categoryVariant: "orange",
-    date: "March 2, 2026",
-    readTime: "4 min read",
-    title: "Partnership Announcement: Strategic Alliance with Global Tech Leader",
-    description: "We're excited to announce our partnership with a Fortune 100 technology company to deliver next-generation cloud solutions.",
-    href: "/news/partnership-global-tech-3",
-  },
-  {
-    id: 4,
-    imageSrc: "/images/news/news-card-cover.png",
-    category: "Partnership",
-    categoryVariant: "blue",
-    date: "March 2, 2026",
-    readTime: "4 min read",
-    title: "Partnership Announcement: Strategic Alliance with Global Tech Leader",
-    description: "We're excited to announce our partnership with a Fortune 100 technology company to deliver next-generation cloud solutions.",
-    href: "/news/partnership-global-tech-4",
-  },
-  {
-    id: 5,
-    imageSrc: "/images/news/news-card-cover.png",
-    category: "Partnership",
-    categoryVariant: "orange",
-    date: "March 2, 2026",
-    readTime: "4 min read",
-    title: "Partnership Announcement: Strategic Alliance with Global Tech Leader",
-    description: "We're excited to announce our partnership with a Fortune 100 technology company to deliver next-generation cloud solutions.",
-    href: "/news/partnership-global-tech-5",
-  },
-  {
-    id: 6,
-    imageSrc: "/images/news/news-card-cover.png",
-    category: "Partnership",
-    categoryVariant: "blue",
-    date: "March 2, 2026",
-    readTime: "4 min read",
-    title: "Partnership Announcement: Strategic Alliance with Global Tech Leader",
-    description: "We're excited to announce our partnership with a Fortune 100 technology company to deliver next-generation cloud solutions.",
-    href: "/news/partnership-global-tech-6",
-  },
-];
-
 interface NewsGridSectionProps {
   badge?: string;
   title?: string;
@@ -93,14 +25,15 @@ interface NewsGridSectionProps {
 }
 
 export default function NewsGridSection({
-  badge = "Products",
+  badge = "Latest",
   title = "Latest News",
   subtitle = "Recent updates and announcements",
-  articles = NEWS_ARTICLES,
+  articles = [],
 }: NewsGridSectionProps) {
   return (
     <section className="w-full py-[80px] px-6 md:px-[120px] bg-white">
       <div className="max-w-[1200px] mx-auto flex flex-col gap-12">
+
         {/* Section Header — 2-column: badge+title left, subtitle right */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           {/* Left column */}
@@ -128,28 +61,46 @@ export default function NewsGridSection({
           </p>
         </div>
 
-        {/* 3×2 card grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article) => (
-            <NewsArticleCard
-              key={article.id}
-              imageSrc={article.imageSrc}
-              imageAlt={article.imageAlt}
-              category={article.category}
-              categoryVariant={article.categoryVariant}
-              date={article.date}
-              readTime={article.readTime}
-              title={article.title}
-              description={article.description}
-              href={article.href}
-            />
-          ))}
-        </div>
+        {articles.length > 0 ? (
+          <>
+            {/* 3×2 card grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.map((article) => (
+                <NewsArticleCard
+                  key={article.id}
+                  imageSrc={article.imageSrc}
+                  imageAlt={article.imageAlt}
+                  category={article.category}
+                  categoryVariant={article.categoryVariant}
+                  date={article.date}
+                  readTime={article.readTime}
+                  title={article.title}
+                  description={article.description}
+                  href={article.href}
+                />
+              ))}
+            </div>
 
-        {/* Load more CTA */}
-        <div className="flex justify-center">
-          <Button variant="outline">Load More Articles</Button>
-        </div>
+            {/* Load more CTA */}
+            <div className="flex justify-center">
+              <Button variant="outline">Load More Articles</Button>
+            </div>
+          </>
+        ) : (
+          /* Empty state */
+          <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-[#2251B5]/8 flex items-center justify-center">
+              <Newspaper className="w-8 h-8 text-[#2251B5]/40" />
+            </div>
+            <p
+              className="text-[#4A5565] text-[18px]"
+              style={{ fontFamily: "Inter, sans-serif" }}
+            >
+              No articles published yet. Check back soon!
+            </p>
+          </div>
+        )}
+
       </div>
     </section>
   );

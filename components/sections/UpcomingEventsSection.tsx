@@ -1,8 +1,8 @@
 import { UpcomingEventCard } from "@/components/ui/UpcomingEventCard";
 import Button from "@/components/ui/Button";
 
-interface EventItem {
-  id: number;
+export interface EventItem {
+  id: string;
   imageSrc: string;
   imageAlt?: string;
   type: string;
@@ -13,57 +13,6 @@ interface EventItem {
   attendees: string;
   href?: string;
 }
-
-const UPCOMING_EVENTS: EventItem[] = [
-  {
-    id: 1,
-    imageSrc: "/images/events/event-conference.png",
-    imageAlt: "Annual Developer Conference 2026",
-    type: "Conference",
-    statusLabel: "Registration Open",
-    title: "Annual Developer Conference 2026",
-    date: "April 15-17, 2026",
-    location: "Karachi Expo Center",
-    attendees: "5000+ Expected",
-    href: "/events/annual-developer-conference-2026",
-  },
-  {
-    id: 2,
-    imageSrc: "/images/events/event-conference.png",
-    imageAlt: "Cloud Architecture Workshop",
-    type: "Workshop",
-    statusLabel: "Limited Seats",
-    title: "Cloud Architecture Workshop",
-    date: "March 28, 2026",
-    location: "Lahore Tech Hub",
-    attendees: "200 Expected",
-    href: "/events/cloud-architecture-workshop",
-  },
-  {
-    id: 3,
-    imageSrc: "/images/events/event-conference.png",
-    imageAlt: "Product Demo Day: HRM & ERP",
-    type: "Webinar",
-    statusLabel: "Free Event",
-    title: "Product Demo Day: HRM & ERP",
-    date: "March 22, 2026",
-    location: "Online Webinar",
-    attendees: "Unlimited Expected",
-    href: "/events/product-demo-day",
-  },
-  {
-    id: 4,
-    imageSrc: "/images/events/event-conference.png",
-    imageAlt: "Digital Transformation Summit",
-    type: "Summit",
-    statusLabel: "VIP Passes Available",
-    title: "Digital Transformation Summit",
-    date: "April 5, 2026",
-    location: "Islamabad Convention Center",
-    attendees: "1000+ Expected",
-    href: "/events/digital-transformation-summit",
-  },
-];
 
 interface UpcomingEventsSectionProps {
   badge?: string;
@@ -76,7 +25,7 @@ export default function UpcomingEventsSection({
   badge = "Events",
   title = "Upcoming Events",
   subtitle = "Join us at our latest conferences, workshops, and webinars",
-  events = UPCOMING_EVENTS,
+  events = [],
 }: UpcomingEventsSectionProps) {
   return (
     <section className="w-full py-[80px] px-6 md:px-[120px] bg-[#F9FAFB]">

@@ -41,7 +41,7 @@ export default async function ProductsSection() {
             );
 
             return (
-              <Link href={`/products/${product.slug}`} key={product.id || index}>
+              <Link href={`/products/${product.slug}`} key={product.id || index} className="h-full block">
                 <ProductCard
                   title={product.fullName || product.name || 'Unnamed Product'}
                   description={product.shortDescription || product.description || 'No description available.'}

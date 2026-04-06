@@ -80,8 +80,8 @@ export default function ContactFormSection() {
       icon: MessageCircle,
       title: "Sales & Inquiries",
       description: "For product demos, pricing, and new business",
-      email: "sales@innovativenetwork.com",
-      phone: "+92 21 1234 5678",
+      email: "contact@innovative-net.com",
+      phone: "(021) 34303051-55",
       iconGradient:
         "linear-gradient(135deg, rgba(233,100,41,1) 0%, rgba(233,100,41,0.8) 100%)",
     },
@@ -89,8 +89,8 @@ export default function ContactFormSection() {
       icon: Headset,
       title: "Technical Support",
       description: "For technical assistance and product support",
-      email: "support@innovativenetwork.com",
-      phone: "+92 21 1234 5679",
+      email: "contact@innovative-net.com",
+      phone: "(021) 34303051-55",
       iconGradient:
         "linear-gradient(135deg, rgba(34,81,181,1) 0%, rgba(34,81,181,0.8) 100%)",
     },
@@ -98,18 +98,18 @@ export default function ContactFormSection() {
       icon: Handshake,
       title: "Partnerships",
       description: "For collaboration and partnership opportunities",
-      email: "partnerships@innovativenetwork.com",
-      phone: "+92 21 1234 5680",
+      email: "contact@innovative-net.com",
+      phone: "(021) 34303051-55",
       iconGradient:
         "linear-gradient(135deg, rgba(233,100,41,1) 0%, rgba(233,100,41,0.8) 100%)",
     },
   ];
 
   const socialLinks = [
-    { label: "Facebook",  href: "#", color: "#1877F2", Icon: Facebook  },
-    { label: "Twitter",   href: "#", color: "#1DA1F2", Icon: Twitter   },
-    { label: "LinkedIn",  href: "#", color: "#0A66C2", Icon: Linkedin  },
-    { label: "Instagram", href: "#", color: "#E4405F", Icon: Instagram },
+    { label: "Facebook",  href: "https://www.facebook.com/innovativenetworkltd/", color: "#1877F2", Icon: Facebook  },
+    // { label: "Twitter",   href: "#", color: "#1DA1F2", Icon: Twitter   },
+    { label: "LinkedIn",  href: "https://www.linkedin.com/company/innovative-network-pvt-ltd", color: "#0A66C2", Icon: Linkedin  },
+    { label: "Instagram", href: "https://www.instagram.com/innovativenetworkltd?igsh=NWpleDE2cnZrZTU=", color: "#E4405F", Icon: Instagram },
   ];
 
   return (
@@ -305,7 +305,7 @@ export default function ContactFormSection() {
                     key={label}
                     href={href}
                     aria-label={label}
-                    className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-85 transition-opacity"
+                    className="w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0"
                     style={{ backgroundColor: color }}
                   >
                     <Icon className="w-5 h-5 text-white" />

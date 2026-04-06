@@ -94,7 +94,7 @@ export default function ProductCTASection() {
             {/* Primary button: bg white filled, shadow, borderRadius 12px, padding 16px 25px */}
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
-                href="/contact?type=demo"
+                href="/contact-us"
                 className="flex items-center justify-center bg-white text-[#2251B5] rounded-xl font-semibold transition-shadow hover:shadow-xl"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -113,7 +113,7 @@ export default function ProductCTASection() {
             {/* Outline button: transparent bg, 2px white border, borderRadius 12px, padding 16px 27px */}
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
-                href="/contact?type=sales"
+                href="/contact-us"
                 className="flex items-center justify-center bg-transparent text-white font-semibold border-2 border-white hover:bg-white/10 transition-colors"
                 style={{
                   fontFamily: "'Inter', sans-serif",

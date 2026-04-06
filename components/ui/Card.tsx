@@ -48,7 +48,7 @@ export function ProductCard({
 }: ProductCardProps) {
   return (
     <div
-      className="group flex flex-col p-6 md:p-8 rounded-[14px] transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0E0E0] hover:bg-[#FFF7F4] hover:border-[#E96429] hover:shadow-md"
+      className="group h-full flex flex-col p-6 md:p-8 rounded-[14px] transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0E0E0] hover:bg-[#FFF7F4] hover:border-[#E96429] hover:shadow-md"
     >
       <div className="flex flex-col h-full gap-6">
         {/* Icon */}
@@ -60,10 +60,10 @@ export function ProductCard({
 
         {/* Content */}
         <div className="flex flex-col gap-3 grow">
-          <h3 className="font-bold text-[20px] leading-[1.4] transition-colors duration-300 text-[#2251B5] group-hover:text-[#E96429] font-['Plus_Jakarta_Sans',sans-serif]">
+          <h3 className="font-bold text-[20px] leading-[1.4] transition-colors duration-300 text-[#2251B5] group-hover:text-[#E96429] font-['Plus_Jakarta_Sans',sans-serif] line-clamp-2 min-h-[56px]">
             {title}
           </h3>
-          <p className="text-[#3C3C3B] text-[14px] leading-relaxed font-['Inter',sans-serif]">
+          <p className="text-[#3C3C3B] text-[14px] leading-relaxed font-['Inter',sans-serif] line-clamp-4 min-h-[88px]">
             {description}
           </p>
         </div>
@@ -97,6 +97,7 @@ interface CTACardProps {
   linkLabel: string;
   svgPath: string;
   variant?: "primary" | "glass";
+  href?: string;
 }
 
 export function CTACard({
@@ -105,6 +106,7 @@ export function CTACard({
   linkLabel,
   svgPath,
   variant = "primary",
+  href,
 }: CTACardProps) {
   const isPrimary = variant === "primary";
 
@@ -147,6 +149,7 @@ export function CTACard({
             {description}
           </p>
           <Button
+            href={href}
             variant="ghost-link"
             className={isPrimary ? "text-[#E96429]" : "text-white!"}
           >

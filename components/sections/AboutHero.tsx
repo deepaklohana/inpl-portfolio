@@ -40,7 +40,8 @@ export default function AboutHero() {
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl md:text-[72px] font-bold text-[#101828] leading-[1.1] tracking-[-0.025em] font-['Inter',sans-serif] w-full max-w-[885px]">
-          Pioneering Digital Excellence Since 2016
+          <span className="block">Pioneering Digital</span>
+          <span className="block text-[#2251B5]">Excellence Since 2016</span>
         </h1>
         
         {/* Subtitle */}

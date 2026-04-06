@@ -16,6 +16,7 @@ import {
   Users,
   Layers,
   HelpCircle,
+  Mail,
 } from 'lucide-react'
 
 export default async function AdminLayout({
@@ -64,6 +65,9 @@ export default async function AdminLayout({
             </NavLink>
             <NavLink href="/admin/faqs" icon={<HelpCircle />}>
               FAQs
+            </NavLink>
+            <NavLink href="/admin/newsletter" icon={<Mail />}>
+              Newsletter
             </NavLink>
             <NavLink href="/admin/media" icon={<ImageIcon />}>
               Media

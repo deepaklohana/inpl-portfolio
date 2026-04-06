@@ -1,33 +1,44 @@
-"use client";
-
+import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
+import NewsletterSubscribeForm from "@/components/sections/NewsletterSubscribeForm";
 
-// ─── Navigation link columns ─────────────────────────────────────────────────
-const footerLinks = [
+// ─── Static Navigation link columns ─────────────────────────────────────────────────
+const initialFooterLinks = [
   {
     heading: "Solutions",
-    links: ["Cloud Services", "AI & Analytics", "Cybersecurity", "Custom Development"],
-  },
-  {
-    heading: "Products",
-    links: ["CloudSync Pro", "eCommerce Suite", "Analytics Dashboard", "SecureGuard"],
+    links: [
+      { label: "Cloud Services", href: "#" },
+      { label: "AI & Analytics", href: "#" },
+      { label: "Cybersecurity", href: "#" },
+      { label: "Custom Development", href: "#" }
+    ],
   },
   {
     heading: "Company",
-    links: ["About Us", "Careers", "Partners", "Press Kit"],
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Careers", href: "#" },
+      { label: "Partners", href: "#" },
+      { label: "Press Kit", href: "#" }
+    ],
   },
   {
     heading: "Resources",
-    links: ["Documentation", "API Reference", "Blog", "Case Studies"],
+    links: [
+      { label: "Documentation", href: "#" },
+      { label: "API Reference", href: "#" },
+      { label: "Blog", href: "/news" },
+      { label: "Case Studies", href: "#" }
+    ],
   },
 ];
 
 // ─── Contact info rows ────────────────────────────────────────────────────────
 const contactItems = [
   {
-    label: "contact@innovativenetwork.com",
+    label: "contact@innovative-net.com",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" aria-hidden>
         <path d="M2.5 5.833A1.667 1.667 0 014.167 4.167h11.666A1.667 1.667 0 0117.5 5.833v8.334a1.667 1.667 0 01-1.667 1.666H4.167A1.667 1.667 0 012.5 14.167V5.833z" stroke="#E96429" strokeWidth="1.667" strokeLinecap="round" strokeLinejoin="round" />
@@ -36,7 +47,7 @@ const contactItems = [
     ),
   },
   {
-    label: "+1 (555) 123-4567",
+    label: "(021) 34303051-55",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" aria-hidden>
         <path d="M3.333 3.333h3.334l1.666 4.167-2.083 1.25a9.167 9.167 0 004.167 4.167l1.25-2.084 4.166 1.667v3.333A1.667 1.667 0 0113.167 18.5C5.417 17.5 2.5 14.583 2.5 5a1.667 1.667 0 011.667-1.667" stroke="#E96429" strokeWidth="1.667" strokeLinecap="round" strokeLinejoin="round" />
@@ -44,7 +55,7 @@ const contactItems = [
     ),
   },
   {
-    label: "123 Innovation Drive, Tech City, TC 12345",
+    label: "41-J, Street-3, Block-6, PECHS, Karachi, Sindh, Pakistan 75400",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" aria-hidden>
         <path d="M10 10.833a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" stroke="#E96429" strokeWidth="1.667" strokeLinecap="round" strokeLinejoin="round" />
@@ -58,7 +69,7 @@ const contactItems = [
 const socialLinks = [
   {
     label: "LinkedIn",
-    href: "#",
+    href: "https://www.linkedin.com/company/innovative-network-pvt-ltd",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" aria-hidden>
         <path d="M15.833 2.5H4.167A1.667 1.667 0 002.5 4.167v11.666A1.667 1.667 0 004.167 17.5h11.666A1.667 1.667 0 0017.5 15.833V4.167A1.667 1.667 0 0015.833 2.5z" stroke="#99A1AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -66,18 +77,18 @@ const socialLinks = [
       </svg>
     ),
   },
-  {
-    label: "Twitter",
-    href: "#",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" aria-hidden>
-        <path d="M18.333 2.5a9.58 9.58 0 01-2.75 1.258A3.917 3.917 0 0010 7.083v.834a9.333 9.333 0 01-7.917-4.25s-3.333 7.5 4.167 10.833a10.167 10.167 0 01-5.833 1.667C8.75 19.583 17.5 15.833 17.5 7.083c0-.233-.024-.464-.071-.693A6.583 6.583 0 0018.333 2.5z" stroke="#99A1AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
+  // {
+  //   label: "Twitter",
+  //   href: "#",
+  //   icon: (
+  //     <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" aria-hidden>
+  //       <path d="M18.333 2.5a9.58 9.58 0 01-2.75 1.258A3.917 3.917 0 0010 7.083v.834a9.333 9.333 0 01-7.917-4.25s-3.333 7.5 4.167 10.833a10.167 10.167 0 01-5.833 1.667C8.75 19.583 17.5 15.833 17.5 7.083c0-.233-.024-.464-.071-.693A6.583 6.583 0 0018.333 2.5z" stroke="#99A1AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  //     </svg>
+  //   ),
+  // },
   {
     label: "Facebook",
-    href: "#",
+    href: "https://www.facebook.com/innovativenetworkltd/",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" aria-hidden>
         <path d="M15 2.5H13.333A3.333 3.333 0 0010 5.833V7.5H8.333v2.5H10v6.667h2.5V10h2.5l.833-2.5H12.5V5.833A.833.833 0 0113.333 5H15V2.5z" stroke="#99A1AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -86,7 +97,7 @@ const socialLinks = [
   },
   {
     label: "Instagram",
-    href: "#",
+    href: "https://www.instagram.com/innovativenetworkltd?igsh=NWpleDE2cnZrZTU=",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" aria-hidden>
         <rect x="2.5" y="2.5" width="15" height="15" rx="4" stroke="#99A1AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -97,7 +108,31 @@ const socialLinks = [
   },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const publishedProducts = await prisma.product.findMany({
+    where: { status: "published" },
+    select: { name: true, slug: true },
+    orderBy: { sortOrder: 'asc' },
+    take: 4,
+  });
+
+  const productLinks = publishedProducts.map(p => ({
+    label: p.name,
+    href: `/products/${p.slug}`
+  }));
+
+  const footerLinks = [
+    initialFooterLinks[0], // Solutions
+    {
+      heading: "Products",
+      links: productLinks.length > 0 ? productLinks : [
+        { label: "Products loading...", href: "#" }
+      ],
+    },
+    initialFooterLinks[1], // Company
+    initialFooterLinks[2], // Resources
+  ];
+
   return (
     <footer 
       className="relative w-full overflow-hidden" 
@@ -150,32 +185,9 @@ export default function Footer() {
               insights, and exclusive offers.
             </p>
 
-            {/* Email + Subscribe row — Figma: row, gap 8px, w:592 h:50 */}
-            <div className="flex gap-2 w-full">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 h-[50px] px-4 text-[#99A1AF] text-base placeholder:text-[#99A1AF] outline-none rounded-[14px]"
-                style={{
-                  background: "rgba(255,255,255,0.1)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              />
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-2 h-[50px] px-6 rounded-[14px] text-white font-semibold text-base shrink-0 transition-opacity hover:opacity-90"
-                style={{
-                  background: "#E96429",
-                  fontFamily: "'Inter', sans-serif",
-                  boxShadow: "0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)",
-                }}
-              >
-                Subscribe
-                <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" aria-hidden>
-                  <path d="M4.167 10h11.666M10 4.167L15.833 10 10 15.833" stroke="currentColor" strokeWidth="1.667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+            {/* Email + Subscribe row — Live form, saves to DB */}
+            <div className="relative w-full">
+              <NewsletterSubscribeForm source="footer" theme="dark" />
             </div>
           </div>
 
@@ -227,13 +239,13 @@ export default function Footer() {
               {/* Figma: Inter 400 16px lh 1.5 #99A1AF, gap 12px */}
               <ul className="flex flex-col gap-3">
                 {col.links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <Link
-                      href="#"
+                      href={link.href}
                       className="text-[#99A1AF] text-base hover:text-white transition-colors duration-200"
                       style={{ fontFamily: "'Inter', sans-serif", lineHeight: "1.5" }}
                     >
-                      {link}
+                      {link.label}
                     </Link>
                   </li>
                 ))}

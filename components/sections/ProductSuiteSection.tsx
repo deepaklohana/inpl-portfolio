@@ -40,7 +40,7 @@ export default function ProductSuiteSection({ products = [] }: { products?: any[
             <Link
               href={`/products/${product.slug}`}
               key={product.id || index}
-              className="group flex flex-col p-8 rounded-3xl bg-white border border-[#E0E0E0] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_35px_-5px_rgba(233,100,41,0.15)] hover:border-[#E96429] cursor-pointer"
+              className="group h-full flex flex-col p-8 rounded-3xl bg-white border border-[#E0E0E0] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_35px_-5px_rgba(233,100,41,0.15)] hover:border-[#E96429] cursor-pointer"
             >
               {/* Top Row: Icon and Users Badge */}
               <div className="flex justify-between items-start w-full mb-8">
@@ -63,13 +63,13 @@ export default function ProductSuiteSection({ products = [] }: { products?: any[
 
               {/* Title & Description */}
               <div className="flex flex-col gap-2 mb-6">
-                <h3 className="font-bold text-[22px] text-[#101828] font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
+                <h3 className="font-bold text-[22px] text-[#101828] font-['Plus_Jakarta_Sans',sans-serif] tracking-tight line-clamp-2 min-h-[64px]">
                   {product.fullName || product.name || 'Unnamed Product'}
                 </h3>
                 <h4 className="font-semibold text-[13px] text-[#2251B5] group-hover:text-[#E96429] transition-colors font-['Inter',sans-serif]">
                   {product.name}
                 </h4>
-                <p className="text-[#4A5565] text-[14px] leading-[1.6] font-['Inter',sans-serif] mt-1 line-clamp-3">
+                <p className="text-[#4A5565] text-[14px] leading-[1.6] font-['Inter',sans-serif] mt-1 line-clamp-3 min-h-[68px]">
                   {product.shortDescription || product.description || 'No description available.'}
                 </p>
               </div>

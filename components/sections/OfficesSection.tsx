@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { MapPin, Phone, Mail, Clock, ExternalLink } from "lucide-react";
 
 interface OfficeCardProps {
@@ -8,20 +9,20 @@ interface OfficeCardProps {
   email: string;
   hours: string;
   mapUrl: string;
-  mapEmbedQuery: string;
 }
 
-function OfficeCard({ type, city, address, phone, email, hours, mapUrl, mapEmbedQuery }: OfficeCardProps) {
+function OfficeCard({ type, city, address, phone, email, hours, mapUrl }: OfficeCardProps) {
   return (
     <div className="flex flex-col bg-white border border-[#E0E0E0] rounded-[24px] overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-      {/* Map Image */}
+      {/* Office Image */}
       <div className="relative h-[224px] bg-gray-100 overflow-hidden shrink-0">
-        <iframe
-          title={`${city} office map`}
-          src={`https://maps.google.com/maps?q=${encodeURIComponent(mapEmbedQuery)}&output=embed`}
-          className="w-full h-full border-0"
-          loading="lazy"
-          allowFullScreen
+        <Image
+          src="/images/sections/office-interior.png"
+          alt={`${city} office`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          priority={city === "Karachi"}
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent pointer-events-none" />
@@ -80,7 +81,6 @@ const OFFICES: OfficeCardProps[] = [
     email: "karachi@innovativenetwork.com",
     hours: "Mon - Fri: 9:00 AM - 6:00 PM",
     mapUrl: "https://maps.google.com/?q=Clifton+Block+5+Karachi+Pakistan",
-    mapEmbedQuery: "Clifton Block 5, Karachi, Pakistan",
   },
   {
     type: "Regional Office",
@@ -90,7 +90,6 @@ const OFFICES: OfficeCardProps[] = [
     email: "lahore@innovativenetwork.com",
     hours: "Mon - Fri: 9:00 AM - 6:00 PM",
     mapUrl: "https://maps.google.com/?q=DHA+Phase+6+Lahore+Pakistan",
-    mapEmbedQuery: "DHA Phase 6, Main Boulevard, Lahore, Pakistan",
   },
   {
     type: "Branch Office",
@@ -100,7 +99,6 @@ const OFFICES: OfficeCardProps[] = [
     email: "islamabad@innovativenetwork.com",
     hours: "Mon - Fri: 9:00 AM - 6:00 PM",
     mapUrl: "https://maps.google.com/?q=Blue+Area+F-7+Markaz+Islamabad+Pakistan",
-    mapEmbedQuery: "Blue Area, F-7 Markaz, Islamabad, Pakistan",
   },
 ];
 

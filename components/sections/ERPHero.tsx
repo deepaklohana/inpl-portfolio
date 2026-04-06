@@ -58,7 +58,8 @@ export default function ERPHero({
 
         {/* Headline — Figma: Inter 700, 72px, lh 1.1, color #101828 */}
         <h1 className="text-4xl sm:text-5xl md:text-[72px] font-bold text-[#101828] leading-[1.1] tracking-[-0.025em] font-['Inter',sans-serif] w-full max-w-[885px] mb-[-15px] md:mb-[-20px]">
-          Complete <br /> <span className="text-[#2251B5]">{title }</span>
+          <span className="block">Complete</span>
+          <span className="block text-[#2251B5]">{title}</span>
         </h1>
 
         {/* Sub — Figma: Inter 400, 20px, lh 1.6, color #4A5565 */}

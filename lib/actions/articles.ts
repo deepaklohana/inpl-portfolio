@@ -192,7 +192,7 @@ export async function getArticles(options: GetArticlesOptions = {}) {
 
     return data;
   } catch (error) {
-    console.error('getArticles failed:', error);
+    console.warn('getArticles failed. Returning empty articles list.');
     return [];
   }
 }

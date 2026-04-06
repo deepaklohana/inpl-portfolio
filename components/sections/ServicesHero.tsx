@@ -19,8 +19,8 @@ export default function ServicesHero({
   badgeIcon = <div className="w-2 h-2 rounded-full bg-[#2251B5]" />,
   title = (
     <>
-      Elevate your {'\n'}
-      <span className="text-[#2251B5]">Digital Presence</span>
+      <span className="block">Elevate your</span>
+      <span className="block text-[#2251B5]">Digital Presence</span>
     </>
   ),
   description = "From strategy to execution, we deliver end-to-end digital solutions that transform businesses and create lasting impact in the digital landscape.",

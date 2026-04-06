@@ -39,13 +39,14 @@ export default function Hero() {
         <div className="flex items-center gap-2 bg-[#FFEDE5] border border-[rgba(233,100,41,0.3)] rounded-full px-4 py-2 mt-8 md:mt-0">
           <div className="w-2 h-2 rounded-full bg-[#2251B5]" />
           <span className="text-sm font-medium text-[#101828] font-['Inter',sans-serif]">
-            Digital Excellence Since 2011
+            Digital Excellence Since 2015
           </span>
         </div>
 
         {/* Headline — Figma: Inter 700, 72px, lh 1.1, color #101828 */}
         <h1 className="text-4xl sm:text-5xl md:text-[72px] font-bold text-[#101828] leading-[1.1] tracking-[-0.025em] font-['Inter',sans-serif] w-full max-w-[885px] mb-[-15px] md:mb-[-20px]">
-          Strategic Partner for <span className="text-[#2251B5]">Digital Mastery</span>
+          <span className="block">Strategic Partner for</span>
+          <span className="block text-[#2251B5]">Digital Mastery</span>
         </h1>
         {/* Sub — Figma: Inter 400, 20px, lh 1.6, color #4A5565 */}
         <p className="text-base sm:text-lg md:text-[20px] text-[#4A5565] leading-[1.6] max-w-[745px] font-['Inter',sans-serif]">

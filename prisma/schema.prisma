@@ -309,3 +309,28 @@ model FAQ {
 
   @@map("faqs")
 }
+
+model NewsletterSubscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  status       String   @default("active")  // "active" | "unsubscribed"
+  source       String   @default("footer")  // "footer" | "cta" | "manual"
+  subscribedAt DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@map("newsletter_subscribers")
+}
+
+model EmailCampaign {
+  id             Int       @id @default(autoincrement())
+  subject        String
+  body           String    // HTML / plain content
+  status         String    @default("draft")  // "draft" | "sent" | "failed"
+  sentAt         DateTime?
+  recipientCount Int?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("email_campaigns")
+}

@@ -17,11 +17,14 @@ export function HTMLContent({ content }: HTMLContentProps) {
   // Format: [CTA: Ready to Transform? | Start your free trial | Button 1 | /link1 | Button 2 | /link2]
   
   const processedContent = content
-    .replace(/\[STATS:\s*(.+?)\]/g, (match, inner) => {
-      return `<span class="custom-shortcode-stats block my-8" data-content="${encodeURIComponent(inner)}"></span>`;
+    // Remove wrapping <p> tags around shortcodes to prevent hydration mismatch (div inside p)
+    .replace(/<p>\s*(\[STATS:[\s\S]*?\])\s*<\/p>/g, '$1')
+    .replace(/<p>\s*(\[CTA:[\s\S]*?\])\s*<\/p>/g, '$1')
+    .replace(/\[STATS:\s*([\s\S]+?)\]/g, (match, inner) => {
+      return `<div class="custom-shortcode-stats block my-8" data-content="${encodeURIComponent(inner)}"></div>`;
     })
-    .replace(/\[CTA:\s*(.+?)\]/g, (match, inner) => {
-      return `<span class="custom-shortcode-cta block my-12" data-content="${encodeURIComponent(inner)}"></span>`;
+    .replace(/\[CTA:\s*([\s\S]+?)\]/g, (match, inner) => {
+      return `<div class="custom-shortcode-cta block my-12" data-content="${encodeURIComponent(inner)}"></div>`;
     });
 
   const options = {

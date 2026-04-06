@@ -17,29 +17,24 @@ export function ArticleStats({ stats }: ArticleStatsProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 my-8 not-prose w-full">
       {stats.map((stat, i) => {
-        // Make the middle one stand out just like the design
         const isMiddle = i === 1;
         return (
           <div
             key={i}
-            className={`flex-1 rounded-2xl p-6 text-center ${
+            className={`flex-1 rounded-[14px] p-6 text-center ${
               isMiddle
-                ? 'bg-[#2251B5] text-white shadow-md shadow-[#2251B5]/20'
-                : 'bg-gray-50 border border-gray-100'
+                ? 'bg-linear-to-br from-[#2251B5]/10 to-white'
+                : 'bg-linear-to-br from-[#E96429]/10 to-white'
             }`}
           >
             <div
               className={`text-4xl font-bold mb-2 ${
-                isMiddle ? 'text-white' : 'text-[#2251B5]'
+                isMiddle ? 'text-[#2251B5]' : 'text-[#E96429]'
               }`}
             >
               {stat.value}
             </div>
-            <div
-              className={`text-sm font-medium ${
-                isMiddle ? 'text-white/90' : 'text-[#101828]'
-              }`}
-            >
+            <div className="text-sm font-medium text-[#4A5565]">
               {stat.label}
             </div>
           </div>
