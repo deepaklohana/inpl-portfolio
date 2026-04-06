@@ -8,7 +8,12 @@ import Link from "next/link";
 import DynamicIcon from "@/components/ui/DynamicIcon";
 
 export default async function ProductsSection() {
-  const products = await getProducts({ status: 'published' });
+  let products: Awaited<ReturnType<typeof getProducts>> = [];
+  try {
+    products = await getProducts({ status: "published" });
+  } catch (error) {
+    console.warn("ProductsSection fetch failed. Rendering empty products list.");
+  }
 
   return (
     <section className="w-full bg-[#F5F5F5] py-20 px-4 md:px-8 relative overflow-hidden">

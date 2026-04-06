@@ -109,12 +109,17 @@ const socialLinks = [
 ];
 
 export default async function Footer() {
-  const publishedProducts = await prisma.product.findMany({
-    where: { status: "published" },
-    select: { name: true, slug: true },
-    orderBy: { sortOrder: 'asc' },
-    take: 4,
-  });
+  let publishedProducts: Array<{ name: string; slug: string }> = [];
+  try {
+    publishedProducts = await prisma.product.findMany({
+      where: { status: "published" },
+      select: { name: true, slug: true },
+      orderBy: { sortOrder: "asc" },
+      take: 4,
+    });
+  } catch (error) {
+    console.warn("Footer products fetch failed. Falling back to static links.", error);
+  }
 
   const productLinks = publishedProducts.map(p => ({
     label: p.name,

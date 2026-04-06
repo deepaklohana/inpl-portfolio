@@ -15,7 +15,12 @@ export const metadata = {
 export const revalidate = 60; // Fallback validation
 
 export default async function ProductPage() {
-  const products = await getProducts({ status: 'published' });
+  let products: Awaited<ReturnType<typeof getProducts>> = [];
+  try {
+    products = await getProducts({ status: "published" });
+  } catch (error) {
+    console.warn("Products page fetch failed. Rendering empty products list.");
+  }
 
   return (
     <>

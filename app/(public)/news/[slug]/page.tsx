@@ -10,6 +10,7 @@ import { HTMLContent } from '@/components/article/HTMLContent';
 import NewsletterCTASection from '@/components/sections/NewsletterCTASection';
 
 export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const TYPE_LABEL: Record<string, string> = {
   news: 'News',
