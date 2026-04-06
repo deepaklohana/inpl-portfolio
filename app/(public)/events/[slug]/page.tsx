@@ -1,18 +1,20 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
 import { buildMetadata } from '@/lib/seo';
 import NewsletterCTASection from '@/components/sections/NewsletterCTASection';
+import { getEventBySlug, getEvents } from '@/lib/actions/events';
 
 
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const events = await prisma.article.findMany({
-    where: { type: 'event', status: 'published' },
-    select: { slug: true },
-  });
-  return events.map((e: { slug: string }) => ({ slug: e.slug }));
+  try {
+    const events = await getEvents({ status: 'published' });
+    return events.map((e: { slug: string }) => ({ slug: e.slug }));
+  } catch (error) {
+    console.warn('generateStaticParams(events/[slug]) failed, returning empty params.', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({
@@ -21,10 +23,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const event = await prisma.article.findFirst({
-    where: { slug, type: 'event' },
-    include: { seo: true },
-  });
+  let event: Awaited<ReturnType<typeof getEventBySlug>> = null;
+  try {
+    event = await getEventBySlug(slug);
+  } catch (error) {
+    console.warn(`generateMetadata(events/[slug]) failed for slug "${slug}".`, error);
+    return {};
+  }
 
   if (!event || event.status !== 'published') return {};
 
@@ -48,10 +53,12 @@ export default async function EventPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const event = await prisma.article.findFirst({
-    where: { slug, type: 'event' },
-    include: { seo: true },
-  });
+  let event: Awaited<ReturnType<typeof getEventBySlug>> = null;
+  try {
+    event = await getEventBySlug(slug);
+  } catch (error) {
+    console.warn(`EventPage fetch failed for slug "${slug}".`, error);
+  }
 
   if (!event || event.status !== 'published') notFound();
 
