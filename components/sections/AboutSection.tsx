@@ -126,13 +126,7 @@ export default function AboutSection() {
                       // Icon on the left
                       <div className="flex justify-start md:justify-end w-full max-w-[535px]">
                         <div className="relative w-[128px] h-[128px] flex items-center justify-center transition-transform hover:scale-105 duration-300">
-                          <div
-                            className={`absolute inset-0 rounded-full ${
-                              step.color === "orange"
-                                ? "bg-[#E96429]/15"
-                                : "bg-[#2251B5]/15"
-                            }`}
-                          />
+
                           <div
                             className={`relative z-10 w-[90px] h-[90px] rounded-full flex items-center justify-center shadow-lg ${
                               step.color === "orange"
@@ -153,13 +147,7 @@ export default function AboutSection() {
                       // Icon on the right
                       <div className="flex justify-start w-full max-w-[535px]">
                         <div className="relative w-[128px] h-[128px] flex items-center justify-center transition-transform hover:scale-105 duration-300">
-                          <div
-                            className={`absolute inset-0 rounded-full ${
-                              step.color === "orange"
-                                ? "bg-[#E96429]/15"
-                                : "bg-[#2251B5]/15"
-                            }`}
-                          />
+
                           <div
                             className={`relative z-10 w-[90px] h-[90px] rounded-full flex items-center justify-center shadow-lg ${
                               step.color === "orange"

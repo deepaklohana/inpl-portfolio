@@ -5,6 +5,7 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ServicesCTASection from "@/components/sections/ServicesCTASection";
 import { getTestimonials } from "@/lib/actions/testimonials";
 import { getServices } from "@/lib/actions/services";
+import AboutSection from "@/components/sections/AboutSection";
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +61,8 @@ export default async function ServicesPage() {
     <>
       <ServicesHero />
       <ServiceCategories services={formattedServices} />
-      <ProcessSection />
+      {/* <ProcessSection /> */}
+      <AboutSection/>
       <TestimonialsSection testimonials={formattedTestimonials} />
       <ServicesCTASection />
     </>

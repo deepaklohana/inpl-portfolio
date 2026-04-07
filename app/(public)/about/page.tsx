@@ -4,7 +4,7 @@ import CoreValuesSection from "@/components/sections/CoreValuesSection";
 import JourneySection from "@/components/sections/JourneySection";
 import DevStatsBar from "@/components/sections/DevStatsBar";
 import TeamStatsSection from "@/components/sections/TeamStatsSection";
-import ServicesCTASection from "@/components/sections/ServicesCTASection";
+import ContactCTASection from "@/components/sections/ContactCTASection";
 
 export const metadata = {
   title: "About Us | Innovative",
@@ -25,11 +25,13 @@ export default function AboutPage() {
       <CoreValuesSection />
       <JourneySection />
       <TeamStatsSection />
-      <ServicesCTASection 
+      
+      <ContactCTASection 
         title="Join Our Success Story"
         description="Let's build something amazing together"
-        primaryButtonText="Get In Touch"
-        secondaryButtonText={undefined} 
+        buttons={[
+          { label: "Get In Touch", href: "/contact-us", variant: "primary" }
+        ]}
       />
     </main>
   );

@@ -40,7 +40,7 @@ export default function Navbar() {
     { name: "Services", href: "/services" },
     { name: "News & Events", href: "/news" },
     { name: "Partnerships", href: "/partnerships" },
-    { name: "Contact Us", href: "/contact-us" },
+    // { name: "Contact Us", href: "/contact-us" },
   ];
 
   return (

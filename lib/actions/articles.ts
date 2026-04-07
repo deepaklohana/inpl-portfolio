@@ -201,7 +201,7 @@ export async function getArticles(options: GetArticlesOptions = {}) {
 // 2. getArticleBySlug  (public page — also increments views)
 // ---------------------------------------------------------------------------
 
-export async function getArticleBySlug(slug: string) {
+export async function getArticleBySlug(slug: string, incrementView: boolean = false) {
   try {
     const article = await prisma.article.findUnique({
       where: { slug },
@@ -210,10 +210,12 @@ export async function getArticleBySlug(slug: string) {
 
     if (!article || article.status !== 'published') return null;
 
-    // Increment views in the background (fire-and-forget)
-    prisma.article
-      .update({ where: { slug }, data: { views: { increment: 1 } } })
-      .catch((e) => console.error('incrementViews (getArticleBySlug) failed:', e));
+    if (incrementView) {
+      // Increment views in the background (fire-and-forget)
+      prisma.article
+        .update({ where: { slug }, data: { views: { increment: 1 } } })
+        .catch((e) => console.error('incrementViews (getArticleBySlug) failed:', e));
+    }
 
     return article;
   } catch (error) {

@@ -18,31 +18,23 @@ export default function NewsletterCTASection({
     >
       {/* ── Decorative orange ellipses — Figma absolute positions ────────────── */}
       {/* Large ellipse — top-right: x:1284, y:-58, 260×260 */}
-      <div
-        aria-hidden
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          width: 260,
-          height: 260,
-          top: -58,
-          right: 0,
-          background: "#E96429",
-          opacity: 0.35,
-          filter: "blur(60px)",
-        }}
-      />
-      {/* Small ellipse — left: x:69, y:52, 40×40 */}
-      <div
-        aria-hidden
-        className="absolute rounded-full pointer-events-none"
-        style={{ width: 40, height: 40, top: 52, left: 69, background: "#E96429", opacity: 0.6 }}
-      />
-      {/* Small ellipse — bottom-right: x:1323, y:307, 40×40 */}
-      <div
-        aria-hidden
-        className="absolute rounded-full pointer-events-none"
-        style={{ width: 40, height: 40, bottom: 95, right: 117, background: "#E96429", opacity: 0.6 }}
-      />
+      <div className="absolute inset-0 max-w-[1440px] mx-auto pointer-events-none">
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{ width: 260, height: 260, top: -58, left: 1284, background: "#E96429" }}
+        />
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{ width: 40, height: 40, top: 52, left: 69, background: "#E96429" }}
+        />
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{ width: 40, height: 40, top: 307, left: 1323, background: "#E96429" }}
+        />
+      </div>
 
       {/* ── Content — centered, max-w 628px ────────────────────────────────── */}
       <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-4 sm:px-6 py-16 md:py-[120px]">
