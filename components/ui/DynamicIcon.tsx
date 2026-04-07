@@ -6,12 +6,17 @@ import * as LucideIcons from 'lucide-react';
 // ============================================================================
 // Import only the specific react-icons you are using to avoid massive bundle size.
 // Do NOT import * as FaIcons from 'react-icons/fa', it will break tree-shaking!
-import { FaReact,FaFigma, FaAws, FaNodeJs, FaGoogle, FaAndroid, FaApple } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiTypescript, SiFigma, SiVercel, SiNestjs, SiPostgresql, SiMongodb } from 'react-icons/si';
+import { FaReact,FaFigma, FaAws, FaNodeJs, FaGoogle, FaAndroid, FaApple, FaFacebookF, FaInstagram,FaTiktok } from 'react-icons/fa';
+import { SiNextdotjs, SiTailwindcss, SiTypescript, SiFigma, SiVercel, SiNestjs, SiPostgresql, SiMongodb,SiGoogleads } from 'react-icons/si';
 import { TbBrandAdobeXd,TbBrandAdobeAfterEffect,TbBrandAdobeIllustrator,TbBrandAdobePhotoshop } from "react-icons/tb";
 import { PiSketchLogoLight } from "react-icons/pi";
 import { RiInvisionLine } from "react-icons/ri";
 import { RxSketchLogo } from "react-icons/rx";
+import { FaXTwitter } from "react-icons/fa6";
+import { FiLinkedin,FiYoutube } from "react-icons/fi";
+import { ImPinterest2 } from "react-icons/im";
+
+
 
 
 
@@ -29,6 +34,9 @@ export const iconRegistry: Record<string, React.ElementType> = {
   FaAndroid,
   FaApple,
   FaFigma,
+  FaFacebookF, 
+  FaInstagram,
+  FaTiktok,
   
   // SimpleIcons (Si)
   SiNextdotjs,
@@ -39,6 +47,7 @@ export const iconRegistry: Record<string, React.ElementType> = {
   SiNestjs,
   SiPostgresql,
   SiMongodb,
+  SiGoogleads,
 
   // Tb
   TbBrandAdobeXd,
@@ -54,6 +63,16 @@ export const iconRegistry: Record<string, React.ElementType> = {
 
   // Rx
   RxSketchLogo,
+
+  // Fa6
+  FaXTwitter,
+
+  // Fi
+  FiLinkedin,
+  FiYoutube,
+
+  // Im
+  ImPinterest2,
 };
 
 // ============================================================================

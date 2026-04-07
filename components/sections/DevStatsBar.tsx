@@ -3,7 +3,15 @@
 import { motion } from "framer-motion";
 
 
-export default function DevStatsBar({stats}: {stats?: any}) {
+export default function DevStatsBar({
+  stats,
+  gradient = 'linear-gradient(135deg, rgba(233, 100, 41, 1) 0%, rgba(34, 81, 181, 1) 100%)',
+  className = ""
+}: {
+  stats?: any,
+  gradient?: string,
+  className?: string
+}) {
   let parsedStats = [];
   
   if (Array.isArray(stats)) {
@@ -28,8 +36,8 @@ export default function DevStatsBar({stats}: {stats?: any}) {
   }
 
   return (
-    <section className="w-full bg-[#E96429] py-8 px-4 md:px-[140px]" style={{
-      background: 'linear-gradient(135deg, rgba(233, 100, 41, 1) 0%, rgba(34, 81, 181, 1) 100%)'
+    <section className={`w-full bg-[#E96429] py-8 px-4 md:px-[140px] ${className}`} style={{
+      background: gradient
     }}>
       <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-[161px] justify-items-center">
         {parsedStats.map((stat: any, index: number) => (

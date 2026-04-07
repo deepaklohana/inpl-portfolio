@@ -4,7 +4,17 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 
-export default function ProductCTASection() {
+export default function ProductCTASection({
+  title = "Ready to Transform Your Business?",
+  description = "Get started with a free demo and see how our products can revolutionize your operations",
+  buttonText = "Schedule Free Demo",
+  buttonUrl = "/contact-us"
+}: {
+  title?: string | null;
+  description?: string | null;
+  buttonText?: string | null;
+  buttonUrl?: string | null;
+}) {
   return (
     // Section: 1440×402px, bg #2251B5
     <section
@@ -71,7 +81,7 @@ export default function ProductCTASection() {
                 letterSpacing: "-0.025em",
               }}
             >
-              Ready to Transform Your Business?
+              {title}
             </h2>
 
             {/* Inter 400, 20px, lh 1.4, rgba(255,255,255,0.9) */}
@@ -85,7 +95,7 @@ export default function ProductCTASection() {
                 maxWidth: "844px",
               }}
             >
-              Get started with a free demo and see how our products can revolutionize your operations
+              {description}
             </p>
           </div>
 
@@ -94,7 +104,7 @@ export default function ProductCTASection() {
             {/* Primary button: bg white filled, shadow, borderRadius 12px, padding 16px 25px */}
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
-                href="/contact-us"
+                href={buttonUrl || "/contact-us"}
                 className="flex items-center justify-center bg-white text-[#2251B5] rounded-xl font-semibold transition-shadow hover:shadow-xl"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -106,7 +116,7 @@ export default function ProductCTASection() {
                     "0px 8px 10px -6px rgba(0,0,0,0.1), 0px 20px 25px -5px rgba(0,0,0,0.1)",
                 }}
               >
-                Schedule Free Demo
+                {buttonText}
               </Link>
             </motion.div>
 

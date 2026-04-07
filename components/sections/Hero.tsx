@@ -39,7 +39,7 @@ export default function Hero() {
         <div className="flex items-center gap-2 bg-[#FFEDE5] border border-[rgba(233,100,41,0.3)] rounded-full px-4 py-2 mt-8 md:mt-0">
           <div className="w-2 h-2 rounded-full bg-[#2251B5]" />
           <span className="text-sm font-medium text-[#101828] font-['Inter',sans-serif]">
-            Digital Excellence Since 2015
+            Digital Excellence Since 2016
           </span>
         </div>
 

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { notFound } from "next/navigation";
 import ERPHero from "@/components/sections/ERPHero";
 import ERPModulesSection from "@/components/sections/ERPModulesSection";
@@ -48,7 +49,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <ERPHero />
+      <ERPHero 
+        title={product.fullName || product.name}
+        tagline={product.tagline || 'Enterprise Solutions'}
+        description={product.shortDescription || product.description}
+        ctaButtonText={product.ctaButtonText}
+        ctaButtonUrl={product.ctaButtonUrl}
+      />
       <DevStatsBar 
       stats={product.stats}
       />
