@@ -1,3 +1,6 @@
+// ISR: contact page 5 minutes baad revalidate hoga (FAQs rarely change)
+export const revalidate = 300;
+
 import { Metadata } from "next";
 import PageHero from "@/components/sections/PageHero";
 import ContactInfoSection from "@/components/sections/ContactInfoSection";

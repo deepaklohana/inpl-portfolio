@@ -1,13 +1,15 @@
+// ISR: page 60s baad background mein revalidate hoga
+export const revalidate = 60;
+
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { buildMetadata } from '@/lib/seo';
-import { getServiceBySlug, getServices } from '@/lib/actions/services';
 import type {
   StatItem,
   SubService,
   ProcessStep,
   TechSection,
-  ToolsSection
+  ToolsSection,
 } from '@/lib/actions/services';
 
 import ServicesHero from '@/components/sections/ServicesHero';
@@ -18,16 +20,26 @@ import TechMasterySection from '@/components/sections/TechMasterySection';
 import ToolsWeUseSection from '@/components/sections/ToolsWeUseSection';
 import InnerServiceCTASection from '@/components/sections/InnerServiceCTASection';
 import DynamicIcon from '@/components/ui/DynamicIcon';
+import {
+  getCachedServiceBySlug,
+  getCachedPublishedServiceSlugs,
+} from '@/lib/cached-queries';
 
-export const dynamic = 'force-dynamic';
+// Build time pe saare published service slugs pre-render karo
+export async function generateStaticParams() {
+  const services = await getCachedPublishedServiceSlugs();
+  return services.map((s) => ({ slug: s.slug }));
+}
 
+// generateMetadata aur page component dono getCachedServiceBySlug call karte hain —
+// React cache() ensure karta hai sirf EK DB call ho per request
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  const service = await getCachedServiceBySlug(slug);
 
   if (!service || service.status !== 'published') return {};
 
@@ -51,9 +63,9 @@ export default async function ServicePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  // cache() ki wajah se yeh same request mein re-fetch nahi karega
+  const service = await getCachedServiceBySlug(slug);
 
-  // Call notFound() for missing or non-published records
   if (!service || service.status !== 'published') {
     notFound();
   }
@@ -100,26 +112,26 @@ export default async function ServicePage({
   }
 
   // Map sub-services to DetailedServiceItem format
-  const mappedSubServices: DetailedServiceItem[] | null = subServices?.map((sub: any) => {
-    return {
+  const mappedSubServices: DetailedServiceItem[] | null =
+    subServices?.map((sub: any) => ({
       id: sub.name,
       title: sub.name,
-      description: sub.description || sub.shortDescription || "",
+      description: sub.description || sub.shortDescription || '',
       icon: <DynamicIcon name={sub.icon} className="w-8 h-8 text-white" />,
       features: sub.features || [],
       techStack: sub.technologies || [],
       featuresHeading: sub.featuresHeading,
       techStackHeading: sub.technologiesHeading,
-    };
-  }) || null;
+    })) || null;
 
   // Map process steps
-  const mappedProcessSteps: SimpleProcessStep[] | null = processSteps?.map((step, index) => ({
-    num: step.number < 10 ? `0${step.number}` : step.number.toString(),
-    title: step.heading,
-    description: step.description,
-    color: index % 2 === 0 ? "orange" : "blue",
-  })) || null;
+  const mappedProcessSteps: SimpleProcessStep[] | null =
+    processSteps?.map((step, index) => ({
+      num: step.number < 10 ? `0${step.number}` : step.number.toString(),
+      title: step.heading,
+      description: step.description,
+      color: index % 2 === 0 ? 'orange' : 'blue',
+    })) || null;
 
   const sectionType = srv.sectionType || 'technologies';
 
@@ -131,8 +143,14 @@ export default async function ServicePage({
       />
 
       <ServicesHero
-        badgeText={pillText || "Our Services"}
-        badgeIcon={service.icon ? <DynamicIcon name={service.icon} className="w-4 h-4 text-[#E96429]" /> : <div className="w-2 h-2 rounded-full bg-[#E96429]" />}
+        badgeText={pillText || 'Our Services'}
+        badgeIcon={
+          service.icon ? (
+            <DynamicIcon name={service.icon} className="w-4 h-4 text-[#E96429]" />
+          ) : (
+            <div className="w-2 h-2 rounded-full bg-[#E96429]" />
+          )
+        }
         title={titleNode}
         description={service.description || undefined}
         primaryButtonText="Get Started"
@@ -140,15 +158,13 @@ export default async function ServicePage({
         showPartnerMarquee={false}
       />
 
-      {stats && stats.length > 0 && (
-        <DevStatsBar stats={stats} />
-      )}
+      {stats && stats.length > 0 && <DevStatsBar stats={stats} />}
 
       {mappedSubServices && mappedSubServices.length > 0 && (
         <DetailedServicesGrid
-          badgeLabel={(service as any).subServicesHeading || "Services"}
-          title={(service as any).subServicesHeading || "Our Services"}
-          description={(service as any).subServicesDescription || ""}
+          badgeLabel={(service as any).subServicesHeading || 'Services'}
+          title={(service as any).subServicesHeading || 'Our Services'}
+          description={(service as any).subServicesDescription || ''}
           services={mappedSubServices}
         />
       )}
@@ -156,8 +172,8 @@ export default async function ServicePage({
       {mappedProcessSteps && mappedProcessSteps.length > 0 && (
         <SimpleProcessSection
           badge="Process"
-          title={(service as any).processStepsHeading || "Development Process"}
-          subtitle={(service as any).processStepsDescription || "How we deliver excellence"}
+          title={(service as any).processStepsHeading || 'Development Process'}
+          subtitle={(service as any).processStepsDescription || 'How we deliver excellence'}
           steps={mappedProcessSteps}
         />
       )}
@@ -173,11 +189,14 @@ export default async function ServicePage({
       {ctaSection && (ctaSection.heading || ctaSection.description) && (
         <InnerServiceCTASection
           title={ctaSection.heading || "Let's Create Something Beautiful"}
-          description={ctaSection.description || "Transform your vision into stunning designs that users love"}
-          primaryButtonText={ctaSection.button1Name || "Start Your Design Project"}
-          primaryButtonSlug={ctaSection.button1Slug || "/contact"}
-          secondaryButtonText={ctaSection.button2Name || "Explore All Services"}
-          secondaryButtonSlug={ctaSection.button2Slug || "/services"}
+          description={
+            ctaSection.description ||
+            'Transform your vision into stunning designs that users love'
+          }
+          primaryButtonText={ctaSection.button1Name || 'Start Your Design Project'}
+          primaryButtonSlug={ctaSection.button1Slug || '/contact'}
+          secondaryButtonText={ctaSection.button2Name || 'Explore All Services'}
+          secondaryButtonSlug={ctaSection.button2Slug || '/services'}
         />
       )}
     </>

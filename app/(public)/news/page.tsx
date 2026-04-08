@@ -1,6 +1,9 @@
 import NewsPageClient from "./NewsPageClient";
 import { getArticles } from "@/lib/actions/articles";
 
+// ISR: news listing 60s baad background mein revalidate hoga
+export const revalidate = 60;
+
 export const metadata = {
   title: "News & Events | Innovative Network",
   description: "Stay informed with our latest news, product updates, and thought leadership content.",

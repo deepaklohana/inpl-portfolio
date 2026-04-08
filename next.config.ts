@@ -10,6 +10,8 @@ function hostnameFromUrl(url?: string) {
 }
 
 const nextConfig: NextConfig = {
+  // Prisma should not be bundled — it needs native binaries on Vercel
+  serverExternalPackages: ['@prisma/client', 'prisma'],
   transpilePackages: [
     '@tiptap/react',
     '@tiptap/core',

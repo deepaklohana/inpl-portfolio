@@ -1,3 +1,6 @@
+// ISR: home page 60s baad background mein revalidate hoga
+export const revalidate = 60;
+
 import Hero from "@/components/sections/Hero";
 import CompanyOverviewSection from "@/components/sections/CompanyOverviewSection";
 import ProductsSection from "@/components/sections/ProductsSection";

@@ -3,14 +3,15 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, Clock, Eye, Share2, ArrowLeft, Link as LinkIcon, ExternalLink } from 'lucide-react';
-import { getArticleBySlug, getRelatedArticles, getArticles } from '@/lib/actions/articles';
+import { getRelatedArticles } from '@/lib/actions/articles';
 import { generateTOC, addHeadingIds } from '@/lib/utils/generateTOC';
 import { TableOfContents } from '@/components/article/TableOfContents';
 import { HTMLContent } from '@/components/article/HTMLContent';
 import NewsletterCTASection from '@/components/sections/NewsletterCTASection';
+import { getCachedArticleBySlug, getCachedPublishedArticleSlugs } from '@/lib/cached-queries';
 
+// ISR: article pages 1 ghante baad background mein revalidate honge
 export const revalidate = 3600;
-export const dynamic = "force-dynamic";
 
 const TYPE_LABEL: Record<string, string> = {
   news: 'News',
@@ -25,8 +26,9 @@ const TYPE_COLOR: Record<string, string> = {
 };
 
 export async function generateStaticParams() {
-  const articles = await getArticles({ status: 'published' });
-  return articles.map((a) => ({ slug: a.slug }));
+  // Only fetch slugs — much lighter than fetching all Article fields
+  const slugs = await getCachedPublishedArticleSlugs();
+  return slugs.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -35,7 +37,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  // getCachedArticleBySlug: same request mein sirf ek DB call
+  const article = await getCachedArticleBySlug(slug);
   if (!article) return {};
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -62,7 +65,8 @@ export default async function ArticleDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug, true);
+  // cache() ki wajah se generateMetadata ke baad yeh re-fetch nahi karega
+  const article = await getCachedArticleBySlug(slug);
 
   if (!article) notFound();
 

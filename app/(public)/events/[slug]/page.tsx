@@ -2,16 +2,18 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { buildMetadata } from '@/lib/seo';
 import NewsletterCTASection from '@/components/sections/NewsletterCTASection';
-import { getEventBySlug, getEvents } from '@/lib/actions/events';
+import { getEventBySlug } from '@/lib/actions/events';
+import { getCachedPublishedArticleSlugs } from '@/lib/cached-queries';
 
-
+// ISR: event pages 1 ghante baad background mein revalidate honge
 export const revalidate = 3600;
-export const dynamic = "force-dynamic";
+// NOTE: 'force-dynamic' REMOVED — it was overriding ISR on every request
 
 export async function generateStaticParams() {
   try {
-    const events = await getEvents({ status: 'published' });
-    return events.map((e: { slug: string }) => ({ slug: e.slug }));
+    // Only fetch slugs with type='event' filter — lightweight query
+    const slugs = await getCachedPublishedArticleSlugs();
+    return slugs.map((e) => ({ slug: e.slug }));
   } catch (error) {
     console.warn('generateStaticParams(events/[slug]) failed, returning empty params.', error);
     return [];

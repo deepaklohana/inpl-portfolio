@@ -3,11 +3,12 @@ import ServiceCategories from "@/components/sections/ServiceCategories";
 import ProcessSection from "@/components/sections/ProcessSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ServicesCTASection from "@/components/sections/ServicesCTASection";
-import { getTestimonials } from "@/lib/actions/testimonials";
-import { getServices } from "@/lib/actions/services";
 import AboutSection from "@/components/sections/AboutSection";
+import { getCachedServices } from "@/lib/cached-queries";
+import { getTestimonials } from "@/lib/actions/testimonials";
 
-export const dynamic = 'force-dynamic';
+// ISR: page 60s baad background mein revalidate hoga — har visit pe DB call nahi
+export const revalidate = 60;
 
 export default async function ServicesPage() {
   let dbTestimonials: any[] = [];
@@ -17,7 +18,7 @@ export default async function ServicesPage() {
   try {
     const results = await Promise.all([
       getTestimonials({ page: 'services', limit: 4 }),
-      getServices({ status: 'published' }),
+      getCachedServices('published'),
     ]);
     dbTestimonials = results[0];
     dbServices = results[1];
