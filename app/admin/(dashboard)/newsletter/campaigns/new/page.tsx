@@ -1,7 +1,9 @@
 import CampaignForm from "../_components/CampaignForm";
 import Link from "next/link";
+import { checkSmtpConfigured } from "@/lib/actions/smtp";
 
-export default function NewCampaignPage() {
+export default async function NewCampaignPage() {
+  const smtpConfigured = await checkSmtpConfigured();
   return (
     <div className="space-y-8">
       {/* Breadcrumb */}
@@ -29,7 +31,7 @@ export default function NewCampaignPage() {
       </div>
 
       {/* Form */}
-      <CampaignForm />
+      <CampaignForm smtpConfigured={smtpConfigured} />
     </div>
   );
 }

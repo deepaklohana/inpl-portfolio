@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { sendEmail } from "@/lib/mail";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 export interface CampaignPayload {
@@ -77,22 +78,9 @@ export async function deleteCampaign(
   }
 }
 
-// ─── Send campaign (SMTP placeholder) ───────────────────────────────────────
-// NOTE: Actual email sending is disabled until SMTP is configured.
-// When SMTP is ready, replace the placeholder block below with nodemailer logic.
 export async function sendCampaign(
   id: number
 ): Promise<{ success: boolean; message: string }> {
-  const SMTP_CONFIGURED = false; // ← Set to true when SMTP is ready
-
-  if (!SMTP_CONFIGURED) {
-    return {
-      success: false,
-      message:
-        "SMTP is not configured yet. Please add your email credentials to enable sending.",
-    };
-  }
-
   try {
     const [campaign, subscribers] = await Promise.all([
       prisma.emailCampaign.findUnique({ where: { id } }),
@@ -103,32 +91,62 @@ export async function sendCampaign(
     if (subscribers.length === 0)
       return { success: false, message: "No active subscribers." };
 
-    // ── TODO: Replace with nodemailer when SMTP is ready ──────────────────
-    // const transporter = nodemailer.createTransport({ ... });
-    // for (const sub of subscribers) {
-    //   await transporter.sendMail({ to: sub.email, subject: campaign.subject, html: campaign.body });
-    // }
-    // ─────────────────────────────────────────────────────────────────────
+    // Send emails and track results
+    const results = await Promise.allSettled(
+      subscribers.map((sub) =>
+        sendEmail(sub.email, campaign.subject, campaign.body)
+      )
+    );
+
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    const failed = results.filter((r) => r.status === "rejected").length;
+
+    // Log any failures for debugging
+    results.forEach((result, i) => {
+      if (result.status === "rejected") {
+        console.error(
+          `[Campaign ${id}] Failed to send to ${subscribers[i].email}:`,
+          result.reason
+        );
+      }
+    });
+
+    // If ALL failed, mark as failed
+    if (succeeded === 0) {
+      await prisma.emailCampaign.update({
+        where: { id },
+        data: { status: "failed" },
+      });
+      revalidatePath("/admin/newsletter");
+      return {
+        success: false,
+        message: `Failed to send. All ${failed} emails failed. Check server logs for SMTP errors.`,
+      };
+    }
 
     await prisma.emailCampaign.update({
       where: { id },
       data: {
         status: "sent",
         sentAt: new Date(),
-        recipientCount: subscribers.length,
+        recipientCount: succeeded,
       },
     });
 
     revalidatePath("/admin/newsletter");
     return {
       success: true,
-      message: `Campaign sent to ${subscribers.length} subscribers.`,
+      message:
+        failed > 0
+          ? `Sent to ${succeeded} subscribers. ${failed} failed.`
+          : `Campaign sent successfully to ${succeeded} subscribers.`,
     };
-  } catch {
+  } catch (err) {
+    console.error(`[Campaign ${id}] sendCampaign error:`, err);
     await prisma.emailCampaign.update({
       where: { id },
       data: { status: "failed" },
     });
-    return { success: false, message: "Failed to send campaign." };
+    return { success: false, message: "Failed to send campaign. Check server logs." };
   }
 }

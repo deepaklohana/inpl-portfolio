@@ -1,4 +1,5 @@
 import { getCampaign } from "@/lib/actions/campaigns";
+import { checkSmtpConfigured } from "@/lib/actions/smtp";
 import CampaignForm from "../../_components/CampaignForm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,7 +10,10 @@ interface Props {
 
 export default async function EditCampaignPage({ params }: Props) {
   const { id } = await params;
-  const campaign = await getCampaign(Number(id));
+  const [campaign, smtpConfigured] = await Promise.all([
+    getCampaign(Number(id)),
+    checkSmtpConfigured(),
+  ]);
 
   if (!campaign) notFound();
 
@@ -58,6 +62,7 @@ export default async function EditCampaignPage({ params }: Props) {
 
       {/* Form */}
       <CampaignForm
+        smtpConfigured={smtpConfigured}
         initial={{
           id: campaign.id,
           subject: campaign.subject,

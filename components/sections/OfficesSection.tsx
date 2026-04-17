@@ -76,30 +76,30 @@ const OFFICES: OfficeCardProps[] = [
   {
     type: "Head Office",
     city: "Karachi",
-    address: "Plot 123, Clifton Block 5, Karachi, Pakistan",
-    phone: "+92 21 1234 5678",
-    email: "karachi@innovativenetwork.com",
+    address: "41-J, Street-3, Block-6, PECHS, Karachi, Sindh, Pakistan 75400",
+    phone: "(021) 34303051-55",
+    email: "contact@innovative-net.com",
     hours: "Mon - Fri: 9:00 AM - 6:00 PM",
-    mapUrl: "https://maps.google.com/?q=Clifton+Block+5+Karachi+Pakistan",
+    mapUrl: "https://maps.app.goo.gl/i9HpfC9XnMmoLwCGA",
   },
-  {
-    type: "Regional Office",
-    city: "Lahore",
-    address: "DHA Phase 6, Main Boulevard, Lahore, Pakistan",
-    phone: "+92 42 9876 5432",
-    email: "lahore@innovativenetwork.com",
-    hours: "Mon - Fri: 9:00 AM - 6:00 PM",
-    mapUrl: "https://maps.google.com/?q=DHA+Phase+6+Lahore+Pakistan",
-  },
-  {
-    type: "Branch Office",
-    city: "Islamabad",
-    address: "Blue Area, F-7 Markaz, Islamabad, Pakistan",
-    phone: "+92 51 5555 6666",
-    email: "islamabad@innovativenetwork.com",
-    hours: "Mon - Fri: 9:00 AM - 6:00 PM",
-    mapUrl: "https://maps.google.com/?q=Blue+Area+F-7+Markaz+Islamabad+Pakistan",
-  },
+  // {
+  //   type: "Regional Office",
+  //   city: "Lahore",
+  //   address: "DHA Phase 6, Main Boulevard, Lahore, Pakistan",
+  //   phone: "+92 42 9876 5432",
+  //   email: "lahore@innovativenetwork.com",
+  //   hours: "Mon - Fri: 9:00 AM - 6:00 PM",
+  //   mapUrl: "https://maps.google.com/?q=DHA+Phase+6+Lahore+Pakistan",
+  // },
+  // {
+  //   type: "Branch Office",
+  //   city: "Islamabad",
+  //   address: "Blue Area, F-7 Markaz, Islamabad, Pakistan",
+  //   phone: "+92 51 5555 6666",
+  //   email: "islamabad@innovativenetwork.com",
+  //   hours: "Mon - Fri: 9:00 AM - 6:00 PM",
+  //   mapUrl: "https://maps.google.com/?q=Blue+Area+F-7+Markaz+Islamabad+Pakistan",
+  // },
 ];
 
 export default function OfficesSection() {
@@ -112,7 +112,7 @@ export default function OfficesSection() {
         {/* Header */}
         <div className="flex flex-col items-center gap-4 text-center mb-12">
           <h2 className="font-bold text-[38px] leading-[1.05] text-[#2251B5] font-['Plus_Jakarta_Sans',sans-serif]">
-            Our Offices
+            Our Office
           </h2>
           <p className="text-[20px] leading-[1.4] text-[#4A5565] font-['Inter',sans-serif]">
             Visit us at any of our locations across Pakistan

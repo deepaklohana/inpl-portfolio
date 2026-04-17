@@ -13,9 +13,10 @@ interface Campaign {
 
 interface Props {
   initial?: Campaign;
+  smtpConfigured?: boolean;
 }
 
-export default function CampaignForm({ initial }: Props) {
+export default function CampaignForm({ initial, smtpConfigured = false }: Props) {
   const router = useRouter();
   const isEdit = !!initial?.id;
 
@@ -24,8 +25,6 @@ export default function CampaignForm({ initial }: Props) {
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-
-  const SMTP_CONFIGURED = false; // ← flip to true when SMTP is ready
 
   async function handleSave() {
     setSaving(true);
@@ -107,7 +106,7 @@ export default function CampaignForm({ initial }: Props) {
       </div>
 
       {/* SMTP Notice (when not configured) */}
-      {!SMTP_CONFIGURED && (
+      {!smtpConfigured && (
         <div
           className="flex items-start gap-3 px-4 py-3 rounded-xl text-sm"
           style={{
@@ -185,9 +184,9 @@ export default function CampaignForm({ initial }: Props) {
         {isEdit && (
           <button
             onClick={handleSend}
-            disabled={sending || !SMTP_CONFIGURED || initial?.status === "sent"}
+            disabled={sending || !smtpConfigured || initial?.status === "sent"}
             title={
-              !SMTP_CONFIGURED
+              !smtpConfigured
                 ? "SMTP not configured yet"
                 : initial?.status === "sent"
                 ? "Already sent"

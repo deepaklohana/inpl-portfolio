@@ -1,5 +1,6 @@
 import { getSubscriberStats, getSubscribers } from "@/lib/actions/newsletter";
 import { getCampaigns } from "@/lib/actions/campaigns";
+import { checkSmtpConfigured } from "@/lib/actions/smtp";
 import Link from "next/link";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -60,12 +61,14 @@ export default async function NewsletterAdminPage() {
     createdAt: Date;
   }> = [];
   let dbUnavailable = false;
+  let smtpConfigured = false;
 
   try {
-    [stats, subscribers, campaigns] = await Promise.all([
+    [stats, subscribers, campaigns, smtpConfigured] = await Promise.all([
       getSubscriberStats(),
       getSubscribers("all"),
       getCampaigns(),
+      checkSmtpConfigured(),
     ]);
   } catch (error) {
     dbUnavailable = true;
@@ -230,28 +233,30 @@ export default async function NewsletterAdminPage() {
           Email Campaigns
         </h2>
 
-        {/* SMTP Notice */}
-        <div
-          className="mb-4 flex items-start gap-3 px-4 py-3 rounded-xl text-sm"
-          style={{
-            background: "rgba(233,100,41,0.05)",
-            border: "1px solid rgba(233,100,41,0.2)",
-          }}
-        >
-          <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4 text-[#E96429] shrink-0 mt-0.5" aria-hidden>
-            <path
-              d="M10 8.333v3.334M10 14.167h.008M8.575 3.242L1.908 15a1.667 1.667 0 001.425 2.5h13.334A1.667 1.667 0 0018.09 15L11.424 3.242a1.667 1.667 0 00-2.849 0z"
-              stroke="#E96429"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-[#E96429]">
-            <strong>SMTP not configured.</strong> You can create and save campaigns now.
-            Email sending will be enabled once you add SMTP credentials.
-          </span>
-        </div>
+        {/* SMTP Notice — only when not configured */}
+        {!smtpConfigured && (
+          <div
+            className="mb-4 flex items-start gap-3 px-4 py-3 rounded-xl text-sm"
+            style={{
+              background: "rgba(233,100,41,0.05)",
+              border: "1px solid rgba(233,100,41,0.2)",
+            }}
+          >
+            <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4 text-[#E96429] shrink-0 mt-0.5" aria-hidden>
+              <path
+                d="M10 8.333v3.334M10 14.167h.008M8.575 3.242L1.908 15a1.667 1.667 0 001.425 2.5h13.334A1.667 1.667 0 0018.09 15L11.424 3.242a1.667 1.667 0 00-2.849 0z"
+                stroke="#E96429"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="text-[#E96429]">
+              <strong>SMTP not configured.</strong> You can create and save campaigns now.
+              Email sending will be enabled once you add SMTP credentials.
+            </span>
+          </div>
+        )}
 
         <div className="rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm">
           {campaigns.length === 0 ? (

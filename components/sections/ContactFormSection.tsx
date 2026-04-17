@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Send, Mail, Phone,
   Headset, Handshake, MessageCircle,
-  Facebook, Twitter, Linkedin, Instagram,
+  Facebook, Linkedin, Instagram,
+  CheckCircle, AlertCircle, Loader2,
 } from "lucide-react";
+import { submitContactForm } from "@/lib/actions/contact";
 
 /* ─────────────────────────────────────────
    Department Card — each card is its own
@@ -75,6 +77,16 @@ function DepartmentCard({
    Main Section
 ───────────────────────────────────────── */
 export default function ContactFormSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [statusMessage, setStatusMessage] = useState("");
+
   const departments = [
     {
       icon: MessageCircle,
@@ -107,20 +119,52 @@ export default function ContactFormSection() {
 
   const socialLinks = [
     { label: "Facebook",  href: "https://www.facebook.com/innovativenetworkltd/", color: "#1877F2", Icon: Facebook  },
-    // { label: "Twitter",   href: "#", color: "#1DA1F2", Icon: Twitter   },
     { label: "LinkedIn",  href: "https://www.linkedin.com/company/innovative-network-pvt-ltd", color: "#0A66C2", Icon: Linkedin  },
     { label: "Instagram", href: "https://www.instagram.com/innovativenetworkltd?igsh=NWpleDE2cnZrZTU=", color: "#E4405F", Icon: Instagram },
   ];
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setStatus("error");
+      setStatusMessage("Please fill in all required fields.");
+      return;
+    }
+
+    setStatus("loading");
+    setStatusMessage("");
+
+    const result = await submitContactForm({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+    });
+
+    if (result.success) {
+      setStatus("success");
+      setStatusMessage(result.message || "Message sent successfully!");
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    } else {
+      setStatus("error");
+      setStatusMessage(result.message || "Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <section className="relative w-full bg-[#F9FAFB] py-20 overflow-hidden">
       {/* ── Blur ellipses ── */}
-      {/* Orange — bottom-left  (Figma: x:-220, y:706) */}
       <div
         className="pointer-events-none absolute w-[343px] h-[307px] rounded-full bg-[#E96429]/15 blur-[300px]"
         style={{ left: -220, top: 706 }}
       />
-      {/* Blue — top-right  (Figma: x:1253 on 1440px canvas → right:-156px) */}
       <div
         className="pointer-events-none absolute w-[343px] h-[307px] rounded-full bg-[#2251B5]/20 blur-[300px]"
         style={{ right: -156, top: -63 }}
@@ -130,16 +174,11 @@ export default function ContactFormSection() {
       <div className="relative z-10 max-w-[1200px] mx-auto px-4 md:px-8 xl:px-0">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_379px] gap-12 xl:gap-12 items-start">
 
-          {/* ══════════════════════════════
-              LEFT — Form card
-              Figma: y:143, h:653.74, padding:32px
-              justifyContent:center → content vertically centred
-          ══════════════════════════════ */}
+          {/* LEFT — Form card */}
           <div
             className={[
               "flex flex-col justify-center gap-6",
               "bg-white border border-[#E0E0E0] rounded-[24px] p-8",
-              // Match Figma fixed height + 63px top offset (form starts 63px below right col)
               "lg:min-h-[654px] lg:mt-[63px]",
             ].join(" ")}
           >
@@ -160,11 +199,26 @@ export default function ContactFormSection() {
               </p>
             </div>
 
+            {/* Status Banner */}
+            {status === "success" && (
+              <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 rounded-[14px] px-4 py-3">
+                <CheckCircle className="w-5 h-5 shrink-0 text-green-600" />
+                <p className="text-[14px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  {statusMessage}
+                </p>
+              </div>
+            )}
+            {status === "error" && (
+              <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 rounded-[14px] px-4 py-3">
+                <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
+                <p className="text-[14px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  {statusMessage}
+                </p>
+              </div>
+            )}
+
             {/* Form */}
-            <form
-              className="flex flex-col gap-6"
-              onSubmit={(e) => e.preventDefault()}
-            >
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               {/* Row 1 */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
@@ -178,6 +232,9 @@ export default function ContactFormSection() {
                   <input
                     type="text"
                     id="cf-fullName"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="John Doe"
                     className="w-full px-4 py-3 border border-[#D1D5DC] rounded-[14px] bg-transparent text-[#101828] text-[16px] placeholder:text-black/50 outline-none focus:border-[#2251B5] focus:ring-1 focus:ring-[#2251B5] transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
@@ -194,6 +251,9 @@ export default function ContactFormSection() {
                   <input
                     type="email"
                     id="cf-email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="john@example.com"
                     className="w-full px-4 py-3 border border-[#D1D5DC] rounded-[14px] bg-transparent text-[#101828] text-[16px] placeholder:text-black/50 outline-none focus:border-[#2251B5] focus:ring-1 focus:ring-[#2251B5] transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
@@ -214,6 +274,9 @@ export default function ContactFormSection() {
                   <input
                     type="tel"
                     id="cf-phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     placeholder="+92 300 1234567"
                     className="w-full px-4 py-3 border border-[#D1D5DC] rounded-[14px] bg-transparent text-[#101828] text-[16px] placeholder:text-black/50 outline-none focus:border-[#2251B5] focus:ring-1 focus:ring-[#2251B5] transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
@@ -230,6 +293,9 @@ export default function ContactFormSection() {
                   <input
                     type="text"
                     id="cf-subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
                     placeholder="How can we help you?"
                     className="w-full px-4 py-3 border border-[#D1D5DC] rounded-[14px] bg-transparent text-[#101828] text-[16px] placeholder:text-black/50 outline-none focus:border-[#2251B5] focus:ring-1 focus:ring-[#2251B5] transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
@@ -248,33 +314,40 @@ export default function ContactFormSection() {
                 </label>
                 <textarea
                   id="cf-message"
+                  name="message"
                   rows={5}
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder="Tell us more about your inquiry..."
                   className="w-full px-4 py-3 border border-[#D1D5DC] rounded-[14px] bg-transparent text-[#101828] text-[16px] placeholder:text-black/50 outline-none focus:border-[#2251B5] focus:ring-1 focus:ring-[#2251B5] transition-colors resize-none"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 />
               </div>
 
-              {/* Submit — full-width, Figma: bg #2251B5, radius 14px, py 13px */}
+              {/* Submit */}
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-[7px] bg-[#2251B5] hover:bg-[#1a3f8f] text-white font-bold text-[16px] leading-normal rounded-[14px] py-[13px] transition-colors duration-200"
+                disabled={status === "loading"}
+                className="w-full flex items-center justify-center gap-[7px] bg-[#2251B5] hover:bg-[#1a3f8f] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-[16px] leading-normal rounded-[14px] py-[13px] transition-colors duration-200"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
-                <Send className="w-5 h-5" />
-                Send Message
+                {status === "loading" ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Send Message
+                  </>
+                )}
               </button>
             </form>
           </div>
 
-          {/* ══════════════════════════════
-              RIGHT — Contact by Department
-              Figma: x:941.33, y:80, w:378.67
-              No background — children have their own cards
-          ══════════════════════════════ */}
+          {/* RIGHT — Contact by Department */}
           <div className="flex flex-col gap-6 w-full">
-
-            {/* Heading + 3 separate dept cards */}
             <div className="flex flex-col gap-4">
               <h3
                 className="font-bold text-[24px] leading-[1.33] text-[#101828]"
@@ -282,8 +355,6 @@ export default function ContactFormSection() {
               >
                 Contact by Department
               </h3>
-
-              {/* Each card is SEPARATE — own border + borderRadius */}
               <div className="flex flex-col gap-4">
                 {departments.map((dept, idx) => (
                   <DepartmentCard key={idx} {...dept} />
@@ -313,7 +384,6 @@ export default function ContactFormSection() {
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </div>
